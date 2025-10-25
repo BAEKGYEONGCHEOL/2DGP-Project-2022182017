@@ -29,7 +29,10 @@ while running:
     # 게임 플레이 모드
     elif game_mode_state == 'main_play':
         cur_state = main_play_mode.run()
+
+    game_mode_state = cur_state
     if game_mode_state == 'QUIT':
         running = False
+
     delay(0.01)
 close_canvas()

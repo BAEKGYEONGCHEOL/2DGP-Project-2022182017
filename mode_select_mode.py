@@ -32,3 +32,10 @@ def run():
                     icon_x -= 447
                 elif icon_x < 1244 and e.key == SDLK_RIGHT:
                     icon_x += 447
+
+                if icon_x == 350 and e.key == SDLK_RETURN:
+                    return 'character_select'
+                elif icon_x == 797 and e.key == SDLK_RETURN:
+                    return 'character_select'
+                elif icon_x == 1244 and e.key == SDLK_RETURN:
+                    return 'QUIT'

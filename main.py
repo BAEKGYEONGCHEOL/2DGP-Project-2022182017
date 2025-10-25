@@ -4,7 +4,7 @@ import character_select_mode
 import main_play_mode
 
 def handle_events():
-    global running, gameModeSelectMode, characterSelectMode, playGameMode
+    global running
 
     event_list = get_events()
     for event in event_list:
@@ -15,21 +15,21 @@ def handle_events():
                 running = False
 
 running = True              # 게임 루프
-gameModeSelectMode = True   # 게임 모드 선택(vs 2P, vs AI, quit)
-characterSelectMode = False # 캐릭터 선택 모드
-playGameMode = False        # 게임 플레이 모드
+game_mode_state = 'mode_select' # 현재 게임 모드 상태
 
-open_canvas()
+open_canvas(1594, 894)
 while running:
     handle_events()
     # 게임 모드 선택(vs 2P, vs AI, quit)
-    while gameModeSelectMode:
+    if game_mode_state == 'mode_select':
         cur_state = mode_select_mode.run()
     # 캐릭터 선택 모드
-    while characterSelectMode:
+    elif game_mode_state == 'character_select':
         cur_state = character_select_mode.run()
     # 게임 플레이 모드
-    while playGameMode:
+    elif game_mode_state == 'main_play':
         cur_state = main_play_mode.run()
+    if game_mode_state == 'QUIT':
+        running = False
     delay(0.01)
 close_canvas()

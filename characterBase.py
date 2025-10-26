@@ -140,6 +140,35 @@ class Jump:
         self.character.draw_frame(frame_data)
 
 
+# Teleport 상태
+class Teleport:
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['teleport'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['teleport'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
 # Base Attack 상태
 class BaseAttack:
 
@@ -169,6 +198,35 @@ class BaseAttack:
         self.character.draw_frame(frame_data)
 
 
+# Dash Attack 상태
+class DashAttack:
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['dash_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['dash_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
 # Power Attack 상태
 class PowerAttack:
 
@@ -195,6 +253,180 @@ class PowerAttack:
 
     def draw(self):
         frame_data = self.character.frame['power_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
+# Sphere Attack 상태
+class SphereAttack:
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['sphere_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['sphere_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
+# Wave Attack 상태
+class WaveAttack:
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['wave_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['wave_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
+# Reflex Attack 상태
+class ReflexAttack:
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['reflex_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['reflex_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
+# Ambient Wave Attack 상태
+class AmbientWaveAttack:
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['ambient_wave_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['ambient_wave_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
+# Base Sword Attack 상태
+class BaseSwordAttack:
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['base_sword_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['base_sword_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
+# Base Buster Attack 상태
+class BaseBusterAttack:
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['base_buster_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['base_buster_attack'][self.character.current_frame]
         self.character.draw_frame(frame_data)
 
 
@@ -432,12 +664,12 @@ class ZeroCharacter(Character):
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
-        # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
-        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
-        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
-        # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
-        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
+        self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
+        self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -484,13 +716,13 @@ class SigmaCharacter(Character):
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
-        # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
-        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
-        # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
-        # self.WAVE_ATTACK = WaveAttack(self, len(self.frame['wave_attack']), self.delay['wave_attack'])
-        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
-        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
+        self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
+        self.WAVE_ATTACK = WaveAttack(self, len(self.frame['wave_attack']), self.delay['wave_attack'])
+        self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -537,13 +769,13 @@ class VileCharacter(Character):
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
-        # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
-        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
-        # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
-        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
-        # self.AMBIENT_WAVE_ATTACK = AmbientWaveAttack(self, len(self.frame['ambient_wave_attack']), self.delay['ambient_wave_attack'])
-        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
+        self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
+        self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        self.AMBIENT_WAVE_ATTACK = AmbientWaveAttack(self, len(self.frame['ambient_wave_attack']), self.delay['ambient_wave_attack'])
+        self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -590,13 +822,13 @@ class UltimateArmorXCharacter(Character):
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
-        # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
-        # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_sword_attack']), self.delay['base_sword_attack'])
-        # self.BASE_BUSTER_ATTACK = BaseBusterAttack(self, len(self.frame['base_buster_attack']), self.delay['base_buster_attack'])
-        # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
-        # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
-        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
+        self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_sword_attack']), self.delay['base_sword_attack'])
+        self.BASE_BUSTER_ATTACK = BaseBusterAttack(self, len(self.frame['base_buster_attack']), self.delay['base_buster_attack'])
+        self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
+        self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
+        self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태

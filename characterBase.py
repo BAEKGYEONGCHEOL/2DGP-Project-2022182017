@@ -19,31 +19,157 @@ def right_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].type == SDLK_RIGHT
 
 
+# Intro 상태
 class Intro:
-    pass
+
+    def __init__(self, character, max_frame):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0    # current_frame 초기화!
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        self.frame += 1
+
+        if self.frame >= len(self.character.frame['intro']):
+            self.character.state_machine.handle_state_event(('TIME_OUT', None))
+        else:
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['intro'][self.character.current_frame]
+        x_data, y_data, w_data, h_data = frame_data
+        # 플레이어 1(기본 방향: 우측)
+        # 캐릭터의 사진이 좌측 방향을 보고 있어서 우측 방향으로 바꾸어야 한다면!
+        if self.character.player == 1:
+            if self.character.change_facing_right:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+            else:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+        # 플레이어 2(기본 방향: 좌측)
+        # 캐릭터의 사진이 우측 방향을 보고 있어서 좌측 방향으로 바꾸어야 한다면!
+        elif self.character.player == 2:
+            if self.character.change_facing_right:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+            else:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
 
 
+# Idle 상태
 class Idle:
-    pass
+
+    def __init__(self, character, max_frame):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        self.frame = (self.frame + 1) % len(self.character.frame['idle'])
+        self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['idle'][self.character.current_frame]
+        x_data, y_data, w_data, h_data = frame_data
+        # 플레이어 1(기본 방향: 우측)
+        # 캐릭터의 사진이 좌측 방향을 보고 있어서 우측 방향으로 바꾸어야 한다면!
+        if self.character.player == 1:
+            if self.character.change_facing_right:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+            else:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+        # 플레이어 2(기본 방향: 좌측)
+        # 캐릭터의 사진이 우측 방향을 보고 있어서 좌측 방향으로 바꾸어야 한다면!
+        elif self.character.player == 2:
+            if self.character.change_facing_right:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+            else:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
 
 
+# Walk 상태
 class Walk:
-    pass
+
+    def __init__(self, character, max_frame):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        self.frame = (self.frame + 1) % len(self.character.frame['walk'])
+        self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['walk'][self.character.current_frame]
+        x_data, y_data, w_data, h_data = frame_data
+        # 플레이어 1(기본 방향: 우측)
+        # 캐릭터의 사진이 좌측 방향을 보고 있어서 우측 방향으로 바꾸어야 한다면!
+        if self.character.player == 1:
+            if self.character.change_facing_right:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+            else:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+        # 플레이어 2(기본 방향: 좌측)
+        # 캐릭터의 사진이 우측 방향을 보고 있어서 좌측 방향으로 바꾸어야 한다면!
+        elif self.character.player == 2:
+            if self.character.change_facing_right:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
+            else:
+                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
+                                                    self.character.y, w_data * 3, h_data * 3)
 
 
 class Character:
-    def __init__(self, image_path, x, y, speed):
+    def __init__(self, image_path, x, y, speed, sheet_data, player, change_facing_right):
         self.image = load_image(image_path)    # 캐릭터 이미지 로드
-        self.x = 400
-        self.y = 300
-        self.frame = 0
+        self.x = x
+        self.y = y
+        self.frame = {
+            'intro': sheet_data[0],
+            'idle': sheet_data[1],
+            'walk': sheet_data[2],
+        }
+        self.current_frame = 0  # 현재 프레임 인덱스
         self.face_dir = 1
         self.dir = 0
         self.speed = speed
 
-        self.INTRO = Intro(self)
-        self.IDLE = Idle(self)
-        self.WALK = Walk(self)
+        self.player = player
+        self.change_facing_right = change_facing_right  # 캐릭터의 기본 방향은 우측 방향!
+
+        self.INTRO = Intro(self, len(sheet_data[0]))
+        self.IDLE = Idle(self, len(sheet_data[1]))
+        self.WALK = Walk(self, len(sheet_data[2]))
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태

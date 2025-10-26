@@ -1,5 +1,6 @@
 from pico2d import load_image, get_time
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP
+from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 
 from state_machine import StateMachine
 
@@ -22,11 +23,11 @@ def right_up(e):
 # Intro 상태
 class Intro:
 
-    def __init__(self, character, max_frame):
+    def __init__(self, character, max_frame, delay):
         self.character = character
         self.frame = 0
         self.max_frame = max_frame
-        self.delay = 0.1   # 프레임 상태마다 다르게 구현
+        self.delay = delay   # 프레임 상태마다 다르게 구현
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
@@ -73,11 +74,11 @@ class Intro:
 # Idle 상태
 class Idle:
 
-    def __init__(self, character, max_frame):
+    def __init__(self, character, max_frame, delay):
         self.character = character
         self.frame = 0
         self.max_frame = max_frame
-        self.delay = 0.1  # 프레임 상태마다 다르게 구현
+        self.delay = delay   # 프레임 상태마다 다르게 구현
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
@@ -120,11 +121,11 @@ class Idle:
 # Walk 상태
 class Walk:
 
-    def __init__(self, character, max_frame):
+    def __init__(self, character, max_frame, delay):
         self.character = character
         self.frame = 0
         self.max_frame = max_frame
-        self.delay = 0.1  # 프레임 상태마다 다르게 구현
+        self.delay = delay   # 프레임 상태마다 다르게 구현
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
@@ -169,22 +170,74 @@ class Character:
         self.image = load_image(image_path)    # 캐릭터 이미지 로드
         self.x = x
         self.y = y
-        self.frame = {
-            'intro': sheet_data[0],
-            'idle': sheet_data[1],
-            'walk': sheet_data[2],
-        }
-        self.current_frame = 0  # 현재 프레임 인덱스
-        self.face_dir = 1
-        self.dir = 0
-        self.speed = speed
-
         self.player = player
         self.change_facing_right = change_facing_right  # 캐릭터의 기본 방향은 우측 방향!
 
-        self.INTRO = Intro(self, len(sheet_data[0]))
-        self.IDLE = Idle(self, len(sheet_data[1]))
-        self.WALK = Walk(self, len(sheet_data[2]))
+        self.current_frame = 0  # 현재 프레임 인덱스
+        self.speed = speed
+
+        # 자식 클래스 생성 시 프레임, 딜레이 데이터를 딕셔너리 형태로 저장
+        self.frame = {}
+        self.delay = {}
+
+        self.state_machine = None
+
+    def update(self):
+        if self.state_machine:
+            self.state_machine.update()
+
+    def draw(self):
+        if self.state_machine:
+            self.state_machine.draw()
+
+    def handle_event(self, event):
+        if self.state_machine:
+            self.state_machine.handle_state_event(('INPUT', event))
+
+
+# ===================================================================
+# 각자 개인 캐릭터 클래스 구현!
+# ===================================================================
+
+# X 캐릭터 클래스
+class XCharacter(Character):
+    def __init__(self, x, y, speed, player):
+        super().__init__('mmx_x4_x_sheet.png', x, y, speed, mmx_x4_x_sheet, player, False)
+
+        # 캐릭터 별 프레임 및 딜레이 데이터 설정
+        self.frame = {
+            'intro': mmx_x4_x_sheet[0],
+            'idle': mmx_x4_x_sheet[1],
+            'walk': mmx_x4_x_sheet[2],
+            'jump': mmx_x4_x_sheet[3],
+            'base_attack': mmx_x4_x_sheet[4],
+            'power_attack': mmx_x4_x_sheet[5],
+            'dash': mmx_x4_x_sheet[6],
+            'hit': mmx_x4_x_sheet[7],
+            'defeat': mmx_x4_x_sheet[8],
+        }
+
+        self.delay = {
+            'intro': 0.1,
+            'idle': 0.1,
+            'walk': 0.1,
+            'jump': 0.1,
+            'base_attack': 0.1,
+            'power_attack': 0.1,
+            'dash': 0.1,
+            'hit': 0.1,
+            'defeat': 0.1,
+        }
+
+        self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
+        self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
+        self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
+        self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
+        self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
+        self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -198,11 +251,22 @@ class Character:
             }
         )
 
-    def update(self):
-        self.state_machine.update()
 
-    def draw(self):
-        self.state_machine.draw()
+# Zero 캐릭터 클래스
+class ZeroCharacter(Character):
+    pass
 
-    def handle_event(self, event):
-        self.state_machine.handle_state_event(('INPUT', event))
+
+# Sigma 캐릭터 클래스
+class SigmaCharacter(Character):
+    pass
+
+
+# Vile 캐릭터 클래스
+class VileCharacter(Character):
+    pass
+
+
+# Ultimate Armor X 캐릭터 클래스
+class UltimateArmorXCharacter(Character):
+    pass

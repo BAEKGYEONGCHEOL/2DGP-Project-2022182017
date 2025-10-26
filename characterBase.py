@@ -165,6 +165,36 @@ class Walk:
                                                     self.character.y, w_data * 3, h_data * 3)
 
 
+# Jump 상태
+class Jump:
+    pass
+
+
+# Base Attack 상태
+class BaseAttack:
+    pass
+
+
+# Power Attack 상태
+class PowerAttack:
+    pass
+
+
+# Dash 상태
+class Dash:
+    pass
+
+
+# Hit 상태
+class Hit:
+    pass
+
+
+# Defeat 상태
+class Defeat:
+    pass
+
+
 class Character:
     def __init__(self, image_path, x, y, speed, sheet_data, player, change_facing_right):
         self.image = load_image(image_path)    # 캐릭터 이미지 로드
@@ -232,12 +262,12 @@ class XCharacter(Character):
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
-        self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
-        self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
-        self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
-        self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
-        self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
+        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
+        # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
+        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -254,19 +284,127 @@ class XCharacter(Character):
 
 # Zero 캐릭터 클래스
 class ZeroCharacter(Character):
-    pass
+    def __init__(self, x, y, speed, player):
+        super().__init__('zerox4sheet.png', x, y, speed, zerox4sheet, player, False)
+
+        # 캐릭터 별 프레임 및 딜레이 데이터 설정
+        self.frame = {
+            'intro': zerox4sheet[0],
+            'idle': zerox4sheet[1],
+            'walk': zerox4sheet[2],
+        }
+
+        self.delay = {
+            'intro': 0.1,
+            'idle': 0.1,
+            'walk': 0.1,
+        }
+
+        self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
+        self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
+        self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+
+        self.state_machine = StateMachine(
+            self.IDLE,  # 시작 상태는 IDLE 상태
+            {
+                self.INTRO: {time_out: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+            }
+        )
 
 
 # Sigma 캐릭터 클래스
 class SigmaCharacter(Character):
-    pass
+    def __init__(self, x, y, speed, player):
+        super().__init__('x5sigma4.png', x, y, speed, x5sigma4, player, True)
+
+        # 캐릭터 별 프레임 및 딜레이 데이터 설정
+        self.frame = {
+            'intro': x5sigma4[0],
+            'idle': x5sigma4[1],
+            'walk': x5sigma4[2],
+        }
+
+        self.delay = {
+            'intro': 0.1,
+            'idle': 0.1,
+            'walk': 0.1,
+        }
+
+        self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
+        self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
+        self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+
+        self.state_machine = StateMachine(
+            self.IDLE,  # 시작 상태는 IDLE 상태
+            {
+                self.INTRO: {time_out: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+            }
+        )
 
 
 # Vile 캐릭터 클래스
 class VileCharacter(Character):
-    pass
+    def __init__(self, x, y, speed, player):
+        super().__init__('Dynamox56sheet.png', x, y, speed, Dynamox56sheet, player, True)
+
+        # 캐릭터 별 프레임 및 딜레이 데이터 설정
+        self.frame = {
+            'intro': Dynamox56sheet[0],
+            'idle': Dynamox56sheet[1],
+            'walk': Dynamox56sheet[2],
+        }
+
+        self.delay = {
+            'intro': 0.1,
+            'idle': 0.1,
+            'walk': 0.1,
+        }
+
+        self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
+        self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
+        self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+
+        self.state_machine = StateMachine(
+            self.IDLE,  # 시작 상태는 IDLE 상태
+            {
+                self.INTRO: {time_out: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+            }
+        )
 
 
 # Ultimate Armor X 캐릭터 클래스
 class UltimateArmorXCharacter(Character):
-    pass
+    def __init__(self, x, y, speed, player):
+        super().__init__('ultimate_armor_x.png', x, y, speed, ultimate_armor_x, player, False)
+
+        # 캐릭터 별 프레임 및 딜레이 데이터 설정
+        self.frame = {
+            'intro': ultimate_armor_x[0],
+            'idle': ultimate_armor_x[1],
+            'walk': ultimate_armor_x[2],
+        }
+
+        self.delay = {
+            'intro': 0.1,
+            'idle': 0.1,
+            'walk': 0.1,
+        }
+
+        self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
+        self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
+        self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+
+        self.state_machine = StateMachine(
+            self.IDLE,  # 시작 상태는 IDLE 상태
+            {
+                self.INTRO: {time_out: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+            }
+        )

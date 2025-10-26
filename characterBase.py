@@ -292,17 +292,35 @@ class ZeroCharacter(Character):
             'intro': zerox4sheet[0],
             'idle': zerox4sheet[1],
             'walk': zerox4sheet[2],
+            'jump': zerox4sheet[3],
+            'base_attack': zerox4sheet[4],
+            'dash_attack': zerox4sheet[5],
+            'dash': zerox4sheet[6],
+            'hit': zerox4sheet[7],
+            'defeat': zerox4sheet[8],
         }
 
         self.delay = {
             'intro': 0.1,
             'idle': 0.1,
             'walk': 0.1,
+            'jump': 0.1,
+            'base_attack': 0.1,
+            'dash_attack': 0.1,
+            'dash': 0.1,
+            'hit': 0.1,
+            'defeat': 0.1,
         }
 
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
+        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
+        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -324,17 +342,38 @@ class SigmaCharacter(Character):
             'intro': x5sigma4[0],
             'idle': x5sigma4[1],
             'walk': x5sigma4[2],
+            'teleport': x5sigma4[3],
+            'base_attack': x5sigma4[4],
+            'sphere_attack': x5sigma4[5],
+            'wave_attack': x5sigma4[6],
+            'dash_attack': x5sigma4[7],
+            'hit': x5sigma4[8],
+            'defeat': x5sigma4[9],
         }
 
         self.delay = {
             'intro': 0.1,
             'idle': 0.1,
             'walk': 0.1,
+            'teleport': 0.1,
+            'base_attack': 0.1,
+            'sphere_attack': 0.1,
+            'wave_attack': 0.1,
+            'dash_attack': 0.1,
+            'hit': 0.1,
+            'defeat': 0.1,
         }
 
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
+        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
+        # self.WAVE_ATTACK = WaveAttack(self, len(self.frame['wave_attack']), self.delay['wave_attack'])
+        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -356,17 +395,38 @@ class VileCharacter(Character):
             'intro': Dynamox56sheet[0],
             'idle': Dynamox56sheet[1],
             'walk': Dynamox56sheet[2],
+            'teleport': Dynamox56sheet[3],
+            'base_attack': Dynamox56sheet[4],
+            'reflex_attack': Dynamox56sheet[5],
+            'dash_attack': Dynamox56sheet[6],
+            'ambient_wave_attack': Dynamox56sheet[7],
+            'hit': Dynamox56sheet[8],
+            'defeat': Dynamox56sheet[9],
         }
 
         self.delay = {
             'intro': 0.1,
             'idle': 0.1,
             'walk': 0.1,
+            'teleport': 0.1,
+            'base_attack': 0.1,
+            'reflex_attack': 0.1,
+            'dash_attack': 0.1,
+            'ambient_wave_attack': 0.1,
+            'hit': 0.1,
+            'defeat': 0.1,
         }
 
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
+        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
+        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        # self.AMBIENT_WAVE_ATTACK = AmbientWaveAttack(self, len(self.frame['ambient_wave_attack']), self.delay['ambient_wave_attack'])
+        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -388,17 +448,38 @@ class UltimateArmorXCharacter(Character):
             'intro': ultimate_armor_x[0],
             'idle': ultimate_armor_x[1],
             'walk': ultimate_armor_x[2],
+            'jump': ultimate_armor_x[3],
+            'base_sword_attack': ultimate_armor_x[4],
+            'base_buster_attack': ultimate_armor_x[5],  # 기본 공격(base_attack)으로 판단!
+            'power_attack': ultimate_armor_x[6],
+            'dash': ultimate_armor_x[7],
+            'hit': ultimate_armor_x[8],
+            'defeat': ultimate_armor_x[9],
         }
 
         self.delay = {
             'intro': 0.1,
             'idle': 0.1,
             'walk': 0.1,
+            'jump': 0.1,
+            'base_sword_attack': 0.1,   # 기본 공격(base_attack)으로 판단!
+            'base_buster_attack': 0.1,
+            'power_attack': 0.1,
+            'dash': 0.1,
+            'hit': 0.1,
+            'defeat': 0.1,
         }
 
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
+        # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_sword_attack']), self.delay['base_sword_attack'])
+        # self.BASE_BUSTER_ATTACK = BaseBusterAttack(self, len(self.frame['base_buster_attack']), self.delay['base_buster_attack'])
+        # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
+        # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
+        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태

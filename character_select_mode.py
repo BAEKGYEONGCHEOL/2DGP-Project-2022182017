@@ -1,19 +1,20 @@
 from pico2d import *
-from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
-from characterBase import Character
+from characterBase import XCharacter, ZeroCharacter, SigmaCharacter, VileCharacter, UltimateArmorXCharacter
 
 
 # 플레이어 객체 생성 함수
-def draw_character_select_screen(character_data, index, x, y, speed, player):
-    player_character  = Character(
-        character_data[index][0],
-        x,
-        y,
-        speed,
-        character_data[index][1],
-        player,
-        character_data[index][2]
-    )
+def draw_character_select_screen(index, x, y, speed, player):
+    if index == 0:
+        player_character = XCharacter(x, y, speed, player)
+    elif index == 1:
+        player_character = ZeroCharacter(x, y, speed, player)
+    elif index == 2:
+        player_character = SigmaCharacter(x, y, speed, player)
+    elif index == 3:
+        player_character = VileCharacter(x, y, speed, player)
+    elif index == 4:
+        player_character = UltimateArmorXCharacter(x, y, speed, player)
+
     # 초기 상태 INTRO로 설정
     player_character.state_machine.cur_state = player_character.INTRO
 
@@ -44,20 +45,11 @@ def run(battle_mode):
     player1_index = 0
     player2_index = 0
 
-    # 캐릭터 별 기본 데이터 (이미지 파일명, 스프라이트 시트 데이터, 좌우 반전 여부)
-    character_data = [
-        ('mmx_x4_x_sheet.png', mmx_x4_x_sheet, False),
-        ('zerox4sheet.png', zerox4sheet, False),
-        ('x5sigma4.png', x5sigma4, True),
-        ('Dynamox56sheet.png', Dynamox56sheet, True),
-        ('ultimate_armor_x.png', ultimate_armor_x, False)
-    ]
-
     # 플레이어1 캐릭터 객체 생성
-    player1_character = draw_character_select_screen(character_data, player1_index, player1_character_view_x,
+    player1_character = draw_character_select_screen(player1_index, player1_character_view_x,
                                                      player1_character_view_y, 0, 1)
     # 플레이어2 캐릭터 객체 생성
-    player2_character = draw_character_select_screen(character_data, player2_index, player2_character_view_x,
+    player2_character = draw_character_select_screen(player2_index, player2_character_view_x,
                                                      player2_character_view_y, 0, 2)
 
     while True:
@@ -93,14 +85,14 @@ def run(battle_mode):
                     player1_icon_x -= 276
                     player1_index -= 1
                     # 플레이어1 캐릭터 객체 생성
-                    player1_character = draw_character_select_screen(character_data, player1_index,
+                    player1_character = draw_character_select_screen(player1_index,
                                                                      player1_character_view_x,
                                                                      player1_character_view_y, 0, 1)
                 elif player1_icon_x < 1278 and e.key == SDLK_RIGHT:
                     player1_icon_x += 276
                     player1_index += 1
                     # 플레이어1 캐릭터 객체 생성
-                    player1_character = draw_character_select_screen(character_data, player1_index,
+                    player1_character = draw_character_select_screen(player1_index,
                                                                      player1_character_view_x,
                                                                      player1_character_view_y, 0, 1)
                 # 플레이어 2 캐릭터 선택 아이콘 이동
@@ -108,14 +100,14 @@ def run(battle_mode):
                     player2_icon_x -= 276
                     player2_index -= 1
                     # 플레이어2 캐릭터 객체 생성
-                    player2_character = draw_character_select_screen(character_data, player2_index,
+                    player2_character = draw_character_select_screen(player2_index,
                                                                      player2_character_view_x,
                                                                      player2_character_view_y, 0, 2)
                 elif player2_icon_x < 1416 and e.key == SDLK_KP_6:
                     player2_icon_x += 276
                     player2_index += 1
                     # 플레이어2 캐릭터 객체 생성
-                    player2_character = draw_character_select_screen(character_data, player2_index,
+                    player2_character = draw_character_select_screen(player2_index,
                                                                      player2_character_view_x,
                                                                      player2_character_view_y, 0, 2)
 

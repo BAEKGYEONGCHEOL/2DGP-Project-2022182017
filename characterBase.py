@@ -26,6 +26,8 @@ class Intro:
         self.character = character
         self.frame = 0
         self.max_frame = max_frame
+        self.delay = 0.1   # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
         self.frame = 0
@@ -35,12 +37,15 @@ class Intro:
         pass
 
     def do(self):
-        self.frame += 1
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame += 1
+            self.last_update_time = time
 
-        if self.frame >= len(self.character.frame['intro']):
-            self.character.state_machine.handle_state_event(('TIME_OUT', None))
-        else:
-            self.character.current_frame = self.frame
+            if self.frame >= len(self.character.frame['intro']):
+                self.character.state_machine.handle_state_event(('TIME_OUT', None))
+            else:
+                self.character.current_frame = self.frame
 
     def draw(self):
         frame_data = self.character.frame['intro'][self.character.current_frame]
@@ -72,6 +77,8 @@ class Idle:
         self.character = character
         self.frame = 0
         self.max_frame = max_frame
+        self.delay = 0.1  # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
         self.frame = 0
@@ -81,8 +88,11 @@ class Idle:
         pass
 
     def do(self):
-        self.frame = (self.frame + 1) % len(self.character.frame['idle'])
-        self.character.current_frame = self.frame
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['idle'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
 
     def draw(self):
         frame_data = self.character.frame['idle'][self.character.current_frame]
@@ -114,6 +124,8 @@ class Walk:
         self.character = character
         self.frame = 0
         self.max_frame = max_frame
+        self.delay = 0.1  # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
         self.frame = 0
@@ -123,8 +135,11 @@ class Walk:
         pass
 
     def do(self):
-        self.frame = (self.frame + 1) % len(self.character.frame['walk'])
-        self.character.current_frame = self.frame
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['walk'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
 
     def draw(self):
         frame_data = self.character.frame['walk'][self.character.current_frame]

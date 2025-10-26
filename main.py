@@ -16,19 +16,20 @@ def handle_events():
 
 running = True              # 게임 루프
 game_mode_state = 'mode_select' # 현재 게임 모드 상태
+battle_mode = None
 
 open_canvas(1594, 894)
 while running:
     handle_events()
     # 게임 모드 선택(vs 2P, vs AI, quit)
     if game_mode_state == 'mode_select':
-        cur_state = mode_select_mode.run()
+        cur_state, battle_mode = mode_select_mode.run()
     # 캐릭터 선택 모드
     elif game_mode_state == 'character_select':
-        cur_state = character_select_mode.run()
+        cur_state = character_select_mode.run(battle_mode)
     # 게임 플레이 모드
     elif game_mode_state == 'main_play':
-        cur_state = main_play_mode.run()
+        cur_state = main_play_mode.run(battle_mode)
 
     game_mode_state = cur_state
     if game_mode_state == 'QUIT':

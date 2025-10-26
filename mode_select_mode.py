@@ -34,8 +34,11 @@ def run():
                     icon_x += 447
 
                 if icon_x == 350 and e.key == SDLK_RETURN:
-                    return 'character_select'
+                    # vs 2P 선택
+                    return 'character_select', 'vs_player2'
                 elif icon_x == 797 and e.key == SDLK_RETURN:
-                    return 'character_select'
+                    # vs CPU 선택
+                    return 'character_select', 'vs_cpu'
                 elif icon_x == 1244 and e.key == SDLK_RETURN:
-                    return 'QUIT'
+                    # 게임 종료 선택
+                    return 'QUIT', None

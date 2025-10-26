@@ -14,11 +14,13 @@ def handle_events():
             if event.key == SDLK_ESCAPE:
                 running = False
 
-running = True              # 게임 루프
+running = True              # 게임 루프 실행 변수
 game_mode_state = 'mode_select' # 현재 게임 모드 상태
 battle_mode = None
 
 open_canvas(1594, 894)
+
+# 게임 루프
 while running:
     handle_events()
     # 게임 모드 선택(vs 2P, vs AI, quit)

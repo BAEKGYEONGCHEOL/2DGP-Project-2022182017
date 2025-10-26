@@ -50,25 +50,7 @@ class Intro:
 
     def draw(self):
         frame_data = self.character.frame['intro'][self.character.current_frame]
-        x_data, y_data, w_data, h_data = frame_data
-        # 플레이어 1(기본 방향: 우측)
-        # 캐릭터의 사진이 좌측 방향을 보고 있어서 우측 방향으로 바꾸어야 한다면!
-        if self.character.player == 1:
-            if self.character.change_facing_right:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-            else:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-        # 플레이어 2(기본 방향: 좌측)
-        # 캐릭터의 사진이 우측 방향을 보고 있어서 좌측 방향으로 바꾸어야 한다면!
-        elif self.character.player == 2:
-            if self.character.change_facing_right:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-            else:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
+        self.character.draw_frame(frame_data)
 
 
 # Idle 상태
@@ -97,25 +79,7 @@ class Idle:
 
     def draw(self):
         frame_data = self.character.frame['idle'][self.character.current_frame]
-        x_data, y_data, w_data, h_data = frame_data
-        # 플레이어 1(기본 방향: 우측)
-        # 캐릭터의 사진이 좌측 방향을 보고 있어서 우측 방향으로 바꾸어야 한다면!
-        if self.character.player == 1:
-            if self.character.change_facing_right:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-            else:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-        # 플레이어 2(기본 방향: 좌측)
-        # 캐릭터의 사진이 우측 방향을 보고 있어서 좌측 방향으로 바꾸어야 한다면!
-        elif self.character.player == 2:
-            if self.character.change_facing_right:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-            else:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
+        self.character.draw_frame(frame_data)
 
 
 # Walk 상태
@@ -144,57 +108,188 @@ class Walk:
 
     def draw(self):
         frame_data = self.character.frame['walk'][self.character.current_frame]
-        x_data, y_data, w_data, h_data = frame_data
-        # 플레이어 1(기본 방향: 우측)
-        # 캐릭터의 사진이 좌측 방향을 보고 있어서 우측 방향으로 바꾸어야 한다면!
-        if self.character.player == 1:
-            if self.character.change_facing_right:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-            else:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-        # 플레이어 2(기본 방향: 좌측)
-        # 캐릭터의 사진이 우측 방향을 보고 있어서 좌측 방향으로 바꾸어야 한다면!
-        elif self.character.player == 2:
-            if self.character.change_facing_right:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, '', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
-            else:
-                self.character.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, 'h', self.character.x,
-                                                    self.character.y, w_data * 3, h_data * 3)
+        self.character.draw_frame(frame_data)
 
 
 # Jump 상태
 class Jump:
-    pass
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['jump'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['jump'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
 
 
 # Base Attack 상태
 class BaseAttack:
-    pass
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['base_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['base_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
 
 
 # Power Attack 상태
 class PowerAttack:
-    pass
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['power_attack'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['power_attack'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
 
 
 # Dash 상태
 class Dash:
-    pass
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['dash'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['dash'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
 
 
 # Hit 상태
 class Hit:
-    pass
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['hit'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['hit'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
 
 
 # Defeat 상태
 class Defeat:
-    pass
+
+    def __init__(self, character, max_frame, delay):
+        self.character = character
+        self.frame = 0
+        self.max_frame = max_frame
+        self.delay = delay      # 프레임 상태마다 다르게 구현
+        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        time = get_time()
+        if time - self.last_update_time >= self.delay:
+            self.frame = (self.frame + 1) % len(self.character.frame['defeat'])
+            self.last_update_time = time
+            self.character.current_frame = self.frame
+
+    def draw(self):
+        frame_data = self.character.frame['defeat'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
 
 
+# ===================================================================
+# 캐릭터 베이스 클래스 구현!
+# ===================================================================
+
+# 기본 베이스 캐릭터 클래스 구현
 class Character:
     def __init__(self, image_path, x, y, speed, sheet_data, player, change_facing_right):
         self.image = load_image(image_path)    # 캐릭터 이미지 로드
@@ -223,6 +318,28 @@ class Character:
     def handle_event(self, event):
         if self.state_machine:
             self.state_machine.handle_state_event(('INPUT', event))
+
+    # 프레임 그리기 함수
+    def draw_frame(self, frame_data):
+        x_data, y_data, w_data, h_data = frame_data
+
+        # 플레이어 1(기본 방향: 우측)
+        # 캐릭터의 사진이 좌측 방향을 보고 있어서 우측 방향으로 바꾸어야 한다면!
+        if self.player == 1:
+            if self.change_facing_right:
+                flip = 'h'
+            else:
+                flip = ''
+        # 플레이어 2(기본 방향: 좌측)
+        # 캐릭터의 사진이 우측 방향을 보고 있어서 좌측 방향으로 바꾸어야 한다면!
+        else:
+            if self.change_facing_right:
+                flip = ''
+            else:
+                flip = 'h'
+
+        # 해당 프레임 그리기!
+        self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x, self.y, w_data * 3, h_data * 3)
 
 
 # ===================================================================
@@ -262,12 +379,12 @@ class XCharacter(Character):
         self.INTRO = Intro(self, len(self.frame['intro']), self.delay['intro'])
         self.IDLE = Idle(self, len(self.frame['idle']), self.delay['idle'])
         self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
-        # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
-        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
-        # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
-        # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
-        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
+        self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
+        self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
+        self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
+        self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태

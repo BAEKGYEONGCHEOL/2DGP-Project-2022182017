@@ -1,4 +1,24 @@
 from pico2d import *
+from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
+from characterBase import Character
+
+
+# 플레이어 객체 생성 함수
+def draw_character_select_screen(character_data, index, x, y, speed, player):
+    player_character  = Character(
+        character_data[index][0],
+        x,
+        y,
+        speed,
+        character_data[index][1],
+        player,
+        character_data[index][2]
+    )
+    # 초기 상태 INTRO로 설정
+    player_character.state_machine.cur_state = player_character.INTRO
+
+    return player_character
+
 
 def run(battle_mode):
     background = load_image('select_character_background.png')  # 배경
@@ -13,6 +33,32 @@ def run(battle_mode):
 
     player1_icon_x = 174
     player2_icon_x = 312
+
+    # 플레이어 별 캐릭터 뷰 위치
+    player1_character_view_x = 444
+    player1_character_view_y = 645
+    player2_character_view_x = 1150
+    player2_character_view_y = 645
+
+    # 플레이어 캐릭터 인덱스
+    player1_index = 0
+    player2_index = 0
+
+    # 캐릭터 별 기본 데이터 (이미지 파일명, 스프라이트 시트 데이터, 좌우 반전 여부)
+    character_data = [
+        ('mmx_x4_x_sheet.png', mmx_x4_x_sheet, False),
+        ('zerox4sheet.png', zerox4sheet, False),
+        ('x5sigma4.png', x5sigma4, True),
+        ('Dynamox56sheet.png', Dynamox56sheet, True),
+        ('ultimate_armor_x.png', ultimate_armor_x, False)
+    ]
+
+    # 플레이어1 캐릭터 객체 생성
+    player1_character = draw_character_select_screen(character_data, player1_index, player1_character_view_x,
+                                                     player1_character_view_y, 0, 1)
+    # 플레이어2 캐릭터 객체 생성
+    player2_character = draw_character_select_screen(character_data, player2_index, player2_character_view_x,
+                                                     player2_character_view_y, 0, 2)
 
     while True:
         clear_canvas()
@@ -29,6 +75,12 @@ def run(battle_mode):
         player1IconDirection.clip_draw(0, 0, 100, 73, player1_icon_x, 375)
         player2IconDirection.clip_draw(0, 0, 100, 73, player2_icon_x, 375)
 
+        # 플레이어에 따라 캐릭터 객체 업데이트 및 그리기
+        player1_character.update()
+        player1_character.draw()
+        player2_character.update()
+        player2_character.draw()
+
         update_canvas()
 
         events = get_events()
@@ -39,14 +91,33 @@ def run(battle_mode):
                 # 플레이어 1 캐릭터 선택 아이콘 이동
                 if player1_icon_x > 174 and e.key == SDLK_LEFT:
                     player1_icon_x -= 276
+                    player1_index -= 1
+                    # 플레이어1 캐릭터 객체 생성
+                    player1_character = draw_character_select_screen(character_data, player1_index,
+                                                                     player1_character_view_x,
+                                                                     player1_character_view_y, 0, 1)
                 elif player1_icon_x < 1278 and e.key == SDLK_RIGHT:
                     player1_icon_x += 276
-
+                    player1_index += 1
+                    # 플레이어1 캐릭터 객체 생성
+                    player1_character = draw_character_select_screen(character_data, player1_index,
+                                                                     player1_character_view_x,
+                                                                     player1_character_view_y, 0, 1)
                 # 플레이어 2 캐릭터 선택 아이콘 이동
                 if player2_icon_x > 312 and e.key == SDLK_KP_4:
                     player2_icon_x -= 276
+                    player2_index -= 1
+                    # 플레이어2 캐릭터 객체 생성
+                    player2_character = draw_character_select_screen(character_data, player2_index,
+                                                                     player2_character_view_x,
+                                                                     player2_character_view_y, 0, 2)
                 elif player2_icon_x < 1416 and e.key == SDLK_KP_6:
                     player2_icon_x += 276
+                    player2_index += 1
+                    # 플레이어2 캐릭터 객체 생성
+                    player2_character = draw_character_select_screen(character_data, player2_index,
+                                                                     player2_character_view_x,
+                                                                     player2_character_view_y, 0, 2)
 
         if battle_mode == 'vs_cpu':
             pass

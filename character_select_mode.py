@@ -111,6 +111,10 @@ def run(battle_mode):
                                                                      player2_character_view_x,
                                                                      player2_character_view_y, 0, 2)
 
+                if e.key == SDLK_ESCAPE:
+                    return 'mode_select'
+
+
         if battle_mode == 'vs_cpu':
             pass
         elif battle_mode == 'vs_player2':

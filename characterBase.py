@@ -12,7 +12,7 @@ def left_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
 
 def right_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].type == SDLK_RIGHT
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
@@ -76,15 +76,16 @@ class Idle:
         self.character.draw_frame(frame_data)
 
 
-# Walk 상태
+# Walk 상태(한 번 대기 후 걷기 반복)
 class Walk:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character, speed, prepare_frame_count):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay   # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+        self.speed = speed
+        self.prepare_frame_count = prepare_frame_count
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.frame = 0
@@ -94,11 +95,21 @@ class Walk:
         pass
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['walk'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        self.frame += len(self.character.frame['walk']) * self.ACTION_PER_TIME * game_framework.frame_time
+
+        # 준비 구간: 0 ~ prepare_frame_count-1
+        if self.frame < self.prepare_frame_count:
+            # 준비 중일 때는 그대로 진행 (한 번만)
+            self.character.current_frame = int(self.frame)
+
+        else:
+            # 준비 이후는 반복
+            loop_start = self.prepare_frame_count
+            loop_frames = len(self.character.frame['walk']) - loop_start
+
+            # 반복 구간 계산
+            loop_frame = int((self.frame - loop_start) * 1) % loop_frames + loop_start
+            self.character.current_frame = loop_frame
 
     def draw(self):
         frame_data = self.character.frame['walk'][self.character.current_frame]
@@ -591,7 +602,7 @@ class XCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        # self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        self.WALK = Walk(self, 6, 0)
         # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
@@ -605,9 +616,9 @@ class XCharacter(Character):
                 # INTRO 상태에서 해당 INTRO 프레임이 끝나는 이벤트(time_out)가 발생하면 IDLE 상태가 됨
                 self.INTRO: {time_out: self.IDLE},
                 # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
-                # self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
                 # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
-                # self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
             }
         )
 
@@ -632,7 +643,7 @@ class ZeroCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        # self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        self.WALK = Walk(self, 10, 0)
         # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
@@ -644,8 +655,8 @@ class ZeroCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                # self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
-                # self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
             }
         )
 
@@ -671,7 +682,7 @@ class SigmaCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        # self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        self.WALK = Walk(self, 6, 3)
         # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
@@ -684,8 +695,8 @@ class SigmaCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                # self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
-                # self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
             }
         )
 
@@ -711,7 +722,7 @@ class VileCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        # self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        self.WALK = Walk(self, 8, 1)
         # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
@@ -724,8 +735,8 @@ class VileCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                # self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
-                # self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
             }
         )
 
@@ -751,7 +762,7 @@ class UltimateArmorXCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        # self.WALK = Walk(self, len(self.frame['walk']), self.delay['walk'])
+        self.WALK = Walk(self, 10, 0)
         # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
         # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_sword_attack']), self.delay['base_sword_attack'])
         # self.BASE_BUSTER_ATTACK = BaseBusterAttack(self, len(self.frame['base_buster_attack']), self.delay['base_buster_attack'])
@@ -764,7 +775,7 @@ class UltimateArmorXCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                # self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
-                # self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
             }
         )

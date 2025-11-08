@@ -103,13 +103,14 @@ class Walk:
             self.character.current_frame = int(self.frame)
 
         else:
-            # 준비 이후는 반복
+            # 반복 구간 계산 (loop_frames이 0이 되지 않도록!)
             loop_start = self.prepare_frame_count
-            loop_frames = len(self.character.frame['walk']) - loop_start
+            total_frames = len(self.character.frame['walk'])
+            loop_frames = max(1, total_frames - loop_start)
 
             # 반복 구간 계산
-            loop_frame = int((self.frame - loop_start) * 1) % loop_frames + loop_start
-            self.character.current_frame = loop_frame
+            loop_frame = int((self.frame - loop_start)) % loop_frames + loop_start
+            self.character.current_frame = min(loop_frame, total_frames - 1)
 
     def draw(self):
         frame_data = self.character.frame['walk'][self.character.current_frame]

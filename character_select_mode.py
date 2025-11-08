@@ -50,7 +50,7 @@ def draw_character_select_screen(index, x, y, speed, player):
 
 
 def init():
-    global background, characterSelectViewSlot, player1IconDirection, player2IconDirection, slot_images, player1_icon_x, player2_icon_x, player1_index, player2_index, player1_character, player2_character, battle_mode
+    global background, characterSelectViewSlot, player1IconDirection, player2IconDirection, slot_images, player1_icon_x, player2_icon_x, player1_index, player2_index, player1_character, player2_character, battle_mode, player1_locked, player2_locked
 
     background = load_image('select_character_background.png')
     characterSelectViewSlot = load_image('character_select_view_slot.png')
@@ -64,8 +64,10 @@ def init():
         load_image('character_select_slot_5.png')
     ]
 
+    # 초기화
     player1_icon_x, player2_icon_x = 174, 312
     player1_index, player2_index = 0, 0
+    player1_locked, player2_locked = False, False
 
     # 캐릭터 표시 위치
     player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)

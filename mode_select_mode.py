@@ -35,6 +35,7 @@ def handle_events():
     for e in events:
         if e.type == SDL_QUIT:
             game_framework.quit()
+
         elif e.type == SDL_KEYDOWN:
             if e.key == SDLK_LEFT and icon_x > 350:
                 icon_x -= 447

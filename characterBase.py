@@ -630,7 +630,7 @@ class XCharacter(Character):
 class ZeroCharacter(Character):
     Zero_speed = 10
 
-    def __init__(self, x, y, speed, player):
+    def __init__(self, x, y, player):
         super().__init__('zerox4sheet.png', x, y, self.Zero_speed, zerox4sheet, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
@@ -670,7 +670,7 @@ class ZeroCharacter(Character):
 class SigmaCharacter(Character):
     Sigma_speed = 6
 
-    def __init__(self, x, y, speed, player):
+    def __init__(self, x, y, player):
         super().__init__('x5sigma4.png', x, y, self.Sigma_speed, x5sigma4, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
@@ -712,7 +712,7 @@ class SigmaCharacter(Character):
 class VileCharacter(Character):
     Vile_speed = 8
 
-    def __init__(self, x, y, speed, player):
+    def __init__(self, x, y, player):
         super().__init__('Dynamox56sheet.png', x, y, self.Vile_speed, Dynamox56sheet, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
@@ -754,7 +754,7 @@ class VileCharacter(Character):
 class UltimateArmorXCharacter(Character):
     UAX_speed = 10
 
-    def __init__(self, x, y, speed, player):
+    def __init__(self, x, y, player):
         super().__init__('ultimate_armor_x.png', x, y, self.UAX_speed, ultimate_armor_x, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정

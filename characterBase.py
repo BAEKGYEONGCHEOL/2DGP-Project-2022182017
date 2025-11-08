@@ -21,17 +21,14 @@ def right_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].type == SDLK_RIGHT
 
 
-# 캐릭터 Action Speed
-TIME_PER_ACTION = 0.5
-ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-
-
 # Intro 상태
 class Intro:
 
     def __init__(self, character):
         self.character = character
         self.frame = 0
+        self.TIME_PER_ACTION = 1.25
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.frame = 0
@@ -41,7 +38,8 @@ class Intro:
         pass
 
     def do(self):
-        self.frame = (self.frame + len(self.character.frame['intro']) * ACTION_PER_TIME * game_framework.frame_time)
+        # 한 번만 실행하기 위해 % 연산 제거
+        self.frame = (self.frame + len(self.character.frame['intro']) * self.ACTION_PER_TIME * game_framework.frame_time)
 
         if self.frame >= len(self.character.frame['intro']):
             self.character.state_machine.handle_state_event(('TIME_OUT', None))
@@ -59,6 +57,8 @@ class Idle:
     def __init__(self, character):
         self.character = character
         self.frame = 0
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.frame = 0
@@ -68,7 +68,7 @@ class Idle:
         pass
 
     def do(self):
-        self.frame = (self.frame + len(self.character.frame['idle']) * ACTION_PER_TIME * game_framework.frame_time) % len(self.character.frame['idle'])
+        self.frame = (self.frame + len(self.character.frame['idle']) * self.ACTION_PER_TIME * game_framework.frame_time) % len(self.character.frame['idle'])
         self.character.current_frame = int(self.frame)
 
     def draw(self):

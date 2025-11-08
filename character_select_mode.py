@@ -112,7 +112,7 @@ def handle_events():
                     player1_locked = True
 
             # 플레이어 2 캐릭터 선택 아이콘 이동
-            elif not player2_locked:
+            if not player2_locked:
                 if e.key == SDLK_KP_4 and player2_icon_x > 312:
                     player2_icon_x -= 276
                     player2_index -= 1

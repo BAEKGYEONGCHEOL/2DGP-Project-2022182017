@@ -17,6 +17,12 @@ player1_index, player2_index = 0, 0
 # 플레이어1, 2 캐릭터 객체
 player1_character, player2_character = None, None
 
+# 플레이어 캐릭터 확정
+player1_locked = False
+player2_locked = False
+
+battle_mode = 'vs_player'  # 대전 모드 설정
+
 
 # 플레이어 객체 생성 함수
 def draw_character_select_screen(index, x, y, speed, player):
@@ -38,7 +44,7 @@ def draw_character_select_screen(index, x, y, speed, player):
 
 
 def init():
-    global background, characterSelectViewSlot, player1IconDirection, player2IconDirection, slot_images, player1_icon_x, player2_icon_x, player1_index, player2_index, player1_character, player2_character
+    global background, characterSelectViewSlot, player1IconDirection, player2IconDirection, slot_images, player1_icon_x, player2_icon_x, player1_index, player2_index, player1_character, player2_character, battle_mode
 
     background = load_image('select_character_background.png')
     characterSelectViewSlot = load_image('character_select_view_slot.png')
@@ -83,28 +89,40 @@ def handle_events():
                 game_framework.change_mode(mode_select_mode)
 
             # 플레이어 1 캐릭터 선택 아이콘 이동
-            elif e.key == SDLK_LEFT and player1_icon_x > 174:
-                player1_icon_x -= 276
-                player1_index -= 1
-                # 플레이어1 캐릭터 객체 생성
-                player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)
-            elif e.key == SDLK_RIGHT and player1_icon_x < 1278:
-                player1_icon_x += 276
-                player1_index += 1
-                # 플레이어1 캐릭터 객체 생성
-                player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)
+            elif not player1_locked:
+                if e.key == SDLK_LEFT and player1_icon_x > 174:
+                    player1_icon_x -= 276
+                    player1_index -= 1
+                    # 플레이어1 캐릭터 객체 생성
+                    player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)
+                elif e.key == SDLK_RIGHT and player1_icon_x < 1278:
+                    player1_icon_x += 276
+                    player1_index += 1
+                    # 플레이어1 캐릭터 객체 생성
+                    player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)
 
             # 플레이어 2 캐릭터 선택 아이콘 이동
-            elif e.key == SDLK_KP_4 and player2_icon_x > 312:
-                player2_icon_x -= 276
-                player2_index -= 1
-                # 플레이어2 캐릭터 객체 생성
-                player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
-            elif e.key == SDLK_KP_6 and player2_icon_x < 1416:
-                player2_icon_x += 276
-                player2_index += 1
-                # 플레이어2 캐릭터 객체 생성
-                player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
+            elif not player2_locked:
+                if e.key == SDLK_KP_4 and player2_icon_x > 312:
+                    player2_icon_x -= 276
+                    player2_index -= 1
+                    # 플레이어2 캐릭터 객체 생성
+                    player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
+                elif e.key == SDLK_KP_6 and player2_icon_x < 1416:
+                    player2_icon_x += 276
+                    player2_index += 1
+                    # 플레이어2 캐릭터 객체 생성
+                    player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
+
+            if e.key == SDLK_a and player1_locked == False:
+                player1_locked = True
+
+            elif e.key == SDLK_l and player2_locked == False:
+                player2_locked = True
+
+            if player1_locked and player2_locked:
+                main_play_mode.set_characters(player1_index, player2_index, battle_mode)
+                game_framework.change_mode(main_play_mode)
 
             # # Enter → 다음 모드로 진입
             # elif e.key == SDLK_RETURN:

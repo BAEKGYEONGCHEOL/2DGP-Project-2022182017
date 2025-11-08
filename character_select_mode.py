@@ -31,17 +31,17 @@ def set_battle_mode(mode):
 
 
 # 플레이어 객체 생성 함수
-def draw_character_select_screen(index, x, y, speed, player):
+def draw_character_select_screen(index, x, y, player):
     if index == 0:
-        player_character = XCharacter(x, y, speed, player)
+        player_character = XCharacter(x, y, player)
     elif index == 1:
-        player_character = ZeroCharacter(x, y, speed, player)
+        player_character = ZeroCharacter(x, y, player)
     elif index == 2:
-        player_character = SigmaCharacter(x, y, speed, player)
+        player_character = SigmaCharacter(x, y, player)
     elif index == 3:
-        player_character = VileCharacter(x, y, speed, player)
+        player_character = VileCharacter(x, y, player)
     elif index == 4:
-        player_character = UltimateArmorXCharacter(x, y, speed, player)
+        player_character = UltimateArmorXCharacter(x, y, player)
 
     # 초기 상태 INTRO로 설정
     player_character.state_machine.cur_state = player_character.INTRO
@@ -103,12 +103,12 @@ def handle_events():
                     player1_icon_x -= 276
                     player1_index -= 1
                     # 플레이어1 캐릭터 객체 생성
-                    player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)
+                    player1_character = draw_character_select_screen(player1_index, 444, 645, 1)
                 elif e.key == SDLK_RIGHT and player1_icon_x < 1278:
                     player1_icon_x += 276
                     player1_index += 1
                     # 플레이어1 캐릭터 객체 생성
-                    player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)
+                    player1_character = draw_character_select_screen(player1_index, 444, 645, 1)
                 # 플레이어 1 캐릭터 확정
                 elif e.key == SDLK_a:
                     player1_locked = True
@@ -119,12 +119,12 @@ def handle_events():
                     player2_icon_x -= 276
                     player2_index -= 1
                     # 플레이어2 캐릭터 객체 생성
-                    player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
+                    player2_character = draw_character_select_screen(player2_index, 1150, 645, 2)
                 elif e.key == SDLK_KP_6 and player2_icon_x < 1416:
                     player2_icon_x += 276
                     player2_index += 1
                     # 플레이어2 캐릭터 객체 생성
-                    player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
+                    player2_character = draw_character_select_screen(player2_index, 1150, 645, 2)
                 # 플레이어 2 캐릭터 확정
                 elif e.key == SDLK_l:
                     player2_locked = True

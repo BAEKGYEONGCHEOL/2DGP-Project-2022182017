@@ -60,6 +60,9 @@ def handle_events():
             if e.key == SDLK_ESCAPE:
                 game_framework.quit()
 
+        player1.handle_event(e)
+        player2.handle_event(e)
+
 
 def update():
     player1.update()

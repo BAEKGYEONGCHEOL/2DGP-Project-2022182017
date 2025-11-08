@@ -13,7 +13,6 @@ icon_x = 350
 
 def init():
     global banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame, icon_x
-    open_canvas(1600, 900)
 
     banner = load_image('banner.png')  # 배경
     gameTitle = load_image('game_title.png')  # 게임 제목
@@ -28,7 +27,6 @@ def init():
 def finish():
     global banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame
     del banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame
-    close_canvas()
 
 
 def handle_events():

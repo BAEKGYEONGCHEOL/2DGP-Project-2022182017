@@ -40,8 +40,6 @@ def draw_character_select_screen(index, x, y, speed, player):
 def init():
     global background, characterSelectViewSlot, player1IconDirection, player2IconDirection, slot_images, player1_icon_x, player2_icon_x, player1_index, player2_index, player1_character, player2_character
 
-    open_canvas(1594, 894)
-
     background = load_image('select_character_background.png')
     characterSelectViewSlot = load_image('character_select_view_slot.png')
     player1IconDirection = load_image('player1_icon_direction.png')
@@ -67,7 +65,6 @@ def finish():
     del background, characterSelectViewSlot, player1IconDirection, player2IconDirection
     for s in slot_images:
         del s
-    close_canvas()
 
 
 def handle_events():
@@ -109,11 +106,11 @@ def handle_events():
                 # 플레이어2 캐릭터 객체 생성
                 player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
 
-            # Enter → 다음 모드로 진입
-            elif e.key == SDLK_RETURN:
-                import main_play
-                main_play.set_characters(player1_index, player2_index, battle_mode)
-                game_framework.change_mode(main_play)
+            # # Enter → 다음 모드로 진입
+            # elif e.key == SDLK_RETURN:
+            #     import main_play
+            #     main_play.set_characters(player1_index, player2_index, battle_mode)
+            #     game_framework.change_mode(main_play)
 
 
 def update():

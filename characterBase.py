@@ -18,7 +18,7 @@ def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
 def right_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].type == SDLK_RIGHT
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
 
 
 # Intro 상태
@@ -90,6 +90,14 @@ class Walk:
     def enter(self, e):
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
+
+        if e and e[0] == 'INPUT':
+            # 공격 방향에 따라 캐릭터의 위치를 약간 이동시킴
+            if e[1].type == SDL_KEYDOWN:
+                if e[1].key == SDLK_RIGHT:
+                    self.character.facing = 1
+                elif e[1].key == SDLK_LEFT:
+                    self.character.facing = -1
 
     def exit(self, e):
         pass
@@ -536,6 +544,11 @@ class Character:
         self.player = player
         self.change_facing_right = change_facing_right  # 캐릭터의 기본 방향은 우측 방향!
 
+        if self.player == 1:
+            self.facing = 1
+        else:
+            self.facing = -1
+
         self.current_frame = 0  # 현재 프레임 인덱스
         self.speed = speed
 
@@ -560,20 +573,29 @@ class Character:
     def draw_frame(self, frame_data):
         x_data, y_data, w_data, h_data = frame_data
 
-        # 플레이어 1(기본 방향: 우측)
-        # 캐릭터의 사진이 좌측 방향을 보고 있어서 우측 방향으로 바꾸어야 한다면!
         if self.player == 1:
-            if self.change_facing_right:
-                flip = 'h'
-            else:
-                flip = ''
-        # 플레이어 2(기본 방향: 좌측)
-        # 캐릭터의 사진이 우측 방향을 보고 있어서 좌측 방향으로 바꾸어야 한다면!
+            base_facing = 1
         else:
-            if self.change_facing_right:
-                flip = ''
-            else:
+            base_facing = -1
+
+        # 현재 바라보는 방향과 기본 방향이 다르면 뒤집기!
+        facing_flip = (self.facing != base_facing)
+
+        # 현재 바라보는 방향(facing)
+        # 시트 방향과 바라보는 방향에 따라 flip 계산
+        if self.change_facing_right:
+            # 시트가 오른쪽을 보고 있다면, 오른쪽일 때 그대로, 왼쪽일 때 뒤집기
+            if self.facing == 1:
                 flip = 'h'
+            else:
+                flip = ''
+
+        else:
+            # 시트가 왼쪽을 보고 있다면, 왼쪽일 때 그대로, 오른쪽일 때 뒤집기
+            if self.facing == -1:
+                flip = 'h'
+            else:
+                flip = ''
 
         # 해당 프레임 그리기!
         self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x, self.y, w_data * 3, h_data * 3)

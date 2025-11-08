@@ -585,8 +585,10 @@ class Character:
 
 # X 캐릭터 클래스
 class XCharacter(Character):
-    def __init__(self, x, y, speed, player):
-        super().__init__('mmx_x4_x_sheet.png', x, y, speed, mmx_x4_x_sheet, player, False)
+    X_speed = 6
+
+    def __init__(self, x, y, player):
+        super().__init__('mmx_x4_x_sheet.png', x, y, self.X_speed, mmx_x4_x_sheet, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -603,7 +605,7 @@ class XCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, 6, 0)
+        self.WALK = Walk(self, self.X_speed, 0)
         # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
@@ -626,8 +628,10 @@ class XCharacter(Character):
 
 # Zero 캐릭터 클래스
 class ZeroCharacter(Character):
+    Zero_speed = 10
+
     def __init__(self, x, y, speed, player):
-        super().__init__('zerox4sheet.png', x, y, speed, zerox4sheet, player, False)
+        super().__init__('zerox4sheet.png', x, y, self.Zero_speed, zerox4sheet, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -644,7 +648,7 @@ class ZeroCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, 10, 0)
+        self.WALK = Walk(self, self.Zero_speed, 0)
         # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
@@ -664,8 +668,10 @@ class ZeroCharacter(Character):
 
 # Sigma 캐릭터 클래스
 class SigmaCharacter(Character):
+    Sigma_speed = 6
+
     def __init__(self, x, y, speed, player):
-        super().__init__('x5sigma4.png', x, y, speed, x5sigma4, player, True)
+        super().__init__('x5sigma4.png', x, y, self.Sigma_speed, x5sigma4, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -683,7 +689,7 @@ class SigmaCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, 6, 3)
+        self.WALK = Walk(self, self.Sigma_speed, 3)
         # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
@@ -704,8 +710,10 @@ class SigmaCharacter(Character):
 
 # Vile 캐릭터 클래스
 class VileCharacter(Character):
+    Vile_speed = 8
+
     def __init__(self, x, y, speed, player):
-        super().__init__('Dynamox56sheet.png', x, y, speed, Dynamox56sheet, player, True)
+        super().__init__('Dynamox56sheet.png', x, y, self.Vile_speed, Dynamox56sheet, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -723,7 +731,7 @@ class VileCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, 8, 1)
+        self.WALK = Walk(self, self.Vile_speed, 1)
         # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
@@ -744,8 +752,10 @@ class VileCharacter(Character):
 
 # Ultimate Armor X 캐릭터 클래스
 class UltimateArmorXCharacter(Character):
+    UAX_speed = 10
+
     def __init__(self, x, y, speed, player):
-        super().__init__('ultimate_armor_x.png', x, y, speed, ultimate_armor_x, player, False)
+        super().__init__('ultimate_armor_x.png', x, y, self.UAX_speed, ultimate_armor_x, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -763,7 +773,7 @@ class UltimateArmorXCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, 10, 0)
+        self.WALK = Walk(self, self.UAX_speed, 0)
         # self.JUMP = Jump(self, len(self.frame['jump']), self.delay['jump'])
         # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_sword_attack']), self.delay['base_sword_attack'])
         # self.BASE_BUSTER_ATTACK = BaseBusterAttack(self, len(self.frame['base_buster_attack']), self.delay['base_buster_attack'])

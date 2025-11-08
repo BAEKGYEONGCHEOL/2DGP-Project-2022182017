@@ -83,6 +83,7 @@ def handle_events():
     global player1_icon_x, player2_icon_x
     global player1_index, player2_index
     global player1_character, player2_character
+    global player1_locked, player2_locked
 
     events = get_events()
     for e in events:

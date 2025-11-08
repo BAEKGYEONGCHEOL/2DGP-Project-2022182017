@@ -44,9 +44,11 @@ def handle_events():
             elif e.key == SDLK_RETURN:
                 if icon_x == 350:
                     # vs 2P
+                    character_select_mode.set_battle_mode('vs_player')
                     game_framework.change_mode(character_select_mode)
                 elif icon_x == 797:
                     # vs CPU
+                    character_select_mode.set_battle_mode('vs_cpu')
                     game_framework.change_mode(character_select_mode)
                 elif icon_x == 1244:
                     # 종료

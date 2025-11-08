@@ -24,6 +24,12 @@ player2_locked = False
 battle_mode = 'vs_player'  # 대전 모드 설정
 
 
+# battle_mode 설정 함수
+def set_battle_mode(mode):
+    global battle_mode
+    battle_mode = mode
+
+
 # 플레이어 객체 생성 함수
 def draw_character_select_screen(index, x, y, speed, player):
     if index == 0:
@@ -100,6 +106,9 @@ def handle_events():
                     player1_index += 1
                     # 플레이어1 캐릭터 객체 생성
                     player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)
+                # 플레이어 1 캐릭터 확정
+                elif e.key == SDLK_a:
+                    player1_locked = True
 
             # 플레이어 2 캐릭터 선택 아이콘 이동
             elif not player2_locked:
@@ -113,12 +122,10 @@ def handle_events():
                     player2_index += 1
                     # 플레이어2 캐릭터 객체 생성
                     player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
+                # 플레이어 2 캐릭터 확정
+                elif e.key == SDLK_l:
+                    player2_locked = True
 
-            if e.key == SDLK_a and player1_locked == False:
-                player1_locked = True
-
-            elif e.key == SDLK_l and player2_locked == False:
-                player2_locked = True
 
             if player1_locked and player2_locked:
                 main_play_mode.set_characters(player1_index, player2_index, battle_mode)

@@ -1,6 +1,20 @@
 from pico2d import *
+import game_framework
+import character_select_mode  # 다음 모드 예시
 
-def run():
+banner = None
+gameTitle = None
+directionIcon = None
+vsCPUButton = None
+vsPlayer2Button = None
+quitGame = None
+icon_x = 350
+
+
+def init():
+    global banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame, icon_x
+    open_canvas(1600, 900)
+
     banner = load_image('banner.png')  # 배경
     gameTitle = load_image('game_title.png')  # 게임 제목
     directionIcon = load_image('icon_direction.png')  # 게임 모드 화살표
@@ -8,37 +22,56 @@ def run():
     vsPlayer2Button = load_image('vs_player2_button.png')  # vs 2P 버튼
     quitGame = load_image('quit_game_button.png')  # 게임 종료 버튼
 
-    icon_x = 350  # 초기 화살표 아이콘 x 좌표
+    icon_x = 350
 
-    while True:
-        clear_canvas()
 
-        banner.clip_draw(0, 0, 1594, 894, 1594 // 2, 894 // 2)
-        gameTitle.clip_draw(0, 0, 1189, 148, 625, 800)
-        vsCPUButton.clip_draw(0, 0, 400, 225, 350, 300)
-        vsPlayer2Button.clip_draw(0, 0, 400, 225, 797, 300)
-        quitGame.clip_draw(0, 0, 400, 225, 1244, 300)
+def finish():
+    global banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame
+    del banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame
+    close_canvas()
 
-        directionIcon.clip_draw(0, 0, 100, 73, icon_x, 475)
 
-        update_canvas()
+def handle_events():
+    global icon_x
+    events = get_events()
+    for e in events:
+        if e.type == SDL_QUIT:
+            game_framework.quit()
+        elif e.type == SDL_KEYDOWN:
+            if e.key == SDLK_LEFT and icon_x > 350:
+                icon_x -= 447
+            elif e.key == SDLK_RIGHT and icon_x < 1244:
+                icon_x += 447
+            elif e.key == SDLK_RETURN:
+                if icon_x == 350:
+                    # vs 2P
+                    game_framework.change_mode(character_select_mode)
+                elif icon_x == 797:
+                    # vs CPU
+                    game_framework.change_mode(character_select_mode)
+                elif icon_x == 1244:
+                    # 종료
+                    game_framework.quit()
 
-        events = get_events()
-        for e in events:
-            if e.type == SDL_QUIT:
-                return 'QUIT'
-            elif e.type == SDL_KEYDOWN:
-                if icon_x > 350 and e.key == SDLK_LEFT:
-                    icon_x -= 447
-                elif icon_x < 1244 and e.key == SDLK_RIGHT:
-                    icon_x += 447
 
-                if icon_x == 350 and e.key == SDLK_RETURN:
-                    # vs 2P 선택
-                    return 'character_select', 'vs_player2'
-                elif icon_x == 797 and e.key == SDLK_RETURN:
-                    # vs CPU 선택
-                    return 'character_select', 'vs_cpu'
-                elif icon_x == 1244 and e.key == SDLK_RETURN:
-                    # 게임 종료 선택
-                    return 'QUIT', None
+def update():
+    pass
+
+
+def draw():
+    clear_canvas()
+    banner.clip_draw(0, 0, 1594, 894, 1594 // 2, 894 // 2)
+    gameTitle.clip_draw(0, 0, 1189, 148, 625, 800)
+    vsCPUButton.clip_draw(0, 0, 400, 225, 350, 300)
+    vsPlayer2Button.clip_draw(0, 0, 400, 225, 797, 300)
+    quitGame.clip_draw(0, 0, 400, 225, 1244, 300)
+    directionIcon.clip_draw(0, 0, 100, 73, icon_x, 475)
+    update_canvas()
+
+
+def pause():
+    pass
+
+
+def resume():
+    pass

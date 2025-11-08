@@ -70,8 +70,8 @@ def init():
     player1_locked, player2_locked = False, False
 
     # 캐릭터 표시 위치
-    player1_character = draw_character_select_screen(player1_index, 444, 645, 0, 1)
-    player2_character = draw_character_select_screen(player2_index, 1150, 645, 0, 2)
+    player1_character = draw_character_select_screen(player1_index, 444, 645, 1)
+    player2_character = draw_character_select_screen(player2_index, 1150, 645, 2)
 
 
 def finish():

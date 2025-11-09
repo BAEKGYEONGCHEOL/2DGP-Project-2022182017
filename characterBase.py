@@ -538,6 +538,65 @@ class DashAttack:
         self.character.draw_frame(frame_data)
 
 
+# Dash Attack Wall상태
+class DashAttackWall:
+
+    def __init__(self, character, speed, prepare_frame_count):
+        self.character = character
+        self.frame = 0
+        self.speed = speed
+        self.prepare_frame_count = prepare_frame_count
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        dt = game_framework.frame_time
+
+        self.character.x += self.character.facing * self.speed * dt  # 약간 앞으로 이동
+
+        self.frame += len(self.character.frame['dash_attack_wall']) * self.ACTION_PER_TIME * dt
+
+        # 준비 구간: 0 ~ prepare_frame_count-1
+        if self.frame < self.prepare_frame_count:
+            # 준비 중일 때는 그대로 진행 (한 번만)
+            self.character.current_frame = int(self.frame)
+
+        else:
+            # 반복 구간 계산 (loop_frames이 0이 되지 않도록!)
+            loop_start = self.prepare_frame_count
+            total_frames = len(self.character.frame['dash_attack_wall'])
+            loop_frames = max(1, total_frames - loop_start)
+
+            # 반복 구간 계산
+            loop_frame = int((self.frame - loop_start)) % loop_frames + loop_start
+            self.character.current_frame = min(loop_frame, total_frames - 1)
+
+        # 화면 밖으로 나가지 않도록 제한!
+        if self.character.x < 50:
+            self.character.x = 50
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        elif self.character.x > 1544:
+            self.character.x = 1544
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+
+    def draw(self):
+        frame_data = self.character.frame['dash_attack_wall'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
 # Power Attack 상태
 class PowerAttack:
 
@@ -1081,7 +1140,7 @@ class SigmaCharacter(Character):
             'arm_attack': x5sigma4[4],
             'sphere_attack': x5sigma4[5],
             'wave_attack': x5sigma4[6],
-            'dash_attack': x5sigma4[7],
+            'dash_attack_wall': x5sigma4[7],
             'hit': x5sigma4[8],
             'defeat': x5sigma4[9],
         }
@@ -1093,7 +1152,7 @@ class SigmaCharacter(Character):
         self.ARM_ATTACK = ArmAttack(self)
         # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
         # self.WAVE_ATTACK = WaveAttack(self, len(self.frame['wave_attack']), self.delay['wave_attack'])
-        # self.DASH_ATTACK_WALL = DashAttackWall(self)
+        self.DASH_ATTACK_WALL = DashAttackWall(self, self.dash_speed, 3)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
@@ -1101,13 +1160,13 @@ class SigmaCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL},
                 self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 # self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 # self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                # self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 
@@ -1195,7 +1254,7 @@ class UltimateArmorXCharacter(Character):
         self.BASE_SWORD_ATTACK = BaseSwordAttack(self)
         self.BASE_BUSTER_ATTACK = BaseBusterAttack(self)
         self.POWER_ATTACK = PowerAttack(self)
-        # self.DASH_ATTACK_WALL = DashAttackWall(self, self.dash_speed)
+        self.DASH_ATTACK_WALL = DashAttackWall(self, self.dash_speed, 7)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
@@ -1203,14 +1262,14 @@ class UltimateArmorXCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL},
                 self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                # self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 

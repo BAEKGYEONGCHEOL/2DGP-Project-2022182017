@@ -79,11 +79,12 @@ class Intro:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
+        self.character.action_doing = True
         self.frame = 0
         self.character.current_frame = 0    # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
 
     def do(self):
         # 한 번만 실행하기 위해 % 연산 제거
@@ -550,11 +551,19 @@ class DashAttackWall:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         dt = game_framework.frame_time
@@ -950,6 +959,9 @@ class Character:
         self.is_left_pressed = False
         self.is_right_pressed = False
 
+        self.action_doing = False
+        self.facing_lock = False
+
     def update(self):
         if self.state_machine:
             self.state_machine.update()
@@ -976,10 +988,15 @@ class Character:
                 self.is_right_pressed = False
 
         # 키가 떼인 후에도 반대 방향키가 눌려 있으면 즉시 방향 갱신!
-        if not self.is_left_pressed and self.is_right_pressed:
-            self.facing = 1
-        elif not self.is_right_pressed and self.is_left_pressed:
-            self.facing = -1
+        if self.facing_lock == False:
+            if not self.is_left_pressed and self.is_right_pressed:
+                self.facing = 1
+            elif not self.is_right_pressed and self.is_left_pressed:
+                self.facing = -1
+
+        if self.action_doing == True:
+            return
+
 
     # 프레임 그리기 함수
     def draw_frame(self, frame_data):

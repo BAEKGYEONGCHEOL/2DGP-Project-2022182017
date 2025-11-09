@@ -196,11 +196,8 @@ class Jump:
 
         self.jumping_up = True
 
-        # 점프 직전 이동 속도 유지
-        if self.character.is_walking:
-            self.horizontal_speed = self.character.speed * self.character.facing
-        else:
-            self.horizontal_speed = 0
+        # 제자리 점프
+        self.horizontal_speed = 0.0
 
         # 실제 최고 높이 계산 (포물선 공식: v^2 / 2g)
         self.jump_height = (self.JUMP_UP_SPEED ** 2) / (2 * self.GRAVITY_UP)
@@ -223,6 +220,112 @@ class Jump:
 
         self.character.y += self.vertical_speed * dt
         self.character.x += self.horizontal_speed * dt
+
+        # 화면 밖으로 나가지 않도록 제한!
+        if self.character.x < 50:
+            self.character.x = 50
+        elif self.character.x > 1544:
+            self.character.x = 1544
+
+        # 착지
+        GROUND_Y = 300
+        if self.character.y <= GROUND_Y:
+            self.character.y = GROUND_Y
+            self.character.state_machine.handle_state_event(('TIME_OUT', None))
+            return
+
+        # --- 프레임 계산 (위치 기반 진행률) ---
+        total_frames = len(self.character.frame['jump'])
+
+        # 상승 -> 하강 전체 구간을 0~1로 나눔
+        # 상승 중: (현재 y - 시작 y) / 점프 높이 * 0.5
+        # 하강 중: 0.5 + (시작 높이 + jump_height - 현재 y) / jump_height * 0.5
+        if self.jumping_up:
+            progress = (self.character.y - self.start_y) / self.jump_height * 0.5
+        else:
+            fall_dist = max(0.0, (self.start_y + self.jump_height) - self.character.y)
+            progress = 0.5 + (fall_dist / self.jump_height * 0.5)
+
+        # 진행률을 0~1로 제한
+        progress = max(0.0, min(1.0, progress))
+
+        # progress 비율로 프레임 인덱스 계산
+        frame_index = int(progress * (total_frames - 1))
+        self.character.current_frame = frame_index
+
+    def draw(self):
+        frame_data = self.character.frame['jump'][self.character.current_frame]
+        self.character.draw_frame(frame_data)
+
+
+# WalkJump 상태
+class WalkJump:
+
+    def __init__(self, character):
+        self.character = character
+        self.frame = 0
+
+        self.vertical_speed = 0.0
+
+        self.start_y = 0.0
+        self.max_height = 0.0  # 점프 높이 추적
+
+        # 커스텀 파라미터 (록맨 느낌용)
+        self.JUMP_UP_SPEED = 800.0  # 빠른 상승 속도
+        self.GRAVITY_UP = 800.0  # 상승 중 중력 (약함)
+        self.GRAVITY_DOWN = 2400.0  # 하강 중 중력 (강함)
+
+        self.start_y = 0.0
+        self.jumping_up = True  # 상승 중인지 여부
+        self.jump_height = 180.0  # 최고 높이
+        self.total_height = 0.0
+
+        # 애니메이션 타이밍
+        self.TIME_PER_ACTION = 0.8  # 전체 점프 중 프레임 재생 시간
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+        self.total_frames = 0.0  # 시간 기반으로 0~1 진행률 계산용
+
+    def enter(self, e):
+        self.frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
+        self.total_frames = 0.0
+        self.start_y = self.character.y
+
+        # 위로 튕겨 오름
+        self.vertical_speed = self.JUMP_UP_SPEED
+
+        self.jumping_up = True
+
+        # 점프 직전 이동 속도 유지
+        self.horizontal_speed = self.character.speed * self.character.facing
+
+        # 실제 최고 높이 계산 (포물선 공식: v^2 / 2g)
+        self.jump_height = (self.JUMP_UP_SPEED ** 2) / (2 * self.GRAVITY_UP)
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        dt = game_framework.frame_time
+        self.total_frames += self.ACTION_PER_TIME * dt  # 애니메이션 진행률 (0~1)
+        self.frame += len(self.character.frame['jump']) * self.ACTION_PER_TIME * dt
+
+        # 물리 처리
+        if self.jumping_up:
+            self.vertical_speed -= self.GRAVITY_UP * dt
+            if self.vertical_speed <= 0:
+                self.jumping_up = False
+        else:
+            self.vertical_speed -= self.GRAVITY_DOWN * dt
+
+        self.character.y += self.vertical_speed * dt
+        self.character.x += self.horizontal_speed * dt
+
+        # 화면 밖으로 나가지 않도록 제한!
+        if self.character.x < 50:
+            self.character.x = 50
+        elif self.character.x > 1544:
+            self.character.x = 1544
 
         # 착지
         GROUND_Y = 300
@@ -735,6 +838,7 @@ class XCharacter(Character):
         self.IDLE = Idle(self)
         self.WALK = Walk(self, self.speed, 0)
         self.JUMP = Jump(self)
+        self.WALK_JUMP = WalkJump(self)
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
         # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
@@ -749,8 +853,9 @@ class XCharacter(Character):
                 # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
                 self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.JUMP},
                 # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.JUMP},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.WALK_JUMP},
                 self.JUMP: {time_out: self.IDLE},
+                self.WALK_JUMP: {time_out: self.IDLE},
             }
         )
 
@@ -779,6 +884,7 @@ class ZeroCharacter(Character):
         self.IDLE = Idle(self)
         self.WALK = Walk(self, self.Zero_speed, 0)
         self.JUMP = Jump(self)
+        self.WALK_JUMP = WalkJump(self)
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
         # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
@@ -790,8 +896,9 @@ class ZeroCharacter(Character):
             {
                 self.INTRO: {time_out: self.IDLE},
                 self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.JUMP},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.JUMP},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.WALK_JUMP},
                 self.JUMP: {time_out: self.IDLE},
+                self.WALK_JUMP: {time_out: self.IDLE},
             }
         )
 
@@ -905,6 +1012,7 @@ class UltimateArmorXCharacter(Character):
         self.IDLE = Idle(self)
         self.WALK = Walk(self, self.UAX_speed, 0)
         self.JUMP = Jump(self)
+        self.WALK_JUMP = WalkJump(self)
         # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_sword_attack']), self.delay['base_sword_attack'])
         # self.BASE_BUSTER_ATTACK = BaseBusterAttack(self, len(self.frame['base_buster_attack']), self.delay['base_buster_attack'])
         # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
@@ -917,7 +1025,8 @@ class UltimateArmorXCharacter(Character):
             {
                 self.INTRO: {time_out: self.IDLE},
                 self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.JUMP},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.JUMP},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.WALK_JUMP},
                 self.JUMP: {time_out: self.IDLE},
+                self.WALK_JUMP: {time_out: self.IDLE},
             }
         )

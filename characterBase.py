@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, SDLK_r
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, SDLK_r, SDLK_t
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
 
@@ -49,6 +49,12 @@ def e_down(e):
 
 def r_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_r
+
+def t_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_t
+
+def t_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_t
 
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel == 30 cm
@@ -782,12 +788,11 @@ class WaveAttack:
 # Reflex Attack 상태
 class ReflexAttack:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+        self.TIME_PER_ACTION = 0.2
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.character.action_doing = True
@@ -805,11 +810,22 @@ class ReflexAttack:
             self.character.facing = -1
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['reflex_attack'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        dt = game_framework.frame_time
+
+        self.frame += len(self.character.frame['reflex_attack']) * self.ACTION_PER_TIME * game_framework.frame_time
+
+        if self.frame >= len(self.character.frame['reflex_attack']):
+            if self.character.is_t_pressed:
+                self.frame = 0
+                self.character.current_frame = 0
+            else:
+                # 평소처럼 Idle/Walk 복귀
+                if self.character.is_left_pressed or self.character.is_right_pressed:
+                    self.character.state_machine.handle_state_event(('LAND_WALK', None))
+                else:
+                    self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        else:
+            self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['reflex_attack'][self.character.current_frame]
@@ -1091,6 +1107,7 @@ class Character:
         self.state_machine = None
 
         self.is_walking = False  # 기본은 걷지 않음!
+        self.is_t_pressed = False  # 기본은 T키 누르지 않음!
 
         # 좌/우 방향키 입력 상태
         self.is_left_pressed = False
@@ -1123,6 +1140,14 @@ class Character:
                 self.is_left_pressed = False
             elif event.key == SDLK_RIGHT:
                 self.is_right_pressed = False
+
+        # t 키 상태 업데이트
+        if event.type == SDL_KEYDOWN:
+            if event.key == SDLK_t:
+                self.is_t_pressed = True
+        elif event.type == SDL_KEYUP:
+            if event.key == SDLK_t:
+                self.is_t_pressed = False
 
         # 키가 떼인 후에도 반대 방향키가 눌려 있으면 즉시 방향 갱신!
         if self.facing_lock == False:
@@ -1355,7 +1380,7 @@ class VileCharacter(Character):
         self.WALK = Walk(self, self.speed, 1)
         self.TELEPORT = Teleport(self)
         self.BASE_SWORD_ATTACK = BaseSwordAttack(self)
-        # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
+        self.REFLEX_ATTACK = ReflexAttack(self)
         self.DASH_ATTACK = DashAttack(self, self.dash_speed)
         # self.AMBIENT_WAVE_ATTACK = AmbientWaveAttack(self, len(self.frame['ambient_wave_attack']), self.delay['ambient_wave_attack'])
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
@@ -1365,14 +1390,44 @@ class VileCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK},
                 self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                # self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
+
+    # 프레임 그리기 함수(오버라이드!)
+    def draw_frame(self, frame_data):
+        x_data, y_data, w_data, h_data = frame_data
+
+        # 현재 바라보는 방향(facing)
+        # 시트 방향과 바라보는 방향에 따라 flip 계산
+        if self.change_facing_right:
+            # 시트가 오른쪽을 보고 있다면, 오른쪽일 때 그대로, 왼쪽일 때 뒤집기
+            if self.facing == 1:
+                flip = 'h'
+            else:
+                flip = ''
+
+        else:
+            # 시트가 왼쪽을 보고 있다면, 왼쪽일 때 그대로, 오른쪽일 때 뒤집기
+            if self.facing == -1:
+                flip = 'h'
+            else:
+                flip = ''
+
+        # Sword 공격 시 flip 반전!
+        if self.state_machine.cur_state == self.REFLEX_ATTACK:
+            if flip == 'h':
+                flip = ''
+            else:
+                flip = 'h'
+
+        # 해당 프레임 그리기!
+        self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x, self.y, w_data * 3, h_data * 3)
 
 
 # Ultimate Armor X 캐릭터 클래스

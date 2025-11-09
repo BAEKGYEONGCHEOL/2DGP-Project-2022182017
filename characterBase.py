@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, SDLK_r
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
 
@@ -43,6 +43,12 @@ def g_down(e):
 
 def v_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_v
+
+def e_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_e
+
+def r_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_r
 
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel == 30 cm
@@ -692,12 +698,11 @@ class PowerAttack:
 # Sphere Attack 상태
 class SphereAttack:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.character.action_doing = True
@@ -715,11 +720,17 @@ class SphereAttack:
             self.character.facing = -1
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['sphere_attack'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        # 한 번만 실행하기 위해 % 연산 제거
+        self.frame = (self.frame + len(
+            self.character.frame['sphere_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        if self.frame >= len(self.character.frame['sphere_attack']):
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        else:
+            self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['sphere_attack'][self.character.current_frame]
@@ -729,12 +740,11 @@ class SphereAttack:
 # Wave Attack 상태
 class WaveAttack:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.character.action_doing = True
@@ -752,11 +762,17 @@ class WaveAttack:
             self.character.facing = -1
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['wave_attack'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        # 한 번만 실행하기 위해 % 연산 제거
+        self.frame = (self.frame + len(
+            self.character.frame['wave_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        if self.frame >= len(self.character.frame['wave_attack']):
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        else:
+            self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['wave_attack'][self.character.current_frame]
@@ -1288,8 +1304,8 @@ class SigmaCharacter(Character):
         self.WALK = Walk(self, self.speed, 3)
         self.TELEPORT = Teleport(self)
         self.ARM_ATTACK = ArmAttack(self)
-        # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
-        # self.WAVE_ATTACK = WaveAttack(self, len(self.frame['wave_attack']), self.delay['wave_attack'])
+        self.SPHERE_ATTACK = SphereAttack(self)
+        self.WAVE_ATTACK = WaveAttack(self)
         self.DASH_ATTACK_WALL = DashAttackWall(self, self.dash_speed, 3)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
@@ -1298,12 +1314,12 @@ class SigmaCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK},
                 self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                # self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                # self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )

@@ -369,26 +369,71 @@ class WalkJump:
 # Teleport 상태
 class Teleport:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+        self.TIME_PER_ACTION = 0.8
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+
+        self.teleport_distance = 400    # 순간이동 거리
+        self.teleport_done = False      # 실제 순간이동 발생 여부 변수!
+        self.is_visible = True          # 사라짐 여부!
 
     def enter(self, e):
         self.frame = 0
         self.character.current_frame = 0
+        self.teleport_done = False
+        self.is_visible = True
 
     def exit(self, e):
-        pass
+        self.is_visible = True
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['teleport'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        dt = game_framework.frame_time
+        total_frames = len(self.character.frame['teleport'])
+
+        # 프레임 계산!
+        self.frame += total_frames * self.ACTION_PER_TIME * dt
+        if self.frame >= total_frames:
+            # 종료 시점 -> Idle/Walk 복귀
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+
+            return
+
+        # 현재 진행률 (0.0 ~ 1.0)
+        progress = self.frame / total_frames
+
+        # 순간이동 처리
+        if not self.teleport_done and progress >= 0.5:
+            self.teleport_done = True
+            self.is_visible = False  # 사라짐
+
+            # 방향에 따라 이동
+            if self.character.facing == 1:
+                self.character.x += self.teleport_distance
+            else:
+                self.character.x -= self.teleport_distance
+
+            # 화면 밖으로 나가지 않도록 제한!
+            if self.character.x < 50:
+                self.character.x = 50
+            elif self.character.x > 1544:
+                self.character.x = 1544
+
+        # 사라짐/등장 구간 제어!
+        if progress < 0.5:
+            self.is_visible = True  # 사라지는 중이지만 보이게!
+        elif progress < 0.75:
+            self.is_visible = False  # 완전히 사라진 구간!
+        else:
+            self.is_visible = True  # 다시 등장 구간!
+
+        # 프레임 인덱스 갱신
+        self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['teleport'][self.character.current_frame]
@@ -964,7 +1009,7 @@ class SigmaCharacter(Character):
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
         self.WALK = Walk(self, self.speed, 3)
-        # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
+        self.TELEPORT = Teleport(self)
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
         # self.WAVE_ATTACK = WaveAttack(self, len(self.frame['wave_attack']), self.delay['wave_attack'])
@@ -976,8 +1021,9 @@ class SigmaCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.TELEPORT},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.TELEPORT},
+                self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 
@@ -1009,7 +1055,7 @@ class VileCharacter(Character):
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
         self.WALK = Walk(self, self.speed, 1)
-        # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
+        self.TELEPORT = Teleport(self)
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
         # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
@@ -1021,8 +1067,9 @@ class VileCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.TELEPORT},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.TELEPORT},
+                self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 

@@ -928,8 +928,8 @@ class ZeroCharacter(Character):
                 self.INTRO: {time_out: self.IDLE},
                 self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.JUMP},
                 self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.WALK_JUMP},
-                self.JUMP: {time_out: self.IDLE},
-                self.WALK_JUMP: {time_out: self.IDLE},
+                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 
@@ -1057,7 +1057,7 @@ class UltimateArmorXCharacter(Character):
                 self.INTRO: {time_out: self.IDLE},
                 self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.JUMP},
                 self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.WALK_JUMP},
-                self.JUMP: {time_out: self.IDLE},
-                self.WALK_JUMP: {time_out: self.IDLE},
+                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )

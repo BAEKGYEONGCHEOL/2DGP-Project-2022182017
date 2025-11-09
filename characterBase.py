@@ -2,6 +2,7 @@ from pico2d import load_image, get_time
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, SDLK_r, SDLK_t, SDLK_c
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
+from all_buster import NormalBuster
 
 from state_machine import StateMachine
 
@@ -1255,6 +1256,10 @@ class XCharacter(Character):
                 self.DASH: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
+
+    # normal buster 발사 함수
+    def fire_normal_buster(self):
+        pass
 
 
 # Zero 캐릭터 클래스

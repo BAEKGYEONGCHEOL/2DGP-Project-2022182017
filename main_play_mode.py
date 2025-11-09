@@ -11,6 +11,22 @@ battle_mode = 'vs_player'
 player1 = None
 player2 = None
 
+battle_background1 = None
+battle_background2 = None
+
+
+class BattleBackground:
+    def __init__(self, image_path):
+        self.image = load_image(image_path)
+
+    def update(self):
+        # 배경은 움직이지 않으므로 로직 없음
+        pass
+
+    def draw(self):
+        # 배경이 전체 화면을 덮도록 그림
+        self.image.draw(797, 447)  # 1594 * 894 해상도 기준 중앙
+
 
 # 캐릭터 생성 함수
 def create_character(index, x, y, player):
@@ -34,7 +50,7 @@ def create_character(index, x, y, player):
 
 # 플레이어 캐릭터 및 모드 설정 함수
 def set_characters(p1_index, p2_index, mode):
-    global player1_index, player2_index, battle_mode
+    global player1_index, player2_index, battle_mode, battle_background1, battle_background2
     player1_index = p1_index
     player2_index = p2_index
     battle_mode = mode
@@ -48,8 +64,11 @@ def init():
     print(f"Player2 Index: {player2_index}")
     print(f"Battle Mode: {battle_mode}")
 
-    player1 = create_character(player1_index, 350, 300, 1)
-    player2 = create_character(player2_index, 1244, 300, 2)
+    battle_background1 = BattleBackground('battle_background1.png')
+    game_world.add_object(battle_background1, 0)
+
+    player1 = create_character(player1_index, 350, 225, 1)
+    player2 = create_character(player2_index, 1244, 225, 2)
 
     game_world.add_object(player1, 1)
     game_world.add_object(player2, 1)

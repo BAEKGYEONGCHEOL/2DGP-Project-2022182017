@@ -8,6 +8,12 @@ from state_machine import StateMachine
 def time_out(e):
     return e[0] == 'TIME_OUT'
 
+def land_walk(e):
+    return e[0] == 'LAND_WALK'
+
+def land_idle(e):
+    return e[0] == 'LAND_IDLE'
+
 def left_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
 
@@ -112,14 +118,6 @@ class Walk:
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
         self.character.is_walking = True  # 걷는 중 표시
-
-        if e and e[0] == 'INPUT':
-            # 공격 방향에 따라 캐릭터의 위치를 약간 이동시킴
-            if e[1].type == SDL_KEYDOWN:
-                if e[1].key == SDLK_RIGHT:
-                    self.character.facing = 1
-                elif e[1].key == SDLK_LEFT:
-                    self.character.facing = -1
 
     def exit(self, e):
         self.character.is_walking = False  # 걷기 종료
@@ -231,7 +229,12 @@ class Jump:
         GROUND_Y = 300
         if self.character.y <= GROUND_Y:
             self.character.y = GROUND_Y
-            self.character.state_machine.handle_state_event(('TIME_OUT', None))
+
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+
             return
 
         # --- 프레임 계산 (위치 기반 진행률) ---
@@ -331,7 +334,12 @@ class WalkJump:
         GROUND_Y = 300
         if self.character.y <= GROUND_Y:
             self.character.y = GROUND_Y
-            self.character.state_machine.handle_state_event(('TIME_OUT', None))
+
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+
             return
 
         # --- 프레임 계산 (위치 기반 진행률) ---
@@ -763,6 +771,10 @@ class Character:
 
         self.is_walking = False  # 기본은 걷지 않음!
 
+        # 좌/우 방향키 입력 상태
+        self.is_left_pressed = False
+        self.is_right_pressed = False
+
     def update(self):
         if self.state_machine:
             self.state_machine.update()
@@ -774,6 +786,25 @@ class Character:
     def handle_event(self, event):
         if self.state_machine:
             self.state_machine.handle_state_event(('INPUT', event))
+
+        # 좌/우 방향키 상태 업데이트
+        if event.type == SDL_KEYDOWN:
+            if event.key == SDLK_LEFT:
+                self.is_left_pressed = True
+            elif event.key == SDLK_RIGHT:
+                self.is_right_pressed = True
+
+        elif event.type == SDL_KEYUP:
+            if event.key == SDLK_LEFT:
+                self.is_left_pressed = False
+            elif event.key == SDLK_RIGHT:
+                self.is_right_pressed = False
+
+        # 키가 떼인 후에도 반대 방향키가 눌려 있으면 즉시 방향 갱신!
+        if not self.is_left_pressed and self.is_right_pressed:
+            self.facing = 1
+        elif not self.is_right_pressed and self.is_left_pressed:
+            self.facing = -1
 
     # 프레임 그리기 함수
     def draw_frame(self, frame_data):
@@ -854,8 +885,8 @@ class XCharacter(Character):
                 self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.JUMP},
                 # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
                 self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.WALK_JUMP},
-                self.JUMP: {time_out: self.IDLE},
-                self.WALK_JUMP: {time_out: self.IDLE},
+                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 

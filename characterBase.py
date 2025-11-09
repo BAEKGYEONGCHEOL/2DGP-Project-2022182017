@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_s
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
 
@@ -25,6 +25,9 @@ def left_up(e):
 
 def right_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
+
+def a_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
 
 def s_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_s
@@ -440,32 +443,36 @@ class Teleport:
         self.character.draw_frame(frame_data)
 
 
-# Base Attack 상태
-class BaseAttack:
+# Arm Attack 상태
+class ArmAttack:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+        self.TIME_PER_ACTION = 0.4
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
         pass
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['base_attack'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        # 한 번만 실행하기 위해 % 연산 제거
+        self.frame = (self.frame + len(self.character.frame['arm_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        if self.frame >= len(self.character.frame['arm_attack']):
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        else:
+            self.character.current_frame = int(self.frame)
 
     def draw(self):
-        frame_data = self.character.frame['base_attack'][self.character.current_frame]
+        frame_data = self.character.frame['arm_attack'][self.character.current_frame]
         self.character.draw_frame(frame_data)
 
 
@@ -675,26 +682,30 @@ class BaseSwordAttack:
 # Base Buster Attack 상태
 class BaseBusterAttack:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
         pass
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['base_buster_attack'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        # 한 번만 실행하기 위해 % 연산 제거
+        self.frame = (self.frame + len(self.character.frame['base_buster_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        if self.frame >= len(self.character.frame['base_buster_attack']):
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        else:
+            self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['base_buster_attack'][self.character.current_frame]
@@ -903,7 +914,7 @@ class XCharacter(Character):
             'idle': mmx_x4_x_sheet[1],
             'walk': mmx_x4_x_sheet[2],
             'jump': mmx_x4_x_sheet[3],
-            'base_attack': mmx_x4_x_sheet[4],
+            'base_buster_attack': mmx_x4_x_sheet[4],
             'power_attack': mmx_x4_x_sheet[5],
             'dash': mmx_x4_x_sheet[6],
             'hit': mmx_x4_x_sheet[7],
@@ -915,7 +926,7 @@ class XCharacter(Character):
         self.WALK = Walk(self, self.speed, 0)
         self.JUMP = Jump(self)
         self.WALK_JUMP = WalkJump(self)
-        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        self.BASE_BUSTER_ATTACK = BaseBusterAttack(self)
         # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
         # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
@@ -927,11 +938,12 @@ class XCharacter(Character):
                 # INTRO 상태에서 해당 INTRO 프레임이 끝나는 이벤트(time_out)가 발생하면 IDLE 상태가 됨
                 self.INTRO: {time_out: self.IDLE},
                 # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.JUMP},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_BUSTER_ATTACK, s_down: self.JUMP},
                 # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.WALK_JUMP},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_BUSTER_ATTACK, s_down: self.WALK_JUMP},
                 self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK}
             }
         )
 
@@ -952,7 +964,7 @@ class ZeroCharacter(Character):
             'idle': zerox4sheet[1],
             'walk': zerox4sheet[2],
             'jump': zerox4sheet[3],
-            'base_attack': zerox4sheet[4],
+            'base_sword_attack': zerox4sheet[4],
             'dash_attack': zerox4sheet[5],
             'dash': zerox4sheet[6],
             'hit': zerox4sheet[7],
@@ -964,7 +976,7 @@ class ZeroCharacter(Character):
         self.WALK = Walk(self, self.speed, 0)
         self.JUMP = Jump(self)
         self.WALK_JUMP = WalkJump(self)
-        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
         # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
@@ -998,7 +1010,7 @@ class SigmaCharacter(Character):
             'idle': x5sigma4[1],
             'walk': x5sigma4[2],
             'teleport': x5sigma4[3],
-            'base_attack': x5sigma4[4],
+            'arm_attack': x5sigma4[4],
             'sphere_attack': x5sigma4[5],
             'wave_attack': x5sigma4[6],
             'dash_attack': x5sigma4[7],
@@ -1010,7 +1022,7 @@ class SigmaCharacter(Character):
         self.IDLE = Idle(self)
         self.WALK = Walk(self, self.speed, 3)
         self.TELEPORT = Teleport(self)
-        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        self.ARM_ATTACK = ArmAttack(self)
         # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
         # self.WAVE_ATTACK = WaveAttack(self, len(self.frame['wave_attack']), self.delay['wave_attack'])
         # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
@@ -1021,9 +1033,10 @@ class SigmaCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.TELEPORT},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.TELEPORT},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT},
                 self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 
@@ -1044,7 +1057,7 @@ class VileCharacter(Character):
             'idle': Dynamox56sheet[1],
             'walk': Dynamox56sheet[2],
             'teleport': Dynamox56sheet[3],
-            'base_attack': Dynamox56sheet[4],
+            'base_sword_attack': Dynamox56sheet[4],
             'reflex_attack': Dynamox56sheet[5],
             'dash_attack': Dynamox56sheet[6],
             'ambient_wave_attack': Dynamox56sheet[7],
@@ -1056,7 +1069,7 @@ class VileCharacter(Character):
         self.IDLE = Idle(self)
         self.WALK = Walk(self, self.speed, 1)
         self.TELEPORT = Teleport(self)
-        # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
+        # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
         # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
         # self.AMBIENT_WAVE_ATTACK = AmbientWaveAttack(self, len(self.frame['ambient_wave_attack']), self.delay['ambient_wave_attack'])
@@ -1104,7 +1117,7 @@ class UltimateArmorXCharacter(Character):
         self.JUMP = Jump(self)
         self.WALK_JUMP = WalkJump(self)
         # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_sword_attack']), self.delay['base_sword_attack'])
-        # self.BASE_BUSTER_ATTACK = BaseBusterAttack(self, len(self.frame['base_buster_attack']), self.delay['base_buster_attack'])
+        self.BASE_BUSTER_ATTACK = BaseBusterAttack(self)
         # self.POWER_ATTACK = PowerAttack(self, len(self.frame['power_attack']), self.delay['power_attack'])
         # self.DASH = Dash(self, len(self.frame['dash']), self.delay['dash'])
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
@@ -1114,9 +1127,11 @@ class UltimateArmorXCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, s_down: self.JUMP},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, s_down: self.WALK_JUMP},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_BUSTER_ATTACK, s_down: self.JUMP},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_BUSTER_ATTACK, s_down: self.WALK_JUMP},
                 self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
+                # self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK}
             }
         )

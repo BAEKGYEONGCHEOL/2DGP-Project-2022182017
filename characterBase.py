@@ -206,6 +206,8 @@ class Jump:
         self.total_frames = 0.0  # 시간 기반으로 0~1 진행률 계산용
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
         self.total_frames = 0.0
@@ -223,7 +225,13 @@ class Jump:
         self.jump_height = (self.JUMP_UP_SPEED ** 2) / (2 * self.GRAVITY_UP)
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         dt = game_framework.frame_time
@@ -311,6 +319,8 @@ class WalkJump:
         self.total_frames = 0.0  # 시간 기반으로 0~1 진행률 계산용
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
         self.total_frames = 0.0
@@ -328,7 +338,13 @@ class WalkJump:
         self.jump_height = (self.JUMP_UP_SPEED ** 2) / (2 * self.GRAVITY_UP)
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         dt = game_framework.frame_time
@@ -403,13 +419,22 @@ class Teleport:
         self.is_visible = True          # 사라짐 여부!
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0
         self.teleport_done = False
         self.is_visible = True
 
     def exit(self, e):
+        self.character.action_doing = False
+        self.character.facing_lock = False
         self.is_visible = True
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         dt = game_framework.frame_time
@@ -472,11 +497,19 @@ class ArmAttack:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         # 한 번만 실행하기 위해 % 연산 제거
@@ -506,11 +539,19 @@ class DashAttack:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         dt = game_framework.frame_time
@@ -616,11 +657,19 @@ class PowerAttack:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         # 한 번만 실행하기 위해 % 연산 제거
@@ -651,11 +700,19 @@ class SphereAttack:
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         time = get_time()
@@ -680,11 +737,19 @@ class WaveAttack:
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         time = get_time()
@@ -709,11 +774,19 @@ class ReflexAttack:
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         time = get_time()
@@ -738,11 +811,19 @@ class AmbientWaveAttack:
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         time = get_time()
@@ -766,11 +847,19 @@ class BaseSwordAttack:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         # 한 번만 실행하기 위해 % 연산 제거
@@ -800,11 +889,19 @@ class BaseBusterAttack:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         # 한 번만 실행하기 위해 % 연산 제거
@@ -834,11 +931,19 @@ class Dash:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         dt = game_framework.frame_time
@@ -879,11 +984,19 @@ class Hit:
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         time = get_time()
@@ -908,11 +1021,19 @@ class Defeat:
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
     def enter(self, e):
+        self.character.action_doing = True
+        self.character.facing_lock = True
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
-        pass
+        self.character.action_doing = False
+        self.character.facing_lock = False
+
+        if not self.character.is_left_pressed and self.character.is_right_pressed:
+            self.character.facing = 1
+        elif not self.character.is_right_pressed and self.character.is_left_pressed:
+            self.character.facing = -1
 
     def do(self):
         time = get_time()

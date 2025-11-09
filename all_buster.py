@@ -25,7 +25,7 @@ class NormalBuster:
     def draw(self):
         x, y, w, h = self.frames[int(self.frame)]
 
-        if self.facing == 1:
+        if self.facing == -1:
             flip = 'h'
         else:
             flip = ''

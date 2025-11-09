@@ -1,5 +1,6 @@
 from pico2d import *
 import game_framework
+import game_world
 from characterBase import XCharacter, ZeroCharacter, SigmaCharacter, VileCharacter, UltimateArmorXCharacter
 
 
@@ -50,6 +51,9 @@ def init():
     player1 = create_character(player1_index, 350, 300, 1)
     player2 = create_character(player2_index, 1244, 300, 2)
 
+    game_world.add_object(player1, 1)
+    game_world.add_object(player2, 1)
+
 
 def handle_events():
     events = get_events()
@@ -65,15 +69,13 @@ def handle_events():
 
 
 def update():
-    player1.update()
-    player2.update()
+    game_world.update()
 
 
 def draw():
     clear_canvas()
 
-    player1.draw()
-    player2.draw()
+    game_world.render()
 
     update_canvas()
 

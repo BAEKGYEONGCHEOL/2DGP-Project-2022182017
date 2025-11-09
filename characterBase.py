@@ -2,6 +2,7 @@ from pico2d import load_image, get_time
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, SDLK_r, SDLK_t, SDLK_c
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
+import game_world
 from all_buster import NormalBuster
 
 from state_machine import StateMachine
@@ -928,12 +929,14 @@ class BaseBusterAttack:
         self.frame = 0
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+        self.fired = False  # Buster 발사 여부 변수
 
     def enter(self, e):
         self.character.action_doing = True
         self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
+        self.fired = False  # Buster 발사 여부 변수
 
     def exit(self, e):
         self.character.action_doing = False
@@ -947,6 +950,12 @@ class BaseBusterAttack:
     def do(self):
         # 한 번만 실행하기 위해 % 연산 제거
         self.frame = (self.frame + len(self.character.frame['base_buster_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        current = int(self.frame)
+        self.character.current_frame = current
+        if current == 4 and not self.fired:
+            self.character.fire_normal_buster()
+            self.fired = True
 
         if self.frame >= len(self.character.frame['base_buster_attack']):
             if self.character.is_left_pressed or self.character.is_right_pressed:
@@ -1259,7 +1268,12 @@ class XCharacter(Character):
 
     # normal buster 발사 함수
     def fire_normal_buster(self):
-        pass
+        # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
+        facing = self.facing
+
+        buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, 15)
+
+        game_world.add_object(buster, 2)
 
 
 # Zero 캐릭터 클래스
@@ -1495,6 +1509,15 @@ class UltimateArmorXCharacter(Character):
                 self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
+
+    # normal buster 발사 함수
+    def fire_normal_buster(self):
+        # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
+        facing = self.facing
+
+        buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, 25)
+
+        game_world.add_object(buster, 2)
 
     # 프레임 그리기 함수(오버라이드!)
     def draw_frame(self, frame_data):

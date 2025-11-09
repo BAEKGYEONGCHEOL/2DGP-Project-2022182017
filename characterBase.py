@@ -3,7 +3,7 @@ from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, 
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
 import game_world
-from all_buster import NormalBuster
+from all_buster import NormalBuster, PowerBuster
 
 from state_machine import StateMachine
 
@@ -672,12 +672,14 @@ class PowerAttack:
         self.frame = 0
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+        self.fired = False
 
     def enter(self, e):
         self.character.action_doing = True
         self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
+        self.fired = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -692,6 +694,12 @@ class PowerAttack:
         # 한 번만 실행하기 위해 % 연산 제거
         self.frame = (self.frame + len(
             self.character.frame['power_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        current = int(self.frame)
+        self.character.current_frame = current
+        if current == 4 and not self.fired:
+            self.character.fire_power_buster()
+            self.fired = True
 
         if self.frame >= len(self.character.frame['power_attack']):
             if self.character.is_left_pressed or self.character.is_right_pressed:
@@ -1275,6 +1283,15 @@ class XCharacter(Character):
 
         game_world.add_object(buster, 2)
 
+    # power buster 발사 함수
+    def fire_power_buster(self):
+        # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
+        facing = self.facing
+
+        buster = PowerBuster(self.x + 50 * facing, self.y + 20, facing, 25)
+
+        game_world.add_object(buster, 2)
+
 
 # Zero 캐릭터 클래스
 class ZeroCharacter(Character):
@@ -1516,6 +1533,15 @@ class UltimateArmorXCharacter(Character):
         facing = self.facing
 
         buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, 25)
+
+        game_world.add_object(buster, 2)
+
+    # power buster 발사 함수
+    def fire_power_buster(self):
+        # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
+        facing = self.facing
+
+        buster = PowerBuster(self.x + 50 * facing, self.y + 25, facing, 40)
 
         game_world.add_object(buster, 2)
 

@@ -125,6 +125,8 @@ class Walk:
         self.character.is_walking = False  # 걷기 종료
 
     def do(self):
+        dt = game_framework.frame_time
+
         self.frame += len(self.character.frame['walk']) * self.ACTION_PER_TIME * game_framework.frame_time
 
         # 준비 구간: 0 ~ prepare_frame_count-1
@@ -141,6 +143,15 @@ class Walk:
             # 반복 구간 계산
             loop_frame = int((self.frame - loop_start)) % loop_frames + loop_start
             self.character.current_frame = min(loop_frame, total_frames - 1)
+
+        # facing 방향으로 이동!
+        self.character.x += self.character.facing * self.speed * dt
+
+        # 화면 밖으로 나가지 않도록 제한!
+        if self.character.x < 50:
+            self.character.x = 50
+        elif self.character.x > 1544:
+            self.character.x = 1544
 
     def draw(self):
         frame_data = self.character.frame['walk'][self.character.current_frame]

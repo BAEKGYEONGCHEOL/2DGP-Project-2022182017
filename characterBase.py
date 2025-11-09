@@ -844,7 +844,7 @@ class Character:
 
 # X 캐릭터 클래스
 class XCharacter(Character):
-    X_speed = 1.0
+    X_speed = 1.5
 
     def __init__(self, x, y, player):
         # 실제 이동 속도
@@ -893,10 +893,13 @@ class XCharacter(Character):
 
 # Zero 캐릭터 클래스
 class ZeroCharacter(Character):
-    Zero_speed = 10
+    Zero_speed = 2.2
 
     def __init__(self, x, y, player):
-        super().__init__('zerox4sheet.png', x, y, self.Zero_speed, zerox4sheet, player, False)
+        # 실제 이동 속도
+        real_speed = RUN_SPEED_PPS * self.Zero_speed
+
+        super().__init__('zerox4sheet.png', x, y, real_speed, zerox4sheet, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -913,7 +916,7 @@ class ZeroCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, self.Zero_speed, 0)
+        self.WALK = Walk(self, self.speed, 0)
         self.JUMP = Jump(self)
         self.WALK_JUMP = WalkJump(self)
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
@@ -936,10 +939,13 @@ class ZeroCharacter(Character):
 
 # Sigma 캐릭터 클래스
 class SigmaCharacter(Character):
-    Sigma_speed = 6
+    Sigma_speed = 1.5
 
     def __init__(self, x, y, player):
-        super().__init__('x5sigma4.png', x, y, self.Sigma_speed, x5sigma4, player, True)
+        # 실제 속도
+        real_speed = RUN_SPEED_PPS * self.Sigma_speed
+
+        super().__init__('x5sigma4.png', x, y, real_speed, x5sigma4, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -957,7 +963,7 @@ class SigmaCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, self.Sigma_speed, 3)
+        self.WALK = Walk(self, self.speed, 3)
         # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
@@ -978,10 +984,13 @@ class SigmaCharacter(Character):
 
 # Vile 캐릭터 클래스
 class VileCharacter(Character):
-    Vile_speed = 8
+    Vile_speed = 1.85
 
     def __init__(self, x, y, player):
-        super().__init__('Dynamox56sheet.png', x, y, self.Vile_speed, Dynamox56sheet, player, True)
+        # 실제 속도
+        real_speed = RUN_SPEED_PPS * self.Vile_speed
+
+        super().__init__('Dynamox56sheet.png', x, y, real_speed, Dynamox56sheet, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -999,7 +1008,7 @@ class VileCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, self.Vile_speed, 1)
+        self.WALK = Walk(self, self.speed, 1)
         # self.TELEPORT = Teleport(self, len(self.frame['teleport']), self.delay['teleport'])
         # self.BASE_ATTACK = BaseAttack(self, len(self.frame['base_attack']), self.delay['base_attack'])
         # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
@@ -1020,10 +1029,13 @@ class VileCharacter(Character):
 
 # Ultimate Armor X 캐릭터 클래스
 class UltimateArmorXCharacter(Character):
-    UAX_speed = 10
+    UAX_speed = 2.2
 
     def __init__(self, x, y, player):
-        super().__init__('ultimate_armor_x.png', x, y, self.UAX_speed, ultimate_armor_x, player, False)
+        # 실제 속도
+        real_speed = RUN_SPEED_PPS * self.UAX_speed
+
+        super().__init__('ultimate_armor_x.png', x, y, real_speed, ultimate_armor_x, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -1041,7 +1053,7 @@ class UltimateArmorXCharacter(Character):
 
         self.INTRO = Intro(self)
         self.IDLE = Idle(self)
-        self.WALK = Walk(self, self.UAX_speed, 0)
+        self.WALK = Walk(self, self.speed, 0)
         self.JUMP = Jump(self)
         self.WALK_JUMP = WalkJump(self)
         # self.BASE_SWORD_ATTACK = BaseSwordAttack(self, len(self.frame['base_sword_attack']), self.delay['base_sword_attack'])

@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
 
@@ -40,6 +40,9 @@ def f_down(e):
 
 def g_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_g
+
+def v_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_v
 
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel == 30 cm
@@ -494,26 +497,41 @@ class ArmAttack:
 # Dash Attack 상태
 class DashAttack:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character, speed):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+        self.speed = speed
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
     def enter(self, e):
         self.frame = 0
-        self.character.current_frame = 0
+        self.character.current_frame = 0  # current_frame 초기화!
 
     def exit(self, e):
         pass
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['dash_attack'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        dt = game_framework.frame_time
+
+        self.character.x += self.character.facing * self.speed * dt  # 약간 앞으로 이동
+
+        # 한 번만 실행하기 위해 % 연산 제거
+        self.frame = (self.frame + len(self.character.frame['dash_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        # 화면 밖 제한
+        if self.character.x < 50:
+            self.character.x = 50
+        elif self.character.x > 1544:
+            self.character.x = 1544
+
+        if self.frame >= len(self.character.frame['dash_attack']):
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        else:
+            self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['dash_attack'][self.character.current_frame]
@@ -1023,7 +1041,7 @@ class ZeroCharacter(Character):
         self.JUMP = Jump(self)
         self.WALK_JUMP = WalkJump(self)
         self.BASE_SWORD_ATTACK = BaseSwordAttack(self)
-        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        self.DASH_ATTACK = DashAttack(self, self.dash_speed)
         self.DASH = Dash(self, self.dash_speed)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
@@ -1032,12 +1050,12 @@ class ZeroCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, g_down: self.DASH},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, g_down: self.DASH},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK},
                 self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                # self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.DASH: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
@@ -1050,8 +1068,9 @@ class SigmaCharacter(Character):
     def __init__(self, x, y, player):
         # 실제 속도
         real_speed = RUN_SPEED_PPS * self.Sigma_speed
+        real_dash_speed = DASH_SPEED_PPS * self.Sigma_speed
 
-        super().__init__('x5sigma4.png', x, y, real_speed, 0, x5sigma4, player, True)
+        super().__init__('x5sigma4.png', x, y, real_speed, real_dash_speed, x5sigma4, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -1074,7 +1093,7 @@ class SigmaCharacter(Character):
         self.ARM_ATTACK = ArmAttack(self)
         # self.SPHERE_ATTACK = SphereAttack(self, len(self.frame['sphere_attack']), self.delay['sphere_attack'])
         # self.WAVE_ATTACK = WaveAttack(self, len(self.frame['wave_attack']), self.delay['wave_attack'])
-        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        # self.DASH_ATTACK_WALL = DashAttackWall(self)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
@@ -1086,6 +1105,9 @@ class SigmaCharacter(Character):
                 self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT},
                 self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                # self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                # self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                # self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 
@@ -1097,8 +1119,9 @@ class VileCharacter(Character):
     def __init__(self, x, y, player):
         # 실제 속도
         real_speed = RUN_SPEED_PPS * self.Vile_speed
+        real_dash_speed = DASH_SPEED_PPS * self.Vile_speed
 
-        super().__init__('Dynamox56sheet.png', x, y, real_speed, 0, Dynamox56sheet, player, True)
+        super().__init__('Dynamox56sheet.png', x, y, real_speed, real_dash_speed, Dynamox56sheet, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -1120,7 +1143,7 @@ class VileCharacter(Character):
         self.TELEPORT = Teleport(self)
         self.BASE_SWORD_ATTACK = BaseSwordAttack(self)
         # self.REFLEX_ATTACK = ReflexAttack(self, len(self.frame['reflex_attack']), self.delay['reflex_attack'])
-        # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
+        self.DASH_ATTACK = DashAttack(self, self.dash_speed)
         # self.AMBIENT_WAVE_ATTACK = AmbientWaveAttack(self, len(self.frame['ambient_wave_attack']), self.delay['ambient_wave_attack'])
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
@@ -1129,10 +1152,12 @@ class VileCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK},
                 self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                # self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 
@@ -1144,8 +1169,9 @@ class UltimateArmorXCharacter(Character):
     def __init__(self, x, y, player):
         # 실제 속도
         real_speed = RUN_SPEED_PPS * self.UAX_speed
+        real_dash_speed = DASH_SPEED_PPS * self.UAX_speed
 
-        super().__init__('ultimate_armor_x.png', x, y, real_speed, 0, ultimate_armor_x, player, False)
+        super().__init__('ultimate_armor_x.png', x, y, real_speed, real_dash_speed, ultimate_armor_x, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -1156,7 +1182,7 @@ class UltimateArmorXCharacter(Character):
             'base_buster_attack': ultimate_armor_x[4],
             'base_sword_attack': ultimate_armor_x[5],
             'power_attack': ultimate_armor_x[6],
-            'dash_attack': ultimate_armor_x[7],
+            'dash_attack_wall': ultimate_armor_x[7],
             'hit': ultimate_armor_x[8],
             'defeat': ultimate_armor_x[9],
         }
@@ -1169,7 +1195,7 @@ class UltimateArmorXCharacter(Character):
         self.BASE_SWORD_ATTACK = BaseSwordAttack(self)
         self.BASE_BUSTER_ATTACK = BaseBusterAttack(self)
         self.POWER_ATTACK = PowerAttack(self)
-        # self.DASH_ATTACK = DashAttack(self)
+        # self.DASH_ATTACK_WALL = DashAttackWall(self, self.dash_speed)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
@@ -1177,8 +1203,8 @@ class UltimateArmorXCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, g_down: self.DASH_ATTACK},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, g_down: self.DASH_ATTACK},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK},
                 self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},

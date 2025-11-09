@@ -1423,7 +1423,7 @@ class SigmaCharacter(Character):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
-        buster = Wave(self.x + 50 * facing, self.y + 20, facing, 25)
+        buster = Wave(self.x + 50 * facing, self.y + 50, facing, 25)
 
         game_world.add_object(buster, 2)
 

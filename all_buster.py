@@ -153,9 +153,9 @@ class Sphere:
         x, y, w, h = self.frames[int(self.frame)]
 
         if self.facing == -1:
-            flip = ''
-        else:
             flip = 'h'
+        else:
+            flip = ''
 
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
@@ -217,9 +217,9 @@ class Wave:
         x, y, w, h = self.frames[int(self.frame)]
 
         if self.facing == -1:
-            flip = 'h'
-        else:
             flip = ''
+        else:
+            flip = 'h'
 
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.

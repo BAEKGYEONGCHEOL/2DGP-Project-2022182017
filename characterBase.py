@@ -59,6 +59,12 @@ JUMP_SPEED_PPS = (JUMP_SPEED_MPS * PIXEL_PER_METER)
 # 중력 가속도 (픽셀 단위, 아래 방향)
 GRAVITY_PPS2 = 9.8 * 30
 
+# 대쉬 속도
+DASH_SPEED_KMPH = 50.0
+DASH_SPEED_MPM = (DASH_SPEED_KMPH * 1000.0 / 60.0)
+DASH_SPEED_MPS = (DASH_SPEED_MPM / 60.0)
+DASH_SPEED_PPS = (DASH_SPEED_MPS * PIXEL_PER_METER)
+
 
 # Intro 상태
 class Intro:
@@ -734,9 +740,10 @@ class BaseBusterAttack:
 # Dash 상태
 class Dash:
 
-    def __init__(self, character):
+    def __init__(self, character, speed):
         self.character = character
         self.frame = 0
+        self.speed = speed
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
@@ -748,9 +755,19 @@ class Dash:
         pass
 
     def do(self):
+        dt = game_framework.frame_time
+
+        self.character.x += self.character.facing * self.speed * dt  # 약간 앞으로 이동
+
         # 한 번만 실행하기 위해 % 연산 제거
         self.frame = (self.frame + len(
             self.character.frame['dash']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        # 화면 밖 제한
+        if self.character.x < 50:
+            self.character.x = 50
+        elif self.character.x > 1544:
+            self.character.x = 1544
 
         if self.frame >= len(self.character.frame['dash']):
             if self.character.is_left_pressed or self.character.is_right_pressed:
@@ -829,7 +846,7 @@ class Defeat:
 
 # 기본 베이스 캐릭터 클래스 구현
 class Character:
-    def __init__(self, image_path, x, y, speed, sheet_data, player, change_facing_right):
+    def __init__(self, image_path, x, y, speed, dash_speed, sheet_data, player, change_facing_right):
         self.image = load_image(image_path)    # 캐릭터 이미지 로드
         self.x = x
         self.y = y
@@ -843,6 +860,7 @@ class Character:
 
         self.current_frame = 0  # 현재 프레임 인덱스
         self.speed = speed
+        self.dash_speed = dash_speed
 
         # 자식 클래스 생성 시 프레임 데이터를 딕셔너리 형태로 저장
         self.frame = {}
@@ -929,8 +947,9 @@ class XCharacter(Character):
     def __init__(self, x, y, player):
         # 실제 이동 속도
         real_speed = RUN_SPEED_PPS * self.X_speed
+        real_dash_speed = DASH_SPEED_PPS * self.X_speed
 
-        super().__init__('mmx_x4_x_sheet.png', x, y, real_speed, mmx_x4_x_sheet, player, False)
+        super().__init__('mmx_x4_x_sheet.png', x, y, real_speed, real_dash_speed, mmx_x4_x_sheet, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -952,7 +971,7 @@ class XCharacter(Character):
         self.WALK_JUMP = WalkJump(self)
         self.BASE_BUSTER_ATTACK = BaseBusterAttack(self)
         self.POWER_ATTACK = PowerAttack(self)
-        self.DASH = Dash(self)
+        self.DASH = Dash(self, self.dash_speed)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
@@ -981,8 +1000,9 @@ class ZeroCharacter(Character):
     def __init__(self, x, y, player):
         # 실제 이동 속도
         real_speed = RUN_SPEED_PPS * self.Zero_speed
+        real_dash_speed = DASH_SPEED_PPS * self.Zero_speed
 
-        super().__init__('zerox4sheet.png', x, y, real_speed, zerox4sheet, player, False)
+        super().__init__('zerox4sheet.png', x, y, real_speed, real_dash_speed, zerox4sheet, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -1004,7 +1024,7 @@ class ZeroCharacter(Character):
         self.WALK_JUMP = WalkJump(self)
         self.BASE_SWORD_ATTACK = BaseSwordAttack(self)
         # self.DASH_ATTACK = DashAttack(self, len(self.frame['dash_attack']), self.delay['dash_attack'])
-        self.DASH = Dash(self)
+        self.DASH = Dash(self, self.dash_speed)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
@@ -1031,7 +1051,7 @@ class SigmaCharacter(Character):
         # 실제 속도
         real_speed = RUN_SPEED_PPS * self.Sigma_speed
 
-        super().__init__('x5sigma4.png', x, y, real_speed, x5sigma4, player, True)
+        super().__init__('x5sigma4.png', x, y, real_speed, 0, x5sigma4, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -1078,7 +1098,7 @@ class VileCharacter(Character):
         # 실제 속도
         real_speed = RUN_SPEED_PPS * self.Vile_speed
 
-        super().__init__('Dynamox56sheet.png', x, y, real_speed, Dynamox56sheet, player, True)
+        super().__init__('Dynamox56sheet.png', x, y, real_speed, 0, Dynamox56sheet, player, True)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -1125,7 +1145,7 @@ class UltimateArmorXCharacter(Character):
         # 실제 속도
         real_speed = RUN_SPEED_PPS * self.UAX_speed
 
-        super().__init__('ultimate_armor_x.png', x, y, real_speed, ultimate_armor_x, player, False)
+        super().__init__('ultimate_armor_x.png', x, y, real_speed, 0, ultimate_armor_x, player, False)
 
         # 캐릭터 별 프레임 및 딜레이 데이터 설정
         self.frame = {
@@ -1136,7 +1156,7 @@ class UltimateArmorXCharacter(Character):
             'base_buster_attack': ultimate_armor_x[4],
             'base_sword_attack': ultimate_armor_x[5],
             'power_attack': ultimate_armor_x[6],
-            'dash': ultimate_armor_x[7],
+            'dash_attack': ultimate_armor_x[7],
             'hit': ultimate_armor_x[8],
             'defeat': ultimate_armor_x[9],
         }
@@ -1149,7 +1169,7 @@ class UltimateArmorXCharacter(Character):
         self.BASE_SWORD_ATTACK = BaseSwordAttack(self)
         self.BASE_BUSTER_ATTACK = BaseBusterAttack(self)
         self.POWER_ATTACK = PowerAttack(self)
-        self.DASH = Dash(self)
+        # self.DASH_ATTACK = DashAttack(self)
         # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
         # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
 
@@ -1157,14 +1177,14 @@ class UltimateArmorXCharacter(Character):
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, g_down: self.DASH},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, g_down: self.DASH},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, g_down: self.DASH_ATTACK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, g_down: self.DASH_ATTACK},
                 self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
                 self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.DASH: {land_idle: self.IDLE, land_walk: self.WALK},
+                # self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
 

@@ -1745,6 +1745,36 @@ class SigmaCharacter(Character):
     def get_attack_damage(self):
         return self.attack_damage_table.get(self.state_machine.cur_state, 0)
 
+    # 프레임 그리기 함수(오버라이드!)
+    def draw_frame(self, frame_data):
+        x_data, y_data, w_data, h_data = frame_data
+
+        # 현재 바라보는 방향(facing)
+        # 시트 방향과 바라보는 방향에 따라 flip 계산
+        if self.change_facing_right:
+            # 시트가 오른쪽을 보고 있다면, 오른쪽일 때 그대로, 왼쪽일 때 뒤집기
+            if self.facing == 1:
+                flip = 'h'
+            else:
+                flip = ''
+
+        else:
+            # 시트가 왼쪽을 보고 있다면, 왼쪽일 때 그대로, 오른쪽일 때 뒤집기
+            if self.facing == -1:
+                flip = 'h'
+            else:
+                flip = ''
+
+        # Sword 공격 시 flip 반전!
+        if self.state_machine.cur_state == self.DEFEAT:
+            if flip == 'h':
+                flip = ''
+            else:
+                flip = 'h'
+
+        # 해당 프레임 그리기!
+        self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x, self.y, w_data * 3, h_data * 3)
+
 
 # Vile 캐릭터 클래스
 class VileCharacter(Character):
@@ -2120,7 +2150,7 @@ class UltimateArmorXCharacter(Character):
                 flip = ''
 
         # Sword 공격 시 flip 반전!
-        if self.state_machine.cur_state == self.BASE_SWORD_ATTACK:
+        if self.state_machine.cur_state == self.BASE_SWORD_ATTACK or self.state_machine.cur_state == self.DEFEAT:
             if flip == 'h':
                 flip = ''
             else:

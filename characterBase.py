@@ -1139,6 +1139,7 @@ class Defeat:
 class Character:
     def __init__(self, image_path, x, y, speed, dash_speed, sheet_data, player, change_facing_right):
         self.image = load_image(image_path)    # 캐릭터 이미지 로드
+        self.hp = 100   # 기본 체력 설정
         self.x = x
         self.y = y
         self.player = player

@@ -1312,6 +1312,7 @@ class XCharacter(Character):
         if self.state_machine:
             self.state_machine.draw()
             draw_rectangle(*self.get_bb())
+            draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -1327,6 +1328,10 @@ class XCharacter(Character):
                 return self.x - 70, self.y - 70, self.x + 60, self.y + 70
             else:
                 return self.x - 50, self.y - 70, self.x + 50, self.y + 70
+
+    def get_attack_bb(self):
+        # X는 근접 공격이 없으므로 공격 박스는 없음!
+        return 0, 0, 0, 0
 
 
 # Zero 캐릭터 클래스

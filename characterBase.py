@@ -61,6 +61,12 @@ def t_up(e):
 def c_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_c
 
+def hit(e):
+    return e[0] == 'HIT'
+
+def defeat(e):
+    return e[0] == 'DEFEAT'
+
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel == 30 cm
 

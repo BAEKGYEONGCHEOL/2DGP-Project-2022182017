@@ -1391,6 +1391,8 @@ class ZeroCharacter(Character):
         if self.facing == 1:
             if state == self.DASH:
                 return self.x - 60, self.y - 70, self.x + 70, self.y + 70
+            elif state == self.BASE_SWORD_ATTACK:
+                return self.x - 70, self.y - 85, self.x + 80, self.y + 85
             elif state == self.DASH_ATTACK:
                 return self.x - 75, self.y - 70, self.x + 60, self.y + 70
             else:
@@ -1398,6 +1400,8 @@ class ZeroCharacter(Character):
         else:
             if state == self.DASH:
                 return self.x - 70, self.y - 70, self.x + 60, self.y + 70
+            elif state == self.BASE_SWORD_ATTACK:
+                return self.x - 70, self.y - 85, self.x + 80, self.y + 85
             elif state == self.DASH_ATTACK:
                 return self.x - 60, self.y - 70, self.x + 75, self.y + 70
             else:
@@ -1412,9 +1416,9 @@ class ZeroCharacter(Character):
         if state == self.BASE_SWORD_ATTACK:
             if frame >= 3 and frame <= 6:
                 if self.facing == 1:
-                    return self.x - 40, self.y - 70, self.x + 140, self.y + 90
+                    return self.x - 40, self.y - 70, self.x + 150, self.y + 100
                 else:
-                    return self.x - 140, self.y - 70, self.x + 40, self.y + 90
+                    return self.x - 150, self.y - 70, self.x + 40, self.y + 100
             else:
                 return 0, 0, 0, 0
         elif state == self.DASH_ATTACK:
@@ -1509,14 +1513,14 @@ class SigmaCharacter(Character):
 
         if self.facing == 1:
             if state == self.WALK or state == self.DASH_ATTACK_WALL:
-                return self.x - 100, self.y - 75, self.x + 105, self.y + 85
+                return self.x - 100, self.y - 75, self.x + 115, self.y + 85
             elif state == self.ARM_ATTACK or state == self.WAVE_ATTACK:
                 return self.x - 65, self.y - 120, self.x + 75, self.y + 120
             else:
                 return self.x - 65, self.y - 120, self.x + 60, self.y + 120
         else:
             if state == self.WALK or state == self.DASH_ATTACK_WALL:
-                return self.x - 105, self.y - 75, self.x + 100, self.y + 85
+                return self.x - 115, self.y - 75, self.x + 100, self.y + 85
             elif state == self.ARM_ATTACK or state == self.WAVE_ATTACK:
                 return self.x - 75, self.y - 120, self.x + 65, self.y + 120
             else:
@@ -1762,22 +1766,51 @@ class UltimateArmorXCharacter(Character):
         if self.state_machine:
             self.state_machine.draw()
             draw_rectangle(*self.get_bb())
-            # draw_rectangle(*self.get_attack_bb())
+            draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
         state = self.state_machine.cur_state
 
         if self.facing == 1:
-            if state == self.DASH_ATTACK_WALL:
+            if state == self.BASE_SWORD_ATTACK:
+                return self.x - 70, self.y - 85, self.x + 80, self.y + 85
+            elif state == self.DASH_ATTACK_WALL:
                 return self.x - 60, self.y - 85, self.x + 100, self.y + 85
             else:
                 return self.x - 50, self.y - 70, self.x + 50, self.y + 70
         else:
-            if state == self.DASH_ATTACK_WALL:
+            if state == self.BASE_SWORD_ATTACK:
+                return self.x - 80, self.y - 85, self.x + 70, self.y + 85
+            elif state == self.DASH_ATTACK_WALL:
                 return self.x - 100, self.y - 85, self.x + 60, self.y + 85
             else:
                 return self.x - 50, self.y - 70, self.x + 50, self.y + 70
+
+    def get_attack_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+        # 현재 프레임 불러오기
+        frame = self.current_frame
+
+        if state == self.BASE_SWORD_ATTACK:
+            if frame >= 4 and frame <= 7:
+                if self.facing == 1:
+                    return self.x - 40, self.y - 70, self.x + 150, self.y + 100
+                else:
+                    return self.x - 150, self.y - 70, self.x + 40, self.y + 100
+            else:
+                return 0, 0, 0, 0
+        elif state == self.DASH_ATTACK_WALL:
+            if frame >= 7 and frame <= 8:
+                if self.facing == 1:
+                    return self.x - 110, self.y - 100, self.x + 170, self.y + 100
+                else:
+                    return self.x - 170, self.y - 100, self.x + 110, self.y + 100
+            else:
+                return 0, 0, 0, 0
+        else:
+            return 0, 0, 0, 0
 
     # 프레임 그리기 함수(오버라이드!)
     def draw_frame(self, frame_data):

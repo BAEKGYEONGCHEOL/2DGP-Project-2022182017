@@ -33,7 +33,7 @@ class NormalBuster:
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        # draw_rectangle(*self.get_bb())
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         dt = game_framework.frame_time
@@ -47,15 +47,19 @@ class NormalBuster:
         if self.x > 1650 or self.x < 0:
             game_world.remove_object(self)
 
-    # def get_bb(self):
-    #     # ball의 바운더리 박스를 튜플 형태로 반환하여 사각형의 범위를 알려준다.
-    #     return self.x - 10, self.y - 10, self.x + 10, self.y + 10
-    #
+    def get_bb(self):
+        # ball의 바운더리 박스를 튜플 형태로 반환하여 사각형의 범위를 알려준다.
+        if self.facing == 1:
+            return self.x - 30, self.y - 30, self.x + 60, self.y + 30
+        else:
+            return self.x - 60, self.y - 30, self.x + 30, self.y + 30
+
+
     # def handle_collision(self, group, other):
     #     # group이 소년과 볼 사이의 충돌이라면
     #     if group == 'boy:ball':
     #         # 아래처럼 작성하면 지울 수 없는 에러가 발생!
-    #         # game_worl d에서는 ball 이 사라졌지만 collision_pairs 에는 여전히 남아 있기 때문이다.
+    #         # game_world에서는 ball 이 사라졌지만 collision_pairs 에는 여전히 남아 있기 때문이다.
     #         # collision_pairs 에서는 계속해서 비교를 시도하게 되고, 이미 지워진 ball 객체에 접근하려고 하면서 에러가 발생한다.
     #         # 해결 방법은 collision_pairs 에서도 해당 객체를 제거해 주어야 한다.
     #         # 이 작업은 game_world.py 의 game_world.remove_object() 함수에서 처리해 준다.
@@ -97,7 +101,7 @@ class PowerBuster:
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        # draw_rectangle(*self.get_bb())
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         dt = game_framework.frame_time
@@ -111,15 +115,18 @@ class PowerBuster:
         if self.x > 1650 or self.x < 0:
             game_world.remove_object(self)
 
-    # def get_bb(self):
-    #     # ball의 바운더리 박스를 튜플 형태로 반환하여 사각형의 범위를 알려준다.
-    #     return self.x - 10, self.y - 10, self.x + 10, self.y + 10
-    #
+    def get_bb(self):
+        # ball의 바운더리 박스를 튜플 형태로 반환하여 사각형의 범위를 알려준다.
+        if self.facing == 1:
+            return self.x - 45, self.y - 40, self.x + 75, self.y + 40
+        else:
+            return self.x - 75, self.y - 40, self.x + 45, self.y + 40
+
     # def handle_collision(self, group, other):
     #     # group이 소년과 볼 사이의 충돌이라면
     #     if group == 'boy:ball':
     #         # 아래처럼 작성하면 지울 수 없는 에러가 발생!
-    #         # game_worl d에서는 ball 이 사라졌지만 collision_pairs 에는 여전히 남아 있기 때문이다.
+    #         # game_world에서는 ball 이 사라졌지만 collision_pairs 에는 여전히 남아 있기 때문이다.
     #         # collision_pairs 에서는 계속해서 비교를 시도하게 되고, 이미 지워진 ball 객체에 접근하려고 하면서 에러가 발생한다.
     #         # 해결 방법은 collision_pairs 에서도 해당 객체를 제거해 주어야 한다.
     #         # 이 작업은 game_world.py 의 game_world.remove_object() 함수에서 처리해 준다.
@@ -160,7 +167,7 @@ class Sphere:
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        # draw_rectangle(*self.get_bb())
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         dt = game_framework.frame_time
@@ -174,15 +181,18 @@ class Sphere:
         if self.x > 1650 or self.x < 0:
             game_world.remove_object(self)
 
-    # def get_bb(self):
-    #     # ball의 바운더리 박스를 튜플 형태로 반환하여 사각형의 범위를 알려준다.
-    #     return self.x - 10, self.y - 10, self.x + 10, self.y + 10
-    #
+    def get_bb(self):
+        # ball의 바운더리 박스를 튜플 형태로 반환하여 사각형의 범위를 알려준다.
+        if self.facing == 1:
+            return self.x - 35, self.y - 35, self.x + 35, self.y + 35
+        else:
+            return self.x - 35, self.y - 35, self.x + 35, self.y + 35
+
     # def handle_collision(self, group, other):
     #     # group이 소년과 볼 사이의 충돌이라면
     #     if group == 'boy:ball':
     #         # 아래처럼 작성하면 지울 수 없는 에러가 발생!
-    #         # game_worl d에서는 ball 이 사라졌지만 collision_pairs 에는 여전히 남아 있기 때문이다.
+    #         # game_world에서는 ball 이 사라졌지만 collision_pairs 에는 여전히 남아 있기 때문이다.
     #         # collision_pairs 에서는 계속해서 비교를 시도하게 되고, 이미 지워진 ball 객체에 접근하려고 하면서 에러가 발생한다.
     #         # 해결 방법은 collision_pairs 에서도 해당 객체를 제거해 주어야 한다.
     #         # 이 작업은 game_world.py 의 game_world.remove_object() 함수에서 처리해 준다.
@@ -224,7 +234,7 @@ class Wave:
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        # draw_rectangle(*self.get_bb())
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         dt = game_framework.frame_time
@@ -238,15 +248,18 @@ class Wave:
         if self.x > 1650 or self.x < 0:
             game_world.remove_object(self)
 
-    # def get_bb(self):
-    #     # ball의 바운더리 박스를 튜플 형태로 반환하여 사각형의 범위를 알려준다.
-    #     return self.x - 10, self.y - 10, self.x + 10, self.y + 10
-    #
+    def get_bb(self):
+        # ball의 바운더리 박스를 튜플 형태로 반환하여 사각형의 범위를 알려준다.
+        if self.facing == 1:
+            return self.x - 50, self.y - 160, self.x + 80, self.y + 160
+        else:
+            return self.x - 80, self.y - 160, self.x + 50, self.y + 160
+
     # def handle_collision(self, group, other):
     #     # group이 소년과 볼 사이의 충돌이라면
     #     if group == 'boy:ball':
     #         # 아래처럼 작성하면 지울 수 없는 에러가 발생!
-    #         # game_worl d에서는 ball 이 사라졌지만 collision_pairs 에는 여전히 남아 있기 때문이다.
+    #         # game_world에서는 ball 이 사라졌지만 collision_pairs 에는 여전히 남아 있기 때문이다.
     #         # collision_pairs 에서는 계속해서 비교를 시도하게 되고, 이미 지워진 ball 객체에 접근하려고 하면서 에러가 발생한다.
     #         # 해결 방법은 collision_pairs 에서도 해당 객체를 제거해 주어야 한다.
     #         # 이 작업은 game_world.py 의 game_world.remove_object() 함수에서 처리해 준다.

@@ -1501,6 +1501,7 @@ class SigmaCharacter(Character):
         if self.state_machine:
             self.state_machine.draw()
             draw_rectangle(*self.get_bb())
+            draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -1521,6 +1522,22 @@ class SigmaCharacter(Character):
             else:
                 return self.x - 60, self.y - 120, self.x + 65, self.y + 120
 
+    def get_attack_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+        # 현재 프레임 불러오기
+        frame = self.current_frame
+
+        if state == self.ARM_ATTACK:
+            if frame >= 1 and frame <= 2:
+                if self.facing == 1:
+                    return self.x - 40, self.y - 120, self.x + 140, self.y + 145
+                else:
+                    return self.x - 140, self.y - 120, self.x + 40, self.y + 145
+            else:
+                return 0, 0, 0, 0
+        else:
+            return 0, 0, 0, 0
 
 
 # Vile 캐릭터 클래스
@@ -1577,6 +1594,7 @@ class VileCharacter(Character):
         if self.state_machine:
             self.state_machine.draw()
             draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -1706,6 +1724,7 @@ class UltimateArmorXCharacter(Character):
         if self.state_machine:
             self.state_machine.draw()
             draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기

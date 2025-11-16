@@ -273,7 +273,7 @@ class Jump:
             self.character.x = 1544
 
         # 착지
-        GROUND_Y = 300
+        GROUND_Y = 225
         if self.character.y <= GROUND_Y:
             self.character.y = GROUND_Y
 
@@ -386,7 +386,7 @@ class WalkJump:
             self.character.x = 1544
 
         # 착지
-        GROUND_Y = 300
+        GROUND_Y = 225
         if self.character.y <= GROUND_Y:
             self.character.y = GROUND_Y
 

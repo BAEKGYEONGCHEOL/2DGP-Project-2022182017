@@ -107,5 +107,5 @@ def handle_collision():
                     b.handle_collision(group, a)
 
                 if collide_attack(a, b):    # 공격 판정 충돌 검사
-                    a.handle_attack_collision(group, b)
-                    b.handle_attack_collision(group, a)
+                    a.handle_collision(group, b)
+                    b.handle_collision(group, a)

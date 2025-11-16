@@ -1359,8 +1359,8 @@ class XCharacter(Character):
 
         # 공격 데미지
         self.attack_damage_table = {
-            'base_buster_attack': 4,
-            'power_attack': 8,
+            self.BASE_BUSTER_ATTACK: 4,
+            self.POWER_ATTACK: 8,
         }
 
     # normal buster 발사 함수
@@ -1422,6 +1422,7 @@ class XCharacter(Character):
 
         # 체력 감소!
         self.hp -= damage
+        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
 
         # 체력 0 이하로 떨어지면 죽음 상태로 전환
         if self.hp <= 0:
@@ -1493,8 +1494,8 @@ class ZeroCharacter(Character):
 
         # 공격 데미지
         self.attack_damage_table = {
-            'base_sword_attack': 5,
-            'dash_attack': 8,
+            self.BASE_SWORD_ATTACK: 5,
+            self.DASH_ATTACK: 8,
         }
 
     def draw(self):
@@ -1636,10 +1637,10 @@ class SigmaCharacter(Character):
 
         # 공격 데미지
         self.attack_damage_table = {
-            'arm_attack': 8,
-            'sphere_attack': 8,
-            'wave_attack': 10,
-            'dash_attack_wall': 12,
+            self.ARM_ATTACK: 8,
+            self.SPHERE_ATTACK: 8,
+            self.WAVE_ATTACK: 10,
+            self.DASH_ATTACK_WALL: 12,
         }
 
     # sphere 발사 함수

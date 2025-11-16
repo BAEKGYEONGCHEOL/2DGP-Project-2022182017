@@ -1435,6 +1435,9 @@ class XCharacter(Character):
             self.state_machine.handle_state_event(('HIT', None))
             return
 
+    def get_attack_damage(self):
+        return self.attack_damage_table.get(self.state_machine.cur_state, 0)
+
 
 
 # Zero 캐릭터 클래스

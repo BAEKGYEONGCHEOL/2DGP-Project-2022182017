@@ -1540,6 +1540,14 @@ class SigmaCharacter(Character):
                     return self.x - 140, self.y - 120, self.x + 40, self.y + 145
             else:
                 return 0, 0, 0, 0
+        elif state == self.DASH_ATTACK_WALL:
+            if frame == 3:
+                if self.facing == 1:
+                    return self.x - 100, self.y - 75, self.x + 115, self.y + 85
+                else:
+                    return self.x - 115, self.y - 75, self.x + 100, self.y + 85
+            else:
+                return 0, 0, 0, 0
         else:
             return 0, 0, 0, 0
 

@@ -1290,6 +1290,12 @@ class XCharacter(Character):
             }
         )
 
+        # 공격 데미지
+        self.attack_damage_table = {
+            'base_buster_attack': 4,
+            'power_attack': 8,
+        }
+
     # normal buster 발사 함수
     def fire_normal_buster(self):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
@@ -1332,6 +1338,17 @@ class XCharacter(Character):
     def get_attack_bb(self):
         # X는 근접 공격이 없으므로 공격 박스는 없음!
         return 0, 0, 0, 0
+
+    def handle_collision(self, group, other):
+        # 상대 공격 박스 가져오기
+        left, bottom, right, top = other.get_attack_bb()
+
+        # 공격 박스 없는 프레임은 무시
+        if left == right and bottom == top:
+            return
+
+        # 피격 처리
+        self.take_damamge(other.attack_sword_damage)
 
 
 # Zero 캐릭터 클래스
@@ -1382,6 +1399,12 @@ class ZeroCharacter(Character):
                 self.DASH: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
+
+        # 공격 데미지
+        self.attack_damage_table = {
+            'base_sword_attack': 5,
+            'dash_attack': 8,
+        }
 
     def draw(self):
         if self.state_machine:
@@ -1487,6 +1510,14 @@ class SigmaCharacter(Character):
                 self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
+
+        # 공격 데미지
+        self.attack_damage_table = {
+            'arm_attack': 8,
+            'sphere_attack': 8,
+            'wave_attack': 10,
+            'dash_attack_wall': 12,
+        }
 
     # sphere 발사 함수
     def fire_sphere(self):
@@ -1606,6 +1637,13 @@ class VileCharacter(Character):
                 self.AMBIENT_WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
+
+        # 공격 데미지
+        self.attack_damage_table = {
+            'base_sword_attack': 6,
+            'dash_attack': 8,
+            'ambient_wave_attack': 10,
+        }
 
     def draw(self):
         if self.state_machine:
@@ -1756,6 +1794,14 @@ class UltimateArmorXCharacter(Character):
                 self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
             }
         )
+
+        # 공격 데미지
+        self.attack_damage_table = {
+            'base_buster_attack': 6,
+            'base_sword_attack': 8,
+            'power_attack': 8,
+            'dash_attack_wall': 10,
+        }
 
     # normal buster 발사 함수
     def fire_normal_buster(self):

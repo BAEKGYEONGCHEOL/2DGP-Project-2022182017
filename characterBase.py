@@ -1594,7 +1594,7 @@ class VileCharacter(Character):
         if self.state_machine:
             self.state_machine.draw()
             draw_rectangle(*self.get_bb())
-            # draw_rectangle(*self.get_attack_bb())
+            draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -1618,6 +1618,44 @@ class VileCharacter(Character):
                 return self.x - 70, self.y - 100, self.x + 75, self.y + 100
             else:
                 return self.x - 60, self.y - 100, self.x + 60, self.y + 100
+
+    def get_attack_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+        # 현재 프레임 불러오기
+        frame = self.current_frame
+
+        if state == self.BASE_SWORD_ATTACK:
+            if frame >= 7 and frame <= 9:
+                if self.facing == 1:
+                    return self.x - 150, self.y - 100, self.x + 140, self.y + 120
+                else:
+                    return self.x - 140, self.y - 100, self.x + 150, self.y + 120
+            else:
+                return 0, 0, 0, 0
+        elif state == self.REFLEX_ATTACK:
+            if self.facing == 1:
+                return self.x - 0, self.y - 110, self.x + 110, self.y + 120
+            else:
+                return self.x - 110, self.y - 110, self.x + 0, self.y + 120
+        elif state == self.DASH_ATTACK:
+            if frame == 8:
+                if self.facing == 1:
+                    return self.x - 250, self.y - 160, self.x + 250, self.y + 160
+                else:
+                    return self.x - 250, self.y - 160, self.x + 250, self.y + 160
+            else:
+                return 0, 0, 0, 0
+        elif state == self.AMBIENT_WAVE_ATTACK:
+            if frame >= 19 and frame <= 22:
+                if self.facing == 1:
+                    return 0, self.y - 100, 1593, self.y + 25
+                else:
+                    return 0, self.y - 100, 1593, self.y + 25
+            else:
+                return 0, 0, 0, 0
+        else:
+            return 0, 0, 0, 0
 
     # 프레임 그리기 함수(오버라이드!)
     def draw_frame(self, frame_data):

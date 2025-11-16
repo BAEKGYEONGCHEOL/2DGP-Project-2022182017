@@ -1170,15 +1170,13 @@ class Defeat:
 
     def do(self):
         # 한 번만 실행하기 위해 % 연산 제거
-        self.frame = (self.frame + len(self.character.frame['defeat']) * self.ACTION_PER_TIME * game_framework.frame_time)
+        self.frame += len(self.character.frame['defeat']) * self.ACTION_PER_TIME * game_framework.frame_time
 
+        # defeat는 한 번 재생 후 마지막 프레임에서 멈춤!
         if self.frame >= len(self.character.frame['defeat']):
-            if self.character.is_left_pressed or self.character.is_right_pressed:
-                self.character.state_machine.handle_state_event(('LAND_WALK', None))
-            else:
-                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
-        else:
-            self.character.current_frame = int(self.frame)
+            self.frame = len(self.character.frame['defeat']) - 1
+
+        self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['defeat'][self.character.current_frame]
@@ -1352,7 +1350,7 @@ class XCharacter(Character):
                 self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
                 self.DEFEAT: {},
             }
         )
@@ -1487,7 +1485,7 @@ class ZeroCharacter(Character):
                 self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
                 self.DEFEAT: {},
             }
         )
@@ -1633,7 +1631,7 @@ class SigmaCharacter(Character):
                 self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
                 self.DEFEAT: {},
             }
         )
@@ -1795,7 +1793,7 @@ class VileCharacter(Character):
                 self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.AMBIENT_WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
                 self.DEFEAT: {},
             }
         )
@@ -1987,7 +1985,7 @@ class UltimateArmorXCharacter(Character):
                 self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                 self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
                 self.DEFEAT: {},
             }
         )

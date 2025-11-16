@@ -1400,9 +1400,27 @@ class XCharacter(Character):
 
     def handle_collision(self, group, other):
         # 상대가 공격 상태인지 확인!
-        if other.state_machine.cur_state.is_attack:
-            damage = other.attack_damage_table[other.state_machine.cur_state.attack_name]
-            self.take_damage(damage)
+        if not other.state_machine.cur_state.is_attack:
+            return
+
+        # 공격 박스
+        left, bottom, right, top = other.get_attack_bb()
+
+        # 공격 박스가 없는 경우 처리!
+        if left == right or bottom == top:
+            return
+
+        # 충돌 박스
+        c_left, c_bottom, c_right, c_top = self.get_bb()
+
+        # 충돌 박스와 공격 박스가 겹치는지 확인
+        if left >= c_right or right <= c_left or bottom >= c_top or top <= c_bottom:
+            return  # 겹치지 않음
+
+        # 겹친다면 데미지 처리
+        attack_name = other.state_machine.cur_state.attack_name
+        damage = other.attack_damage_table[attack_name]
+        self.take_damage(damage)
 
     def take_damage(self, damage):
         # 이미 죽었으면 무시!

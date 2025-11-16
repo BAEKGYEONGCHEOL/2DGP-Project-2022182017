@@ -42,7 +42,7 @@ def create_character(index, x, y, player):
         character = UltimateArmorXCharacter(x, y, player)
 
     # 초기 상태 INTRO로 설정
-    character.state_machine.cur_state = character.INTRO
+    # character.state_machine.cur_state = character.INTRO
 
     return character
 
@@ -73,6 +73,9 @@ def init():
     game_world.add_object(player1, 1)
     game_world.add_object(player2, 1)
 
+    game_world.add_collision_pair('p1_attack:p2_body', player1, player2)
+    game_world.add_collision_pair('p2_attack:p1_body', player2, player1)
+
 
 def handle_events():
     events = get_events()
@@ -89,6 +92,7 @@ def handle_events():
 
 def update():
     game_world.update()
+    game_world.handle_collision()
 
 
 def draw():

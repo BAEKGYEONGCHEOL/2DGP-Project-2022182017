@@ -1102,13 +1102,11 @@ class Dash:
 # Hit 상태
 class Hit:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
-
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
         self.is_attack = False
         self.attack_name = None
 
@@ -1128,11 +1126,16 @@ class Hit:
             self.character.facing = -1
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['hit'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        # 한 번만 실행하기 위해 % 연산 제거
+        self.frame = (self.frame + len(self.character.frame['hit']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        if self.frame >= len(self.character.frame['hit']):
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        else:
+            self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['hit'][self.character.current_frame]
@@ -1142,13 +1145,11 @@ class Hit:
 # Defeat 상태
 class Defeat:
 
-    def __init__(self, character, max_frame, delay):
+    def __init__(self, character):
         self.character = character
         self.frame = 0
-        self.max_frame = max_frame
-        self.delay = delay      # 프레임 상태마다 다르게 구현
-        self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
-
+        self.TIME_PER_ACTION = 0.5
+        self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
         self.is_attack = False
         self.attack_name = None
 
@@ -1168,11 +1169,16 @@ class Defeat:
             self.character.facing = -1
 
     def do(self):
-        time = get_time()
-        if time - self.last_update_time >= self.delay:
-            self.frame = (self.frame + 1) % len(self.character.frame['defeat'])
-            self.last_update_time = time
-            self.character.current_frame = self.frame
+        # 한 번만 실행하기 위해 % 연산 제거
+        self.frame = (self.frame + len(self.character.frame['defeat']) * self.ACTION_PER_TIME * game_framework.frame_time)
+
+        if self.frame >= len(self.character.frame['defeat']):
+            if self.character.is_left_pressed or self.character.is_right_pressed:
+                self.character.state_machine.handle_state_event(('LAND_WALK', None))
+            else:
+                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+        else:
+            self.character.current_frame = int(self.frame)
 
     def draw(self):
         frame_data = self.character.frame['defeat'][self.character.current_frame]
@@ -1329,8 +1335,8 @@ class XCharacter(Character):
         self.BASE_BUSTER_ATTACK = BaseBusterAttack(self)
         self.POWER_ATTACK = PowerAttack(self)
         self.DASH = Dash(self, self.dash_speed)
-        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        self.HIT = Hit(self)
+        self.DEFEAT = Defeat(self)
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
@@ -1338,14 +1344,16 @@ class XCharacter(Character):
                 # INTRO 상태에서 해당 INTRO 프레임이 끝나는 이벤트(time_out)가 발생하면 IDLE 상태가 됨
                 self.INTRO: {time_out: self.IDLE},
                 # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_BUSTER_ATTACK, s_down: self.JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_BUSTER_ATTACK, s_down: self.JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
                 # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_BUSTER_ATTACK, s_down: self.WALK_JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH},
-                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.DASH: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_BUSTER_ATTACK, s_down: self.WALK_JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
+                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.DEFEAT: {},
             }
         )
 
@@ -1399,28 +1407,13 @@ class XCharacter(Character):
         return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
-        # 상대가 공격 상태인지 확인!
-        if not other.state_machine.cur_state.is_attack:
-            return
+        # 1P가 2P를 때리는 경우
+        if group == 'p1_attack:p2_body' and self.player == 2:
+            self.take_damage(other.get_attack_damage())
 
-        # 공격 박스
-        left, bottom, right, top = other.get_attack_bb()
-
-        # 공격 박스가 없는 경우 처리!
-        if left == right or bottom == top:
-            return
-
-        # 충돌 박스
-        c_left, c_bottom, c_right, c_top = self.get_bb()
-
-        # 충돌 박스와 공격 박스가 겹치는지 확인
-        if left >= c_right or right <= c_left or bottom >= c_top or top <= c_bottom:
-            return  # 겹치지 않음
-
-        # 겹친다면 데미지 처리
-        attack_name = other.state_machine.cur_state.attack_name
-        damage = other.attack_damage_table[attack_name]
-        self.take_damage(damage)
+        # 2P가 1P를 때리는 경우
+        if group == 'p2_attack:p1_body' and self.player == 1:
+            self.take_damage(other.get_attack_damage())
 
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
@@ -1552,6 +1545,38 @@ class ZeroCharacter(Character):
                 return 0, 0, 0, 0
         else:
             return 0, 0, 0, 0
+
+    def handle_collision(self, group, other):
+        # 1P가 2P를 때리는 경우
+        if group == 'p1_attack:p2_body' and self.player == 2:
+            self.take_damage(other.get_attack_damage())
+
+        # 2P가 1P를 때리는 경우
+        if group == 'p2_attack:p1_body' and self.player == 1:
+            self.take_damage(other.get_attack_damage())
+
+    def take_damage(self, damage):
+        # 이미 죽었으면 무시!
+        if self.hp <= 0:
+            return
+
+        # 체력 감소!
+        self.hp -= damage
+
+        # 체력 0 이하로 떨어지면 죽음 상태로 전환
+        if self.hp <= 0:
+            self.hp = 0
+
+            self.state_machine.handle_state_event(('DEFEAT', None))
+            return
+
+        # 아직 살아있으면 히트 상태로 전환
+        else:
+            self.state_machine.handle_state_event(('HIT', None))
+            return
+
+    def get_attack_damage(self):
+        return self.attack_damage_table.get(self.state_machine.cur_state, 0)
 
 
 # Sigma 캐릭터 클래스

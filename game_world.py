@@ -98,14 +98,15 @@ def handle_collision():
     for group, pairs in collision_pairs.items():
         for a in pairs[0]:  # a 리스트의 모든 객체에 대해서
             for b in pairs[1]:  # b 리스트의 모든 객체에 대해서
-                if collide(a, b):   # a와 b의 충돌 검사
-                    # 객체에게 충돌이 발생했음을 알려준다.
-                    # 객체 스스로가 충돌에 대한 처리를 하도록 한다.
-                    # group은 충돌 그룹의 이름을 알려준다.
-                    # 2번째 인자는 충돌한 상대 객체이다.
-                    a.handle_collision(group, b)
-                    b.handle_collision(group, a)
+                if 'attack' in group:   # 공격 판정 그룹이면
+                    if collide_attack(a, b):    # 공격 판정 충돌 검사
+                        a.handle_collision(group, b)
+                        b.handle_collision(group, a)
 
-                if collide_attack(a, b):    # 공격 판정 충돌 검사
-                    a.handle_collision(group, b)
-                    b.handle_collision(group, a)
+                # if collide(a, b):   # a와 b의 충돌 검사
+                #     # 객체에게 충돌이 발생했음을 알려준다.
+                #     # 객체 스스로가 충돌에 대한 처리를 하도록 한다.
+                #     # group은 충돌 그룹의 이름을 알려준다.
+                #     # 2번째 인자는 충돌한 상대 객체이다.
+                #     a.handle_collision(group, b)
+                #     b.handle_collision(group, a)

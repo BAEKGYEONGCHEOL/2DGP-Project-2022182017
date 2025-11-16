@@ -1378,6 +1378,30 @@ class ZeroCharacter(Character):
             }
         )
 
+    def draw(self):
+        if self.state_machine:
+            self.state_machine.draw()
+            draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+
+        if self.facing == 1:
+            if state == self.DASH:
+                return self.x - 60, self.y - 70, self.x + 70, self.y + 70
+            elif state == self.DASH_ATTACK:
+                return self.x - 75, self.y - 70, self.x + 60, self.y + 70
+            else:
+                return self.x - 55, self.y - 70, self.x + 55, self.y + 70
+        else:
+            if state == self.DASH:
+                return self.x - 70, self.y - 70, self.x + 60, self.y + 70
+            elif state == self.DASH_ATTACK:
+                return self.x - 60, self.y - 70, self.x + 75, self.y + 70
+            else:
+                return self.x - 55, self.y - 70, self.x + 55, self.y + 70
+
 
 # Sigma 캐릭터 클래스
 class SigmaCharacter(Character):
@@ -1446,6 +1470,30 @@ class SigmaCharacter(Character):
         buster = Wave(self.x + 50 * facing, self.y + 50, facing, 25)
 
         game_world.add_object(buster, 2)
+
+    def draw(self):
+        if self.state_machine:
+            self.state_machine.draw()
+            draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+
+        if self.facing == 1:
+            if state == self.WALK or state == self.DASH_ATTACK_WALL:
+                return self.x - 100, self.y - 75, self.x + 105, self.y + 85
+            elif state == self.ARM_ATTACK or state == self.WAVE_ATTACK:
+                return self.x - 65, self.y - 120, self.x + 75, self.y + 120
+            else:
+                return self.x - 65, self.y - 120, self.x + 60, self.y + 120
+        else:
+            if state == self.WALK or state == self.DASH_ATTACK_WALL:
+                return self.x - 105, self.y - 75, self.x + 100, self.y + 85
+            elif state == self.ARM_ATTACK or state == self.WAVE_ATTACK:
+                return self.x - 75, self.y - 120, self.x + 65, self.y + 120
+            else:
+                return self.x - 60, self.y - 120, self.x + 65, self.y + 120
 
 
 

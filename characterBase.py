@@ -512,6 +512,8 @@ class ArmAttack:
         self.frame = 0
         self.TIME_PER_ACTION = 0.4
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+        self.is_attack = True
+        self.attack_name = 'arm_attack'
 
     def enter(self, e):
         self.character.action_doing = True
@@ -554,6 +556,8 @@ class DashAttack:
         self.speed = speed
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+        self.is_attack = True
+        self.attack_name = 'dash_attack'
 
     def enter(self, e):
         self.character.action_doing = True
@@ -607,6 +611,8 @@ class DashAttackWall:
         self.prepare_frame_count = prepare_frame_count
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+        self.is_attack = True
+        self.attack_name = 'dash_attack_wall'
 
     def enter(self, e):
         self.character.action_doing = True
@@ -869,6 +875,8 @@ class AmbientWaveAttack:
         self.frame = 0
         self.TIME_PER_ACTION = 1.15
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+        self.is_attack = True
+        self.attack_name = 'ambient_wave_attack'
 
     def enter(self, e):
         self.character.action_doing = True
@@ -911,6 +919,8 @@ class BaseSwordAttack:
         self.frame = 0
         self.TIME_PER_ACTION = 0.7
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+        self.is_attack = True
+        self.attack_name = 'base_sword_attack'
 
     def enter(self, e):
         self.character.action_doing = True
@@ -1340,15 +1350,31 @@ class XCharacter(Character):
         return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
-        # 상대 공격 박스 가져오기
-        left, bottom, right, top = other.get_attack_bb()
+        # 상대가 공격 상태인지 확인!
+        if other.state_machine.cur_state.is_attack:
+            damage = other.attack_damage_table[other.state_machine.cur_state.attack_name]
+            self.take_damage(damage)
 
-        # 공격 박스 없는 프레임은 무시
-        if left == right and bottom == top:
+    def take_damage(self, damage):
+        # 이미 죽었으면 무시!
+        if self.hp <= 0:
             return
 
-        # 피격 처리
-        self.take_damamge(other.attack_sword_damage)
+        # 체력 감소!
+        self.hp -= damage
+
+        # 체력 0 이하로 떨어지면 죽음 상태로 전환
+        if self.hp <= 0:
+            self.hp = 0
+
+            self.state_machine.handle_state_event(('DEFEAT', None))
+            return
+
+        # 아직 살아있으면 히트 상태로 전환
+        else:
+            self.state_machine.handle_state_event(('HIT', None))
+            return
+
 
 
 # Zero 캐릭터 클래스

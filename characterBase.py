@@ -1547,6 +1547,34 @@ class VileCharacter(Character):
             }
         )
 
+    def draw(self):
+        if self.state_machine:
+            self.state_machine.draw()
+            draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+
+        if self.facing == 1:
+            if state == self.WALK:
+                return self.x - 90, self.y - 75, self.x + 95, self.y + 80
+            elif state == self.BASE_SWORD_ATTACK:
+                return self.x - 70, self.y - 100, self.x + 75, self.y + 100
+            elif state == self.DASH_ATTACK:
+                return self.x - 80, self.y - 100, self.x + 85, self.y + 100
+            else:
+                return self.x - 60, self.y - 100, self.x + 60, self.y + 100
+        else:
+            if state == self.WALK:
+                return self.x - 95, self.y - 75, self.x + 90, self.y + 80
+            elif state == self.BASE_SWORD_ATTACK:
+                return self.x - 85, self.y - 100, self.x + 80, self.y + 100
+            elif state == self.DASH_ATTACK:
+                return self.x - 70, self.y - 100, self.x + 75, self.y + 100
+            else:
+                return self.x - 60, self.y - 100, self.x + 60, self.y + 100
+
     # 프레임 그리기 함수(오버라이드!)
     def draw_frame(self, frame_data):
         x_data, y_data, w_data, h_data = frame_data

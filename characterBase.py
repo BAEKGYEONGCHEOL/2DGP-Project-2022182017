@@ -1568,6 +1568,7 @@ class ZeroCharacter(Character):
 
         # 체력 감소!
         self.hp -= damage
+        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
 
         # 체력 0 이하로 떨어지면 죽음 상태로 전환
         if self.hp <= 0:
@@ -1618,20 +1619,22 @@ class SigmaCharacter(Character):
         self.SPHERE_ATTACK = SphereAttack(self)
         self.WAVE_ATTACK = WaveAttack(self)
         self.DASH_ATTACK_WALL = DashAttackWall(self, self.dash_speed, 3)
-        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        self.HIT = Hit(self)
+        self.DEFEAT = Defeat(self)
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK},
-                self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.DEFEAT: {},
             }
         )
 
@@ -1710,6 +1713,39 @@ class SigmaCharacter(Character):
                 return 0, 0, 0, 0
         else:
             return 0, 0, 0, 0
+
+    def handle_collision(self, group, other):
+        # 1P가 2P를 때리는 경우
+        if group == 'p1_attack:p2_body' and self.player == 2:
+            self.take_damage(other.get_attack_damage())
+
+        # 2P가 1P를 때리는 경우
+        if group == 'p2_attack:p1_body' and self.player == 1:
+            self.take_damage(other.get_attack_damage())
+
+    def take_damage(self, damage):
+        # 이미 죽었으면 무시!
+        if self.hp <= 0:
+            return
+
+        # 체력 감소!
+        self.hp -= damage
+        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
+
+        # 체력 0 이하로 떨어지면 죽음 상태로 전환
+        if self.hp <= 0:
+            self.hp = 0
+
+            self.state_machine.handle_state_event(('DEFEAT', None))
+            return
+
+        # 아직 살아있으면 히트 상태로 전환
+        else:
+            self.state_machine.handle_state_event(('HIT', None))
+            return
+
+    def get_attack_damage(self):
+        return self.attack_damage_table.get(self.state_machine.cur_state, 0)
 
 
 # Vile 캐릭터 클래스

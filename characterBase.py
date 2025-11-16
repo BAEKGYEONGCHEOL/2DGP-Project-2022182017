@@ -101,6 +101,9 @@ class Intro:
         self.TIME_PER_ACTION = 1.25
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
+        self.is_attack = False
+        self.attack_name = None
+
     def enter(self, e):
         self.character.action_doing = True
         self.frame = 0
@@ -132,6 +135,9 @@ class Idle:
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
+        self.is_attack = False
+        self.attack_name = None
+
     def enter(self, e):
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
@@ -158,6 +164,9 @@ class Walk:
         self.prepare_frame_count = prepare_frame_count
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+
+        self.is_attack = False
+        self.attack_name = None
 
     def enter(self, e):
         self.frame = 0
@@ -227,6 +236,9 @@ class Jump:
         self.TIME_PER_ACTION = 0.8  # 전체 점프 중 프레임 재생 시간
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
         self.total_frames = 0.0  # 시간 기반으로 0~1 진행률 계산용
+
+        self.is_attack = False
+        self.attack_name = None
 
     def enter(self, e):
         self.character.action_doing = True
@@ -341,6 +353,9 @@ class WalkJump:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
         self.total_frames = 0.0  # 시간 기반으로 0~1 진행률 계산용
 
+        self.is_attack = False
+        self.attack_name = None
+
     def enter(self, e):
         self.character.action_doing = True
         self.character.facing_lock = True
@@ -440,6 +455,9 @@ class Teleport:
         self.teleport_distance = 400    # 순간이동 거리
         self.teleport_done = False      # 실제 순간이동 발생 여부 변수!
         self.is_visible = True          # 사라짐 여부!
+
+        self.is_attack = False
+        self.attack_name = None
 
     def enter(self, e):
         self.character.action_doing = True
@@ -686,6 +704,9 @@ class PowerAttack:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
         self.fired = False
 
+        self.is_attack = False
+        self.attack_name = None
+
     def enter(self, e):
         self.character.action_doing = True
         self.character.facing_lock = True
@@ -735,6 +756,9 @@ class SphereAttack:
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
         self.fired = False
+
+        self.is_attack = False
+        self.attack_name = None
 
     def enter(self, e):
         self.character.action_doing = True
@@ -786,6 +810,9 @@ class WaveAttack:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
         self.fired = False
 
+        self.is_attack = False
+        self.attack_name = None
+
     def enter(self, e):
         self.character.action_doing = True
         self.character.facing_lock = True
@@ -834,6 +861,9 @@ class ReflexAttack:
         self.frame = 0
         self.TIME_PER_ACTION = 0.2
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+
+        self.is_attack = False
+        self.attack_name = None
 
     def enter(self, e):
         self.character.action_doing = True
@@ -971,6 +1001,9 @@ class BaseBusterAttack:
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
         self.fired = False  # Buster 발사 여부 변수
 
+        self.is_attack = False
+        self.attack_name = None
+
     def enter(self, e):
         self.character.action_doing = True
         self.character.facing_lock = True
@@ -1019,6 +1052,9 @@ class Dash:
         self.speed = speed
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
+
+        self.is_attack = False
+        self.attack_name = None
 
     def enter(self, e):
         self.character.action_doing = True
@@ -1073,6 +1109,9 @@ class Hit:
         self.delay = delay      # 프레임 상태마다 다르게 구현
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
 
+        self.is_attack = False
+        self.attack_name = None
+
     def enter(self, e):
         self.character.action_doing = True
         self.character.facing_lock = True
@@ -1109,6 +1148,9 @@ class Defeat:
         self.max_frame = max_frame
         self.delay = delay      # 프레임 상태마다 다르게 구현
         self.last_update_time = get_time()  # 마지막 업데이트 시간(현재 시간에서 마지막 시간을 빼서 딜레이 보다 크면 다음 프레임으로!)
+
+        self.is_attack = False
+        self.attack_name = None
 
     def enter(self, e):
         self.character.action_doing = True

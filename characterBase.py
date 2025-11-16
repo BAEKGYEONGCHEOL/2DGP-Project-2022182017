@@ -1472,20 +1472,22 @@ class ZeroCharacter(Character):
         self.BASE_SWORD_ATTACK = BaseSwordAttack(self)
         self.DASH_ATTACK = DashAttack(self, self.dash_speed)
         self.DASH = Dash(self, self.dash_speed)
-        # self.HIT = Hit(self, len(self.frame['hit']), self.delay['hit'])
-        # self.DEFEAT = Defeat(self, len(self.frame['defeat']), self.delay['defeat'])
+        self.HIT = Hit(self)
+        self.DEFEAT = Defeat(self)
 
         self.state_machine = StateMachine(
             self.IDLE,  # 시작 상태는 IDLE 상태
             {
                 self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK},
-                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK},
-                self.DASH: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK},
+                self.DEFEAT: {},
             }
         )
 

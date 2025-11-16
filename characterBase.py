@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time
+from pico2d import load_image, get_time, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, SDLK_r, SDLK_t, SDLK_c
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
@@ -1308,6 +1308,26 @@ class XCharacter(Character):
 
         game_world.add_object(buster, 2)
 
+    def draw(self):
+        if self.state_machine:
+            self.state_machine.draw()
+            draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+
+        if self.facing == 1:
+            if state == self.DASH:
+                return self.x - 60, self.y - 70, self.x + 70, self.y + 70
+            else:
+                return self.x - 50, self.y - 70, self.x + 50, self.y + 70
+        else:
+            if state == self.DASH:
+                return self.x - 70, self.y - 70, self.x + 60, self.y + 70
+            else:
+                return self.x - 50, self.y - 70, self.x + 50, self.y + 70
+
 
 # Zero 캐릭터 클래스
 class ZeroCharacter(Character):
@@ -1426,6 +1446,7 @@ class SigmaCharacter(Character):
         buster = Wave(self.x + 50 * facing, self.y + 50, facing, 25)
 
         game_world.add_object(buster, 2)
+
 
 
 # Vile 캐릭터 클래스

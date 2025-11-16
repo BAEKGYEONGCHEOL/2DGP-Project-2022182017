@@ -1382,6 +1382,7 @@ class ZeroCharacter(Character):
         if self.state_machine:
             self.state_machine.draw()
             draw_rectangle(*self.get_bb())
+            draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -1401,6 +1402,31 @@ class ZeroCharacter(Character):
                 return self.x - 60, self.y - 70, self.x + 75, self.y + 70
             else:
                 return self.x - 55, self.y - 70, self.x + 55, self.y + 70
+
+    def get_attack_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+        # 현재 프레임 불러오기
+        frame = self.current_frame
+
+        if state == self.BASE_SWORD_ATTACK:
+            if frame >= 3 and frame <= 6:
+                if self.facing == 1:
+                    return self.x - 40, self.y - 70, self.x + 140, self.y + 90
+                else:
+                    return self.x - 140, self.y - 70, self.x + 40, self.y + 90
+            else:
+                return 0, 0, 0, 0
+        elif state == self.DASH_ATTACK:
+            if frame >= 3 and frame <= 4:
+                if self.facing == 1:
+                    return self.x - 40, self.y - 70, self.x + 150, self.y + 80
+                else:
+                    return self.x - 150, self.y - 70, self.x + 40, self.y + 80
+            else:
+                return 0, 0, 0, 0
+        else:
+            return 0, 0, 0, 0
 
 
 # Sigma 캐릭터 클래스

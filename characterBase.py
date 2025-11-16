@@ -1676,6 +1676,26 @@ class UltimateArmorXCharacter(Character):
 
         game_world.add_object(buster, 2)
 
+    def draw(self):
+        if self.state_machine:
+            self.state_machine.draw()
+            draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        # 현재 상태 불러오기
+        state = self.state_machine.cur_state
+
+        if self.facing == 1:
+            if state == self.DASH_ATTACK_WALL:
+                return self.x - 60, self.y - 85, self.x + 100, self.y + 85
+            else:
+                return self.x - 50, self.y - 70, self.x + 50, self.y + 70
+        else:
+            if state == self.DASH_ATTACK_WALL:
+                return self.x - 100, self.y - 85, self.x + 60, self.y + 85
+            else:
+                return self.x - 50, self.y - 70, self.x + 50, self.y + 70
+
     # 프레임 그리기 함수(오버라이드!)
     def draw_frame(self, frame_data):
         x_data, y_data, w_data, h_data = frame_data

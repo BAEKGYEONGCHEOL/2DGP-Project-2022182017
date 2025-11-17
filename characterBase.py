@@ -1372,6 +1372,13 @@ class XCharacter(Character):
         facing = self.facing
 
         buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, 15)
+        game_world.add_object(buster, 2)
+
+        # 충돌 그룹으로 등록(플레이어에 따라서!)
+        if self.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', buster, None)
 
         game_world.add_object(buster, 2)
 
@@ -1381,6 +1388,13 @@ class XCharacter(Character):
         facing = self.facing
 
         buster = PowerBuster(self.x + 50 * facing, self.y + 20, facing, 25)
+        game_world.add_object(buster, 2)
+
+        # 충돌 그룹으로 등록(플레이어에 따라서!)
+        if self.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', buster, None)
 
         game_world.add_object(buster, 2)
 
@@ -1663,6 +1677,13 @@ class SigmaCharacter(Character):
         facing = self.facing
 
         buster = Sphere(self.x + 50 * facing, self.y + 25, facing, 15)
+        game_world.add_object(buster, 2)
+
+        # 충돌 그룹으로 등록(플레이어에 따라서!)
+        if self.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', buster, None)
 
         game_world.add_object(buster, 2)
 
@@ -1672,6 +1693,13 @@ class SigmaCharacter(Character):
         facing = self.facing
 
         buster = Wave(self.x + 50 * facing, self.y + 50, facing, 25)
+        game_world.add_object(buster, 2)
+
+        # 충돌 그룹으로 등록(플레이어에 따라서!)
+        if self.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', buster, None)
 
         game_world.add_object(buster, 2)
 
@@ -2055,6 +2083,13 @@ class UltimateArmorXCharacter(Character):
         facing = self.facing
 
         buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, 25)
+        game_world.add_object(buster, 2)
+
+        # 충돌 그룹으로 등록(플레이어에 따라서!)
+        if self.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', buster, None)
 
         game_world.add_object(buster, 2)
 
@@ -2064,6 +2099,13 @@ class UltimateArmorXCharacter(Character):
         facing = self.facing
 
         buster = PowerBuster(self.x + 50 * facing, self.y + 25, facing, 40)
+        game_world.add_object(buster, 2)
+
+        # 충돌 그룹으로 등록(플레이어에 따라서!)
+        if self.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', buster, None)
 
         game_world.add_object(buster, 2)
 

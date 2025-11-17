@@ -1287,26 +1287,52 @@ class Character:
         if self.state_machine:
             self.state_machine.handle_state_event(('INPUT', event))
 
-        # 좌/우 방향키 상태 업데이트
-        if event.type == SDL_KEYDOWN:
-            if event.key == SDLK_LEFT:
-                self.is_left_pressed = True
-            elif event.key == SDLK_RIGHT:
-                self.is_right_pressed = True
+        # 플레이어 1과 2에 따라 키 매핑 다르게 처리!
+        # 플레이어 1 키 매핑
+        if self.player == 1:
+            # 좌/우 방향키 상태 업데이트
+            if event.type == SDL_KEYDOWN:
+                if event.key == SDLK_LEFT:
+                    self.is_left_pressed = True
+                elif event.key == SDLK_RIGHT:
+                    self.is_right_pressed = True
 
-        elif event.type == SDL_KEYUP:
-            if event.key == SDLK_LEFT:
-                self.is_left_pressed = False
-            elif event.key == SDLK_RIGHT:
-                self.is_right_pressed = False
+            elif event.type == SDL_KEYUP:
+                if event.key == SDLK_LEFT:
+                    self.is_left_pressed = False
+                elif event.key == SDLK_RIGHT:
+                    self.is_right_pressed = False
 
-        # t 키 상태 업데이트
-        if event.type == SDL_KEYDOWN:
-            if event.key == SDLK_t:
-                self.is_t_pressed = True
-        elif event.type == SDL_KEYUP:
-            if event.key == SDLK_t:
-                self.is_t_pressed = False
+            # t 키 상태 업데이트
+            if event.type == SDL_KEYDOWN:
+                if event.key == SDLK_t:
+                    self.is_t_pressed = True
+            elif event.type == SDL_KEYUP:
+                if event.key == SDLK_t:
+                    self.is_t_pressed = False
+
+        # 플레이어 2 키 매핑
+        else:
+            # 좌/우 방향키 상태 업데이트
+            if event.type == SDL_KEYDOWN:
+                if event.key == SDLK_KP_4:
+                    self.is_left_pressed = True
+                elif event.key == SDLK_KP_6:
+                    self.is_right_pressed = True
+
+            elif event.type == SDL_KEYUP:
+                if event.key == SDLK_KP_4:
+                    self.is_left_pressed = False
+                elif event.key == SDLK_KP_6:
+                    self.is_right_pressed = False
+
+            # t 키 상태 업데이트
+            if event.type == SDL_KEYDOWN:
+                if event.key == SDLK_LEFTBRACKET:
+                    self.is_t_pressed = True
+            elif event.type == SDL_KEYUP:
+                if event.key == SDLK_LEFTBRACKET:
+                    self.is_t_pressed = False
 
         # 키가 떼인 후에도 반대 방향키가 눌려 있으면 즉시 방향 갱신!
         if self.facing_lock == False:

@@ -1,5 +1,7 @@
 from pico2d import load_image, get_time, draw_rectangle
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, SDLK_r, SDLK_t, SDLK_c
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, \
+    SDLK_r, SDLK_t, SDLK_c, SDLK_KP_4, SDLK_KP_6, SDLK_j, SDLK_k, SDLK_l, SDLK_SEMICOLON, SDLK_QUOTE, SDLK_SLASH, \
+    SDLK_o, SDLK_p, SDLK_LEFTBRACKET, SDLK_PERIOD
 from spriteSheet import mmx_x4_x_sheet, zerox4sheet, x5sigma4, Dynamox56sheet, ultimate_armor_x
 import game_framework
 import game_world
@@ -16,6 +18,13 @@ def land_walk(e):
 def land_idle(e):
     return e[0] == 'LAND_IDLE'
 
+def hit(e):
+    return e[0] == 'HIT'
+
+def defeat(e):
+    return e[0] == 'DEFEAT'
+
+# player 1
 def left_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
 
@@ -61,11 +70,51 @@ def t_up(e):
 def c_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_c
 
-def hit(e):
-    return e[0] == 'HIT'
+# player 2
+def four_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_KP_4
 
-def defeat(e):
-    return e[0] == 'DEFEAT'
+def six_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_KP_6
+
+def four_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_KP_4
+
+def six_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_KP_6
+
+def j_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_j
+
+def k_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_k
+
+def l_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_l
+
+def semicolon_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SEMICOLON
+
+def quote_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_QUOTE
+
+def slash_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SLASH
+
+def o_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_o
+
+def p_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_p
+
+def leftBracket_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFTBRACKET
+
+def leftBracket_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFTBRACKET
+
+def period_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_PERIOD
 
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel == 30 cm
@@ -1341,24 +1390,44 @@ class XCharacter(Character):
         self.HIT = Hit(self)
         self.DEFEAT = Defeat(self)
 
-        self.state_machine = StateMachine(
-            self.IDLE,  # 시작 상태는 IDLE 상태
-            {
-                # INTRO 상태에서 해당 INTRO 프레임이 끝나는 이벤트(time_out)가 발생하면 IDLE 상태가 됨
-                self.INTRO: {time_out: self.IDLE},
-                # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_BUSTER_ATTACK, s_down: self.JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
-                # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_BUSTER_ATTACK, s_down: self.WALK_JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
-                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
-                self.DEFEAT: {},
-            }
-        )
+        if player == 1:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    # INTRO 상태에서 해당 INTRO 프레임이 끝나는 이벤트(time_out)가 발생하면 IDLE 상태가 됨
+                    self.INTRO: {time_out: self.IDLE},
+                    # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_BUSTER_ATTACK, s_down: self.JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
+                    # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_BUSTER_ATTACK, s_down: self.WALK_JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
+                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
+        else:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    # INTRO 상태에서 해당 INTRO 프레임이 끝나는 이벤트(time_out)가 발생하면 IDLE 상태가 됨
+                    self.INTRO: {time_out: self.IDLE},
+                    # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_BUSTER_ATTACK, s_down: self.JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
+                    # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_BUSTER_ATTACK, s_down: self.WALK_JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
+                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
 
         # 공격 데미지
         self.attack_damage_table = {
@@ -1511,21 +1580,38 @@ class ZeroCharacter(Character):
         self.HIT = Hit(self)
         self.DEFEAT = Defeat(self)
 
-        self.state_machine = StateMachine(
-            self.IDLE,  # 시작 상태는 IDLE 상태
-            {
-                self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
-                self.DEFEAT: {},
-            }
-        )
+        if player == 1:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    self.INTRO: {time_out: self.IDLE},
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
+        else:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    self.INTRO: {time_out: self.IDLE},
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
 
         # 공격 데미지
         self.attack_damage_table = {
@@ -1667,21 +1753,38 @@ class SigmaCharacter(Character):
         self.HIT = Hit(self)
         self.DEFEAT = Defeat(self)
 
-        self.state_machine = StateMachine(
-            self.IDLE,  # 시작 상태는 IDLE 상태
-            {
-                self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
-                self.DEFEAT: {},
-            }
-        )
+        if player == 1:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    self.INTRO: {time_out: self.IDLE},
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
+        else:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    self.INTRO: {time_out: self.IDLE},
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
 
         # 공격 데미지
         self.attack_damage_table = {
@@ -1890,21 +1993,38 @@ class VileCharacter(Character):
         self.HIT = Hit(self)
         self.DEFEAT = Defeat(self)
 
-        self.state_machine = StateMachine(
-            self.IDLE,  # 시작 상태는 IDLE 상태
-            {
-                self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK, c_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK, c_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.AMBIENT_WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
-                self.DEFEAT: {},
-            }
-        )
+        if self.player == 1:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    self.INTRO: {time_out: self.IDLE},
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK, c_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK, c_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.AMBIENT_WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
+        else:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    self.INTRO: {time_out: self.IDLE},
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK, c_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK, c_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.AMBIENT_WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
 
         # 공격 데미지
         self.attack_damage_table = {
@@ -2105,22 +2225,40 @@ class UltimateArmorXCharacter(Character):
         self.HIT = Hit(self)
         self.DEFEAT = Defeat(self)
 
-        self.state_machine = StateMachine(
-            self.IDLE,  # 시작 상태는 IDLE 상태
-            {
-                self.INTRO: {time_out: self.IDLE},
-                self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
-                self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
-                self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
-                self.DEFEAT: {},
-            }
-        )
+        if player == 1:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    self.INTRO: {time_out: self.IDLE},
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
+                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
+        else:
+            self.state_machine = StateMachine(
+                self.IDLE,  # 시작 상태는 IDLE 상태
+                {
+                    self.INTRO: {time_out: self.IDLE},
+                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
+                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    self.DEFEAT: {},
+                }
+            )
 
         # 공격 데미지
         self.attack_damage_table = {

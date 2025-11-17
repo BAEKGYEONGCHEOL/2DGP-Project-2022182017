@@ -79,6 +79,9 @@ def init():
     game_world.add_collision_pair('p1_wave:p2_body', None, player2)
     game_world.add_collision_pair('p2_wave:p1_body', None, player1)
 
+    game_world.add_collision_pair('p1_reflect:p2_wave', player1, None)
+    game_world.add_collision_pair('p2_reflect:p1_wave', player2, None)
+
 
 def handle_events():
     events = get_events()

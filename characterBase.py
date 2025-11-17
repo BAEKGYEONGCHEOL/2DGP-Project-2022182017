@@ -1423,6 +1423,10 @@ class XCharacter(Character):
         if self.hp <= 0:
             return
 
+        # hit 상태일 때는 무시!(중복 hit 방지)
+        if self.is_hitted:
+            return
+
         # 체력 감소!
         self.hp -= damage
         print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
@@ -1567,6 +1571,10 @@ class ZeroCharacter(Character):
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
         if self.hp <= 0:
+            return
+
+        # hit 상태일 때는 무시!(중복 hit 방지)
+        if self.is_hitted:
             return
 
         # 체력 감소!
@@ -1729,6 +1737,10 @@ class SigmaCharacter(Character):
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
         if self.hp <= 0:
+            return
+
+        # hit 상태일 때는 무시!(중복 hit 방지)
+        if self.is_hitted:
             return
 
         # 체력 감소!
@@ -1919,6 +1931,10 @@ class VileCharacter(Character):
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
         if self.hp <= 0:
+            return
+
+        # hit 상태일 때는 무시!(중복 hit 방지)
+        if self.is_hitted:
             return
 
         # 체력 감소!
@@ -2113,6 +2129,10 @@ class UltimateArmorXCharacter(Character):
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
         if self.hp <= 0:
+            return
+
+        # hit 상태일 때는 무시!(중복 hit 방지)
+        if self.is_hitted:
             return
 
         # 체력 감소!

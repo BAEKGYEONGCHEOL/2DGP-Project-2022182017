@@ -1979,6 +1979,14 @@ class VileCharacter(Character):
             return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
+        # 투사체가 반사 박스와 충돌 처리!
+        if group == 'p1_wave:reflect_box' and self.player == 1:
+            other.reflect(self)
+            return
+        if group == 'p2_wave:reflect_box' and self.player == 2:
+            other.reflect(self)
+            return
+
         # 투사체 충돌 처리!
         if group == 'p1_wave:p2_body' and self.player == 2:
             self.take_damage(other.get_attack_damage())

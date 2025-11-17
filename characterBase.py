@@ -140,6 +140,11 @@ DASH_SPEED_MPM = (DASH_SPEED_KMPH * 1000.0 / 60.0)
 DASH_SPEED_MPS = (DASH_SPEED_MPM / 60.0)
 DASH_SPEED_PPS = (DASH_SPEED_MPS * PIXEL_PER_METER)
 
+HITTED_SPEED_KMPH = 60.0
+HITTED_SPEED_MPM = (HITTED_SPEED_KMPH * 1000.0 / 60.0)
+HITTED_SPEED_MPS = (HITTED_SPEED_MPM / 60.0)
+HITTED_SPEED_PPS = (HITTED_SPEED_MPS * PIXEL_PER_METER)
+
 
 # Intro 상태
 class Intro:
@@ -1159,12 +1164,15 @@ class Hit:
         self.is_attack = False
         self.attack_name = None
 
+        self.speed_down_rate = 1
+
     def enter(self, e):
         self.character.action_doing = True
         self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
         self.character.is_hitted = True
+        self.speed_down_rate = 1
 
     def exit(self, e):
         self.character.action_doing = False
@@ -1187,6 +1195,17 @@ class Hit:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        # facing 방향으로 이동! -> 점점 속도 감소
+        self.character.x += (self.character.facing * -1) * game_framework.frame_time * HITTED_SPEED_PPS * self.speed_down_rate
+        if self.speed_down_rate > 0:
+            self.speed_down_rate *= 0.99
+
+        # 화면 밖으로 나가지 않도록 제한!
+        if self.character.x < 50:
+            self.character.x = 50
+        elif self.character.x > 1544:
+            self.character.x = 1544
 
     def draw(self):
         frame_data = self.character.frame['hit'][self.character.current_frame]

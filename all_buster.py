@@ -56,6 +56,9 @@ class NormalBuster:
         else:
             return self.x - 60, self.y - 30, self.x + 30, self.y + 30
 
+    def get_attack_damage(self):
+        return self.thrower.get_wave_damage(type(self))
+
 
     # def handle_collision(self, group, other):
     #     # group이 소년과 볼 사이의 충돌이라면
@@ -126,6 +129,9 @@ class PowerBuster:
         else:
             return self.x - 75, self.y - 40, self.x + 45, self.y + 40
 
+    def get_attack_damage(self):
+        return self.thrower.get_wave_damage(type(self))
+
     # def handle_collision(self, group, other):
     #     # group이 소년과 볼 사이의 충돌이라면
     #     if group == 'boy:ball':
@@ -193,6 +199,9 @@ class Sphere:
             return self.x - 35, self.y - 35, self.x + 35, self.y + 35
         else:
             return self.x - 35, self.y - 35, self.x + 35, self.y + 35
+
+    def get_attack_damage(self):
+        return self.thrower.get_wave_damage(type(self))
 
     # def handle_collision(self, group, other):
     #     # group이 소년과 볼 사이의 충돌이라면
@@ -262,6 +271,9 @@ class Wave:
             return self.x - 50, self.y - 160, self.x + 80, self.y + 160
         else:
             return self.x - 80, self.y - 160, self.x + 50, self.y + 160
+
+    def get_attack_damage(self):
+        return self.thrower.get_wave_damage(type(self))
 
     # def handle_collision(self, group, other):
     #     # group이 소년과 볼 사이의 충돌이라면

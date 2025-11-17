@@ -1377,7 +1377,7 @@ class XCharacter(Character):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
-        buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, 15)
+        buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, self, 15)
         game_world.add_object(buster, 2)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
@@ -1385,15 +1385,13 @@ class XCharacter(Character):
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
-
-        game_world.add_object(buster, 2)
 
     # power buster 발사 함수
     def fire_power_buster(self):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
-        buster = PowerBuster(self.x + 50 * facing, self.y + 20, facing, 25)
+        buster = PowerBuster(self.x + 50 * facing, self.y + 20, facing, self, 25)
         game_world.add_object(buster, 2)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
@@ -1401,8 +1399,6 @@ class XCharacter(Character):
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
-
-        game_world.add_object(buster, 2)
 
     def draw(self):
         if self.state_machine:
@@ -1466,6 +1462,8 @@ class XCharacter(Character):
     def get_attack_damage(self):
         return self.attack_damage_table.get(self.state_machine.cur_state, 0)
 
+    def get_wave_damage(self, wave_type):
+        return self.wave_damage_table.get(wave_type, 0)
 
 
 # Zero 캐릭터 클래스
@@ -1686,7 +1684,7 @@ class SigmaCharacter(Character):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
-        buster = Sphere(self.x + 50 * facing, self.y + 25, facing, 15)
+        buster = Sphere(self.x + 50 * facing, self.y + 25, facing, self, 15)
         game_world.add_object(buster, 2)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
@@ -1694,15 +1692,13 @@ class SigmaCharacter(Character):
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
-
-        game_world.add_object(buster, 2)
 
     # wave 발사 함수
     def fire_wave(self):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
-        buster = Wave(self.x + 50 * facing, self.y + 50, facing, 25)
+        buster = Wave(self.x + 50 * facing, self.y + 50, facing, self, 25)
         game_world.add_object(buster, 2)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
@@ -1710,8 +1706,6 @@ class SigmaCharacter(Character):
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
-
-        game_world.add_object(buster, 2)
 
     def draw(self):
         if self.state_machine:
@@ -1799,6 +1793,9 @@ class SigmaCharacter(Character):
 
     def get_attack_damage(self):
         return self.attack_damage_table.get(self.state_machine.cur_state, 0)
+
+    def get_wave_damage(self, wave_type):
+        return self.wave_damage_table.get(wave_type, 0)
 
     # 프레임 그리기 함수(오버라이드!)
     def draw_frame(self, frame_data):

@@ -1910,6 +1910,7 @@ class VileCharacter(Character):
             self.state_machine.draw()
             draw_rectangle(*self.get_bb())
             draw_rectangle(*self.get_attack_bb())
+            draw_rectangle(*self.get_reflect_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -1948,11 +1949,6 @@ class VileCharacter(Character):
                     return self.x - 140, self.y - 100, self.x + 150, self.y + 120
             else:
                 return 0, 0, 0, 0
-        # elif state == self.REFLEX_ATTACK:
-        #     if self.facing == 1:
-        #         return self.x - 0, self.y - 110, self.x + 110, self.y + 120
-        #     else:
-        #         return self.x - 110, self.y - 110, self.x + 0, self.y + 120
         elif state == self.DASH_ATTACK:
             if frame == 8:
                 if self.facing == 1:

@@ -1948,11 +1948,11 @@ class VileCharacter(Character):
                     return self.x - 140, self.y - 100, self.x + 150, self.y + 120
             else:
                 return 0, 0, 0, 0
-        elif state == self.REFLEX_ATTACK:
-            if self.facing == 1:
-                return self.x - 0, self.y - 110, self.x + 110, self.y + 120
-            else:
-                return self.x - 110, self.y - 110, self.x + 0, self.y + 120
+        # elif state == self.REFLEX_ATTACK:
+        #     if self.facing == 1:
+        #         return self.x - 0, self.y - 110, self.x + 110, self.y + 120
+        #     else:
+        #         return self.x - 110, self.y - 110, self.x + 0, self.y + 120
         elif state == self.DASH_ATTACK:
             if frame == 8:
                 if self.facing == 1:
@@ -1969,6 +1969,16 @@ class VileCharacter(Character):
                     return 0, self.y - 100, 1593, self.y + 25
             else:
                 return 0, 0, 0, 0
+        else:
+            return 0, 0, 0, 0
+
+    # 반사 행동 시 박스 생성!
+    def get_reflect_bb(self):
+        if self.state_machine.cur_state == self.REFLEX_ATTACK:
+            if self.facing == 1:
+                return self.x - 0, self.y - 110, self.x + 110, self.y + 120
+            else:
+                return self.x - 110, self.y - 110, self.x + 0, self.y + 120
         else:
             return 0, 0, 0, 0
 

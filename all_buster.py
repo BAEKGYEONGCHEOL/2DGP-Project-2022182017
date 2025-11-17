@@ -63,6 +63,15 @@ class NormalBuster:
         # 투사체는 충돌 시 사라지도록 삭제!
         game_world.remove_object(self)
 
+    def reflect(self, other_thrower):
+        self.facing *= -1
+        self.thrower = other_thrower
+
+        if other_thrower.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', self, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', self, None)
+
 class PowerBuster:
     image = None
 
@@ -119,6 +128,15 @@ class PowerBuster:
     def handle_collision(self, group, other):
         # 투사체는 충돌 시 사라지도록 삭제!
         game_world.remove_object(self)
+
+    def reflect(self, other_thrower):
+        self.facing *= -1
+        self.thrower = other_thrower
+
+        if other_thrower.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', self, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', self, None)
 
 class Sphere:
     image = None
@@ -177,6 +195,15 @@ class Sphere:
         # 투사체는 충돌 시 사라지도록 삭제!
         game_world.remove_object(self)
 
+    def reflect(self, other_thrower):
+        self.facing *= -1
+        self.thrower = other_thrower
+
+        if other_thrower.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', self, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', self, None)
+
 
 class Wave:
     image = None
@@ -234,3 +261,12 @@ class Wave:
     def handle_collision(self, group, other):
         # 투사체는 충돌 시 사라지도록 삭제!
         game_world.remove_object(self)
+
+    def reflect(self, other_thrower):
+        self.facing *= -1
+        self.thrower = other_thrower
+
+        if other_thrower.player == 1:
+            game_world.add_collision_pair('p1_wave:p2_body', self, None)
+        else:
+            game_world.add_collision_pair('p2_wave:p1_body', self, None)

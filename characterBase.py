@@ -1383,8 +1383,10 @@ class XCharacter(Character):
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+            game_world.add_collision_pair('p2_reflect:p1_wave', None, buster)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
+            game_world.add_collision_pair('p1_reflect:p2_wave', None, buster)
 
     # power buster 발사 함수
     def fire_power_buster(self):
@@ -1397,8 +1399,10 @@ class XCharacter(Character):
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+            game_world.add_collision_pair('p2_reflect:p1_wave', None, buster)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
+            game_world.add_collision_pair('p1_reflect:p2_wave', None, buster)
 
     def draw(self):
         if self.state_machine:
@@ -1702,8 +1706,10 @@ class SigmaCharacter(Character):
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+            game_world.add_collision_pair('p2_reflect:p1_wave', None, buster)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
+            game_world.add_collision_pair('p1_reflect:p2_wave', None, buster)
 
     # wave 발사 함수
     def fire_wave(self):
@@ -1716,8 +1722,10 @@ class SigmaCharacter(Character):
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
+            game_world.add_collision_pair('p2_reflect:p1_wave', None, buster)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
+            game_world.add_collision_pair('p1_reflect:p2_wave', None, buster)
 
     def draw(self):
         if self.state_machine:
@@ -1980,10 +1988,10 @@ class VileCharacter(Character):
 
     def handle_collision(self, group, other):
         # 투사체가 반사 박스와 충돌 처리!
-        if group == 'p1_wave:reflect_box' and self.player == 1:
+        if group == 'p1_reflect:p2_wave' and self.player == 1:
             other.reflect(self)
             return
-        if group == 'p2_wave:reflect_box' and self.player == 2:
+        if group == 'p2_reflect:p1_wave' and self.player == 2:
             other.reflect(self)
             return
 

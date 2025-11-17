@@ -1,6 +1,7 @@
 from pico2d import *
 import game_framework
 import game_world
+import mode_select_mode  # 다시 모드 선택 모드로
 from characterBase import XCharacter, ZeroCharacter, SigmaCharacter, VileCharacter, UltimateArmorXCharacter
 
 
@@ -90,7 +91,8 @@ def handle_events():
             game_framework.quit()
         elif e.type == SDL_KEYDOWN:
             if e.key == SDLK_ESCAPE:
-                game_framework.quit()
+                # game_framework.quit()
+                game_framework.change_mode(mode_select_mode)
 
         player1.handle_event(e)
         player2.handle_event(e)
@@ -110,7 +112,7 @@ def draw():
 
 
 def finish():
-    pass
+    game_world.clear()
 
 
 def pause():

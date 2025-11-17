@@ -65,7 +65,6 @@ class NormalBuster:
 
     def reflect(self, other_thrower):
         self.facing *= -1
-        self.thrower = other_thrower
 
         game_world.remove_collision_object(self)
 
@@ -135,7 +134,6 @@ class PowerBuster:
 
     def reflect(self, other_thrower):
         self.facing *= -1
-        self.thrower = other_thrower
 
         game_world.remove_collision_object(self)
 
@@ -205,7 +203,6 @@ class Sphere:
 
     def reflect(self, other_thrower):
         self.facing *= -1
-        self.thrower = other_thrower
 
         game_world.remove_collision_object(self)
 
@@ -276,7 +273,6 @@ class Wave:
 
     def reflect(self, other_thrower):
         self.facing *= -1
-        self.thrower = other_thrower
 
         game_world.remove_collision_object(self)
 

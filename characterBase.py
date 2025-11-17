@@ -1836,7 +1836,7 @@ class SigmaCharacter(Character):
                 flip = ''
 
         # Sword 공격 시 flip 반전!
-        if self.state_machine.cur_state == self.DEFEAT:
+        if self.state_machine.cur_state == self.DEFEAT or self.state_machine.cur_state == self.HIT:
             if flip == 'h':
                 flip = ''
             else:

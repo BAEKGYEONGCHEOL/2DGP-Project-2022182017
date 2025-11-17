@@ -1416,9 +1416,9 @@ class XCharacter(Character):
                     # INTRO 상태에서 해당 INTRO 프레임이 끝나는 이벤트(time_out)가 발생하면 IDLE 상태가 됨
                     self.INTRO: {time_out: self.IDLE},
                     # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
-                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_BUSTER_ATTACK, s_down: self.JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
+                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.BASE_BUSTER_ATTACK, k_down: self.JUMP, l_down: self.POWER_ATTACK, quote_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
                     # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
-                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_BUSTER_ATTACK, s_down: self.WALK_JUMP, d_down: self.POWER_ATTACK, g_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.BASE_BUSTER_ATTACK, k_down: self.WALK_JUMP, l_down: self.POWER_ATTACK, quote_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
                     self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
@@ -1601,8 +1601,8 @@ class ZeroCharacter(Character):
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
                     self.INTRO: {time_out: self.IDLE},
-                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, g_down: self.DASH, v_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.BASE_SWORD_ATTACK, k_down: self.JUMP, quote_down: self.DASH, slash_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.BASE_SWORD_ATTACK, k_down: self.WALK_JUMP, quote_down: self.DASH, slash_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
                     self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
@@ -1774,8 +1774,8 @@ class SigmaCharacter(Character):
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
                     self.INTRO: {time_out: self.IDLE},
-                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.ARM_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK_WALL, e_down: self.SPHERE_ATTACK, r_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.ARM_ATTACK, k_down: self.TELEPORT, slash_down: self.DASH_ATTACK_WALL, o_down: self.SPHERE_ATTACK, p_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.ARM_ATTACK, k_down: self.TELEPORT, slash_down: self.DASH_ATTACK_WALL, o_down: self.SPHERE_ATTACK, p_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
                     self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
@@ -2014,8 +2014,8 @@ class VileCharacter(Character):
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
                     self.INTRO: {time_out: self.IDLE},
-                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK, c_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.TELEPORT, v_down: self.DASH_ATTACK, t_down: self.REFLEX_ATTACK, c_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.BASE_SWORD_ATTACK, k_down: self.TELEPORT, slash_down: self.DASH_ATTACK, leftBracket_down: self.REFLEX_ATTACK, period_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.BASE_SWORD_ATTACK, k_down: self.TELEPORT, slash_down: self.DASH_ATTACK, leftBracket_down: self.REFLEX_ATTACK, period_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
                     self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
@@ -2247,8 +2247,8 @@ class UltimateArmorXCharacter(Character):
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
                     self.INTRO: {time_out: self.IDLE},
-                    self.IDLE: {right_down: self.WALK, right_up: self.WALK, left_down: self.WALK, left_up: self.WALK, a_down: self.BASE_SWORD_ATTACK, s_down: self.JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK: {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE, left_up: self.IDLE, a_down: self.BASE_SWORD_ATTACK, s_down: self.WALK_JUMP, d_down: self.BASE_BUSTER_ATTACK, f_down: self.POWER_ATTACK, v_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
+                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.BASE_SWORD_ATTACK, k_down: self.JUMP, l_down: self.BASE_BUSTER_ATTACK, semicolon_down: self.POWER_ATTACK, slash_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
+                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.BASE_SWORD_ATTACK, k_down: self.WALK_JUMP, l_down: self.BASE_BUSTER_ATTACK, semicolon_down: self.POWER_ATTACK, slash_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
                     self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
                     self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},

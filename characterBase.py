@@ -1426,6 +1426,12 @@ class XCharacter(Character):
         return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
+        # 투사체 충돌 처리!
+        if group == 'p1_wave:p2_body' and self.player == 2:
+            self.take_damage(other.get_attack_damage())
+        if group == 'p2_wave:p1_body' and self.player == 1:
+            self.take_damage(other.get_attack_damage())
+
         # 1P가 2P를 때리는 경우
         if group == 'p1_attack:p2_body' and self.player == 2:
             self.take_damage(other.get_attack_damage())
@@ -1578,6 +1584,12 @@ class ZeroCharacter(Character):
             return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
+        # 투사체 충돌 처리!
+        if group == 'p1_wave:p2_body' and self.player == 2:
+            self.take_damage(other.get_attack_damage())
+        if group == 'p2_wave:p1_body' and self.player == 1:
+            self.take_damage(other.get_attack_damage())
+
         # 1P가 2P를 때리는 경우
         if group == 'p1_attack:p2_body' and self.player == 2:
             self.take_damage(other.get_attack_damage())
@@ -1758,6 +1770,12 @@ class SigmaCharacter(Character):
             return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
+        # 투사체 충돌 처리!
+        if group == 'p1_wave:p2_body' and self.player == 2:
+            self.take_damage(other.get_attack_damage())
+        if group == 'p2_wave:p1_body' and self.player == 1:
+            self.take_damage(other.get_attack_damage())
+
         # 1P가 2P를 때리는 경우
         if group == 'p1_attack:p2_body' and self.player == 2:
             self.take_damage(other.get_attack_damage())
@@ -1955,6 +1973,12 @@ class VileCharacter(Character):
             return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
+        # 투사체 충돌 처리!
+        if group == 'p1_wave:p2_body' and self.player == 2:
+            self.take_damage(other.get_attack_damage())
+        if group == 'p2_wave:p1_body' and self.player == 1:
+            self.take_damage(other.get_attack_damage())
+
         # 1P가 2P를 때리는 경우
         if group == 'p1_attack:p2_body' and self.player == 2:
             self.take_damage(other.get_attack_damage())
@@ -2167,6 +2191,12 @@ class UltimateArmorXCharacter(Character):
             return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
+        # 투사체 충돌 처리!
+        if group == 'p1_wave:p2_body' and self.player == 2:
+            self.take_damage(other.get_attack_damage())
+        if group == 'p2_wave:p1_body' and self.player == 1:
+            self.take_damage(other.get_attack_damage())
+
         # 1P가 2P를 때리는 경우
         if group == 'p1_attack:p2_body' and self.player == 2:
             self.take_damage(other.get_attack_damage())

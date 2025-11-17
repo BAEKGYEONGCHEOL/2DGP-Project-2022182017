@@ -9,11 +9,13 @@ PIXEL_PER_METER = (1.0 / 0.03)  # 1pixel = 3cm, 1m = 33.33 pixel
 class NormalBuster:
     image = None
 
-    def __init__(self, x, y, facing, speed = 15):
+    def __init__(self, x, y, facing, thrower, speed = 15):
         self.x, self.y = x, y
         self.xv = speed
 
         self.facing = facing
+
+        self.thrower = thrower
 
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
@@ -77,11 +79,13 @@ class NormalBuster:
 class PowerBuster:
     image = None
 
-    def __init__(self, x, y, facing, speed = 30):
+    def __init__(self, x, y, facing, thrower, speed = 30):
         self.x, self.y = x, y
         self.xv = speed
 
         self.facing = facing
+
+        self.thrower = thrower
 
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
@@ -143,11 +147,13 @@ class PowerBuster:
 class Sphere:
     image = None
 
-    def __init__(self, x, y, facing, speed = 15):
+    def __init__(self, x, y, facing, thrower, speed = 15):
         self.x, self.y = x, y
         self.xv = speed
 
         self.facing = facing
+
+        self.thrower = thrower
 
         self.TIME_PER_ACTION = 0.25
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
@@ -210,11 +216,13 @@ class Sphere:
 class Wave:
     image = None
 
-    def __init__(self, x, y, facing, speed = 20):
+    def __init__(self, x, y, facing, thrower, speed = 20):
         self.x, self.y = x, y
         self.xv = speed
 
         self.facing = facing
+
+        self.thrower = thrower
 
         self.TIME_PER_ACTION = 0.5
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION

@@ -67,10 +67,14 @@ class NormalBuster:
         self.facing *= -1
         self.thrower = other_thrower
 
+        game_world.remove_collision_object(self)
+
         if other_thrower.player == 1:
             game_world.add_collision_pair('p1_wave:p2_body', self, None)
+            game_world.add_collision_pair('p2_reflect:p1_wave', None, self)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', self, None)
+            game_world.add_collision_pair('p1_reflect:p2_wave', None, self)
 
 class PowerBuster:
     image = None
@@ -133,10 +137,14 @@ class PowerBuster:
         self.facing *= -1
         self.thrower = other_thrower
 
+        game_world.remove_collision_object(self)
+
         if other_thrower.player == 1:
             game_world.add_collision_pair('p1_wave:p2_body', self, None)
+            game_world.add_collision_pair('p2_reflect:p1_wave', None, self)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', self, None)
+            game_world.add_collision_pair('p1_reflect:p2_wave', None, self)
 
 class Sphere:
     image = None
@@ -199,10 +207,14 @@ class Sphere:
         self.facing *= -1
         self.thrower = other_thrower
 
+        game_world.remove_collision_object(self)
+
         if other_thrower.player == 1:
             game_world.add_collision_pair('p1_wave:p2_body', self, None)
+            game_world.add_collision_pair('p2_reflect:p1_wave', None, self)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', self, None)
+            game_world.add_collision_pair('p1_reflect:p2_wave', None, self)
 
 
 class Wave:
@@ -266,7 +278,11 @@ class Wave:
         self.facing *= -1
         self.thrower = other_thrower
 
+        game_world.remove_collision_object(self)
+
         if other_thrower.player == 1:
             game_world.add_collision_pair('p1_wave:p2_body', self, None)
+            game_world.add_collision_pair('p2_reflect:p1_wave', None, self)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', self, None)
+            game_world.add_collision_pair('p1_reflect:p2_wave', None, self)

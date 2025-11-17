@@ -2307,10 +2307,14 @@ class UltimateArmorXCharacter(Character):
 
         # 공격 데미지
         self.attack_damage_table = {
-            self.BASE_BUSTER_ATTACK: 6,
             self.BASE_SWORD_ATTACK: 8,
-            self.POWER_ATTACK: 8,
             self.DASH_ATTACK_WALL: 10,
+        }
+
+        # 스피어, 웨이브 공격 데미지
+        self.wave_damage_table = {
+            NormalBuster: 4,
+            PowerBuster: 8,
         }
 
     # normal buster 발사 함수
@@ -2318,7 +2322,7 @@ class UltimateArmorXCharacter(Character):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
-        buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, 25)
+        buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, self, 25)
         game_world.add_object(buster, 2)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
@@ -2326,15 +2330,13 @@ class UltimateArmorXCharacter(Character):
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
-
-        game_world.add_object(buster, 2)
 
     # power buster 발사 함수
     def fire_power_buster(self):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
-        buster = PowerBuster(self.x + 50 * facing, self.y + 25, facing, 40)
+        buster = PowerBuster(self.x + 50 * facing, self.y + 25, facing, self, 40)
         game_world.add_object(buster, 2)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
@@ -2342,8 +2344,6 @@ class UltimateArmorXCharacter(Character):
             game_world.add_collision_pair('p1_wave:p2_body', buster, None)
         else:
             game_world.add_collision_pair('p2_wave:p1_body', buster, None)
-
-        game_world.add_object(buster, 2)
 
     def draw(self):
         if self.state_machine:
@@ -2437,6 +2437,9 @@ class UltimateArmorXCharacter(Character):
 
     def get_attack_damage(self):
         return self.attack_damage_table.get(self.state_machine.cur_state, 0)
+
+    def get_wave_damage(self, wave_type):
+        return self.wave_damage_table.get(wave_type, 0)
 
     # 프레임 그리기 함수(오버라이드!)
     def draw_frame(self, frame_data):

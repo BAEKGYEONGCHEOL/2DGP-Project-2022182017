@@ -1115,10 +1115,12 @@ class Hit:
         self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
+        self.character.is_hitted = True
 
     def exit(self, e):
         self.character.action_doing = False
         self.character.facing_lock = False
+        self.character.is_hitted = False
 
         if not self.character.is_left_pressed and self.character.is_right_pressed:
             self.character.facing = 1
@@ -1220,6 +1222,9 @@ class Character:
 
         self.action_doing = False
         self.facing_lock = False
+
+        # 히트 상태 변수
+        self.is_hitted = False
 
     def update(self):
         if self.state_machine:

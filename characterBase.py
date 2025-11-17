@@ -1366,6 +1366,12 @@ class XCharacter(Character):
             self.POWER_ATTACK: 8,
         }
 
+        # 스피어, 웨이브 공격 데미지
+        self.wave_damage_table = {
+            NormalBuster: 4,
+            PowerBuster: 8,
+        }
+
     # normal buster 발사 함수
     def fire_normal_buster(self):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
@@ -1666,9 +1672,13 @@ class SigmaCharacter(Character):
         # 공격 데미지
         self.attack_damage_table = {
             self.ARM_ATTACK: 8,
-            self.SPHERE_ATTACK: 8,
-            self.WAVE_ATTACK: 10,
             self.DASH_ATTACK_WALL: 12,
+        }
+
+        # 스피어, 웨이브 공격 데미지
+        self.wave_damage_table = {
+            Sphere: 8,
+            Wave: 10,
         }
 
     # sphere 발사 함수

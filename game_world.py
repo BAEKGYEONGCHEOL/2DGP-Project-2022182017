@@ -80,6 +80,28 @@ def collide_attack(attacker, defender):
     # 충돌이 아닌 경우를 다 걸러냈으면 충돌한 것이다.
     return True
 
+# 공격 판정용 충돌 함수
+def collide_reflect(reflect, wave):
+    # 반사체의 get_reflect_bb 함수가 없으면 충돌하지 않음!
+    if not hasattr(reflect, 'get_reflect_bb'):
+        return False
+
+    left_a, bottom_a, right_a, top_a = reflect.get_reflect_bb()
+    left_b, bottom_b, right_b, top_b = wave.get_bb()
+
+    # 공격이 없는 프레임이면 패스!(사각형의 크기가 0!)
+    if left_a == right_a and bottom_a == top_a:
+        return False
+
+    # 일단 사각형의 모든 방향을 비교해서 충돌이 아닌 경우를 먼저 걸러낸다.
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+
+    # 충돌이 아닌 경우를 다 걸러냈으면 충돌한 것이다.
+    return True
+
 
 # collision_pairs 딕셔너리에는 충돌 검사가 필요한 객체 쌍에 대한 정보가 저장된다.
 collision_pairs = {}
@@ -98,12 +120,20 @@ def handle_collision():
     for group, pairs in collision_pairs.items():
         for a in pairs[0]:  # a 리스트의 모든 객체에 대해서
             for b in pairs[1]:  # b 리스트의 모든 객체에 대해서
-                if 'attack' in group:   # 공격 판정 그룹이면
-                    if collide_attack(a, b):    # 공격 판정 충돌 검사
+                # 근접 공격 충돌!
+                if group in ('p1_attack:p2_body', 'p2_attack:p1_body'):
+                    if collide_attack(a, b):
                         a.handle_collision(group, b)
                         b.handle_collision(group, a)
 
-                elif 'wave' in group:
+                # 일반 wave 충돌!
+                elif group in ('p1_wave:p2_body', 'p2_wave:p1_body'):
                     if collide(a, b):
                         a.handle_collision(group, b)
                         b.handle_collision(group, a)
+
+                # 반사 투사체 충돌!
+                elif group in ('p1_reflect:p2_wave', 'p2_reflect:p1_wave'):
+                    if collide_reflect(a, b):
+                        # a = reflect 캐릭터, b = wave
+                        b.reflect(a)

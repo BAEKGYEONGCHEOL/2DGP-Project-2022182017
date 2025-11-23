@@ -1462,6 +1462,9 @@ class XCharacter(Character):
             PowerBuster: 8,
         }
 
+        # 지면 y 좌표 저장!
+        self.ground_y = 70
+
     # normal buster 발사 함수
     def fire_normal_buster(self):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
@@ -1639,6 +1642,9 @@ class ZeroCharacter(Character):
             self.BASE_SWORD_ATTACK: 5,
             self.DASH_ATTACK: 8,
         }
+
+        # 지면 y 좌표 저장!
+        self.ground_y = 70
 
     def draw(self):
         if self.state_machine:
@@ -1819,6 +1825,9 @@ class SigmaCharacter(Character):
             Wave: 10,
         }
 
+        # 지면 y 좌표 저장!
+        self.ground_y = 120
+
     # sphere 발사 함수
     def fire_sphere(self):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
@@ -1866,8 +1875,8 @@ class SigmaCharacter(Character):
                 return self.x - 100, self.y - 75, self.x + 115, self.y + 85
             elif state == self.ARM_ATTACK or state == self.WAVE_ATTACK:
                 return self.x - 65, self.y - 120, self.x + 75, self.y + 120
-            elif state == self.TELEPORT:
-                return 0, 0, 0, 0
+            # elif state == self.TELEPORT:
+            #     return 0, 0, 0, 0
             else:
                 return self.x - 65, self.y - 120, self.x + 60, self.y + 120
         else:
@@ -1875,8 +1884,8 @@ class SigmaCharacter(Character):
                 return self.x - 115, self.y - 75, self.x + 100, self.y + 85
             elif state == self.ARM_ATTACK or state == self.WAVE_ATTACK:
                 return self.x - 75, self.y - 120, self.x + 65, self.y + 120
-            elif state == self.TELEPORT:
-                return 0, 0, 0, 0
+            # elif state == self.TELEPORT:
+            #     return 0, 0, 0, 0
             else:
                 return self.x - 60, self.y - 120, self.x + 65, self.y + 120
 
@@ -2058,6 +2067,9 @@ class VileCharacter(Character):
             self.AMBIENT_WAVE_ATTACK: 10,
         }
 
+        # 지면 y 좌표 저장!
+        self.ground_y = 100
+
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
@@ -2076,8 +2088,8 @@ class VileCharacter(Character):
                 return self.x - 70, self.y - 100, self.x + 75, self.y + 100
             elif state == self.DASH_ATTACK:
                 return self.x - 80, self.y - 100, self.x + 85, self.y + 100
-            elif state == self.TELEPORT:
-                return 0, 0, 0, 0
+            # elif state == self.TELEPORT:
+            #     return 0, 0, 0, 0
             else:
                 return self.x - 60, self.y - 100, self.x + 60, self.y + 100
         else:
@@ -2087,8 +2099,8 @@ class VileCharacter(Character):
                 return self.x - 85, self.y - 100, self.x + 80, self.y + 100
             elif state == self.DASH_ATTACK:
                 return self.x - 70, self.y - 100, self.x + 75, self.y + 100
-            elif state == self.TELEPORT:
-                return 0, 0, 0, 0
+            # elif state == self.TELEPORT:
+            #     return 0, 0, 0, 0
             else:
                 return self.x - 60, self.y - 100, self.x + 60, self.y + 100
 
@@ -2300,6 +2312,9 @@ class UltimateArmorXCharacter(Character):
             NormalBuster: 4,
             PowerBuster: 8,
         }
+
+        # 지면 y 좌표 저장!
+        self.ground_y = 70
 
     # normal buster 발사 함수
     def fire_normal_buster(self):

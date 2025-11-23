@@ -2395,6 +2395,9 @@ class UltimateArmorXCharacter(Character):
         else:
             return 0, 0, 0, 0
 
+    def get_ground_bb(self):
+        return self.x - 50, self.y - 70, self.x + 50, self.y + 70
+
     def handle_collision(self, group, other):
         # 투사체 충돌 처리!
         if group == 'p1_wave:p2_body' and self.player == 2:

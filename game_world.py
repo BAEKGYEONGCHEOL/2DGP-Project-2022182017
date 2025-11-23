@@ -105,6 +105,24 @@ def collide_reflect(reflect, wave):
     # 충돌이 아닌 경우를 다 걸러냈으면 충돌한 것이다.
     return True
 
+# 지면 판정용 충돌 함수
+def collide_ground(ground, character):
+    left_a, bottom_a, right_a, top_a = ground.get_bb()
+    left_b, bottom_b, right_b, top_b = character.get_ground_bb()
+
+    # 공격이 없는 프레임이면 패스!(사각형의 크기가 0!)
+    if left_a == right_a and bottom_a == top_a:
+        return False
+
+    # 일단 사각형의 모든 방향을 비교해서 충돌이 아닌 경우를 먼저 걸러낸다.
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+
+    # 충돌이 아닌 경우를 다 걸러냈으면 충돌한 것이다.
+    return True
+
 
 # collision_pairs 딕셔너리에는 충돌 검사가 필요한 객체 쌍에 대한 정보가 저장된다.
 collision_pairs = {}
@@ -143,6 +161,6 @@ def handle_collision():
 
                 # 지면과 캐릭터의 충돌!
                 elif group == 'ground:p1_body' or group == 'ground:p2_body':
-                    if collide(a, b):
+                    if collide_ground(a, b):
                         a.handle_collision(group, b)
                         b.handle_collision(group, a)

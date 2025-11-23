@@ -14,11 +14,15 @@ class FirstGround:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return 0, 0, 1594, 200
+        return 0, 0, 1594, 150
 
     # 잔디는 충돌 처리에 대한 아무런 동작을 하지 않으므로 빈 함수로 둔다.
     def handle_collision(self, group, other):
-        pass
+        other.y = 151 + other.ground_y
+        if other.is_left_pressed or other.is_right_pressed:
+            other.state_machine.handle_state_event(('LAND_WALK', None))
+        else:
+            other.state_machine.handle_state_event(('LAND_IDLE', None))
 
 class SecondGround:
     def __init__(self):
@@ -34,8 +38,12 @@ class SecondGround:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return 0, 0, 1594, 200
+        return 0, 0, 1594, 150
 
     # 잔디는 충돌 처리에 대한 아무런 동작을 하지 않으므로 빈 함수로 둔다.
     def handle_collision(self, group, other):
-        pass
+        other.y = 151 + other.ground_y
+        if other.is_left_pressed or other.is_right_pressed:
+            other.state_machine.handle_state_event(('LAND_WALK', None))
+        else:
+            other.state_machine.handle_state_event(('LAND_IDLE', None))

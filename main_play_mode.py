@@ -61,7 +61,7 @@ def set_characters(p1_index, p2_index, mode):
 
 # 모드 초기화 시 프린트로 확인
 def init():
-    global current_map, player1, player2
+    global current_map, player1, player2, hp_tool1, hp_bar1
 
     print(f"Player1 Index: {player1_index}")
     print(f"Player2 Index: {player2_index}")
@@ -78,6 +78,9 @@ def init():
 
     game_world.add_object(player1, 1)
     game_world.add_object(player2, 1)
+
+    # hp_tool1 = load_image('hp_tool.png')
+    # hp_bar1 = load_image('hp_bar.png')
 
     game_world.add_collision_pair('ground:p1_body', current_map, player1)
     game_world.add_collision_pair('ground:p2_body', current_map, player2)
@@ -115,6 +118,10 @@ def draw():
     clear_canvas()
 
     game_world.render()
+    # hp_tool1.draw(350, 825)
+    # hp_bar1.draw(350, 825)
+    # hp_tool1.draw(1244, 825)
+    # hp_bar1.draw(1244, 825)
 
     update_canvas()
 

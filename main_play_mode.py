@@ -5,6 +5,7 @@ import mode_select_mode  # 다시 모드 선택 모드로
 from characterBase import XCharacter, ZeroCharacter, SigmaCharacter, VileCharacter, UltimateArmorXCharacter
 from ground import FirstGround, SecondGround
 import random
+from hp import HPTool, HPBar
 
 
 player1_index = 0
@@ -61,7 +62,7 @@ def set_characters(p1_index, p2_index, mode):
 
 # 모드 초기화 시 프린트로 확인
 def init():
-    global current_map, player1, player2, hp_tool1, hp_bar1
+    global current_map, player1, player2
 
     print(f"Player1 Index: {player1_index}")
     print(f"Player2 Index: {player2_index}")
@@ -79,8 +80,15 @@ def init():
     game_world.add_object(player1, 1)
     game_world.add_object(player2, 1)
 
-    # hp_tool1 = load_image('hp_tool.png')
-    # hp_bar1 = load_image('hp_bar.png')
+    hp_tool1 = HPTool(350, 825)
+    hp_bar1 = HPBar(player1, 350, 825)
+    hp_tool2 = HPTool(1244, 825)
+    hp_bar2 = HPBar(player2, 1244, 825)
+
+    game_world.add_object(hp_tool1, 3)
+    game_world.add_object(hp_bar1, 3)
+    game_world.add_object(hp_tool2, 3)
+    game_world.add_object(hp_bar2, 3)
 
     game_world.add_collision_pair('ground:p1_body', current_map, player1)
     game_world.add_collision_pair('ground:p2_body', current_map, player2)
@@ -118,10 +126,6 @@ def draw():
     clear_canvas()
 
     game_world.render()
-    # hp_tool1.draw(350, 825)
-    # hp_bar1.draw(350, 825)
-    # hp_tool1.draw(1244, 825)
-    # hp_bar1.draw(1244, 825)
 
     update_canvas()
 

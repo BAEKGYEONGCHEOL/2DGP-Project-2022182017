@@ -1523,6 +1523,9 @@ class XCharacter(Character):
         # X는 근접 공격이 없으므로 공격 박스는 없음!
         return 0, 0, 0, 0
 
+    def get_ground_bb(self):
+        return self.x - 50, self.y - 70, self.x + 50, self.y + 70
+
     def handle_collision(self, group, other):
         # 투사체 충돌 처리!
         if group == 'p1_wave:p2_body' and self.player == 2:
@@ -1700,6 +1703,9 @@ class ZeroCharacter(Character):
                 return 0, 0, 0, 0
         else:
             return 0, 0, 0, 0
+
+    def get_ground_bb(self):
+        return self.x - 55, self.y - 70, self.x + 55, self.y + 70
 
     def handle_collision(self, group, other):
         # 투사체 충돌 처리!
@@ -1914,6 +1920,12 @@ class SigmaCharacter(Character):
                 return 0, 0, 0, 0
         else:
             return 0, 0, 0, 0
+
+    def get_ground_bb(self):
+        if self.facing == 1:
+            return self.x - 65, self.y - 120, self.x + 60, self.y + 120
+        else:
+            return self.x - 60, self.y - 120, self.x + 65, self.y + 120
 
     def handle_collision(self, group, other):
         # 투사체 충돌 처리!
@@ -2147,6 +2159,9 @@ class VileCharacter(Character):
                 return self.x - 110, self.y - 110, self.x + 0, self.y + 120
         else:
             return 0, 0, 0, 0
+
+    def get_ground_bb(self):
+        return self.x - 60, self.y - 100, self.x + 60, self.y + 100
 
     def handle_collision(self, group, other):
         # 투사체가 반사 박스와 충돌 처리!

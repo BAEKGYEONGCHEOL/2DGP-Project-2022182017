@@ -2101,8 +2101,8 @@ class VileCharacter(Character):
                 return self.x - 70, self.y - 100, self.x + 75, self.y + 100
             elif state == self.DASH_ATTACK:
                 return self.x - 80, self.y - 100, self.x + 85, self.y + 100
-            # elif state == self.TELEPORT:
-            #     return 0, 0, 0, 0
+            elif state == self.TELEPORT:
+                return 0, 0, 0, 0
             else:
                 return self.x - 60, self.y - 100, self.x + 60, self.y + 100
         else:
@@ -2112,8 +2112,8 @@ class VileCharacter(Character):
                 return self.x - 85, self.y - 100, self.x + 80, self.y + 100
             elif state == self.DASH_ATTACK:
                 return self.x - 70, self.y - 100, self.x + 75, self.y + 100
-            # elif state == self.TELEPORT:
-            #     return 0, 0, 0, 0
+            elif state == self.TELEPORT:
+                return 0, 0, 0, 0
             else:
                 return self.x - 60, self.y - 100, self.x + 60, self.y + 100
 

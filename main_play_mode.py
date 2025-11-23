@@ -3,6 +3,8 @@ import game_framework
 import game_world
 import mode_select_mode  # 다시 모드 선택 모드로
 from characterBase import XCharacter, ZeroCharacter, SigmaCharacter, VileCharacter, UltimateArmorXCharacter
+from ground import FirstGround, SecondGround
+import random
 
 
 player1_index = 0
@@ -59,14 +61,17 @@ def set_characters(p1_index, p2_index, mode):
 
 # 모드 초기화 시 프린트로 확인
 def init():
-    global player1, player2
+    global current_map, player1, player2
 
     print(f"Player1 Index: {player1_index}")
     print(f"Player2 Index: {player2_index}")
     print(f"Battle Mode: {battle_mode}")
 
-    battle_background1 = BattleBackground('battle_background1.png')
-    game_world.add_object(battle_background1, 0)
+    # 맵 2개중 하나 랜덤으로 생성!
+    map_list = [FirstGround, SecondGround]
+    current_map = random.choice(map_list)()
+
+    game_world.add_object(current_map, 0)
 
     player1 = create_character(player1_index, 350, 225, 1)
     player2 = create_character(player2_index, 1244, 225, 2)

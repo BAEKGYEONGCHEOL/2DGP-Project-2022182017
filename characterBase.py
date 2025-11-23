@@ -1882,8 +1882,8 @@ class SigmaCharacter(Character):
                 return self.x - 100, self.y - 75, self.x + 115, self.y + 85
             elif state == self.ARM_ATTACK or state == self.WAVE_ATTACK:
                 return self.x - 65, self.y - 120, self.x + 75, self.y + 120
-            # elif state == self.TELEPORT:
-            #     return 0, 0, 0, 0
+            elif state == self.TELEPORT:
+                return 0, 0, 0, 0
             else:
                 return self.x - 65, self.y - 120, self.x + 60, self.y + 120
         else:
@@ -1891,8 +1891,8 @@ class SigmaCharacter(Character):
                 return self.x - 115, self.y - 75, self.x + 100, self.y + 85
             elif state == self.ARM_ATTACK or state == self.WAVE_ATTACK:
                 return self.x - 75, self.y - 120, self.x + 65, self.y + 120
-            # elif state == self.TELEPORT:
-            #     return 0, 0, 0, 0
+            elif state == self.TELEPORT:
+                return 0, 0, 0, 0
             else:
                 return self.x - 60, self.y - 120, self.x + 65, self.y + 120
 

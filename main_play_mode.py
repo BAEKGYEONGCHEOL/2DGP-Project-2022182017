@@ -73,8 +73,8 @@ def init():
 
     game_world.add_object(current_map, 0)
 
-    player1 = create_character(player1_index, 350, 225, 1)
-    player2 = create_character(player2_index, 1244, 225, 2)
+    player1 = create_character(player1_index, 350, 150, 1)
+    player2 = create_character(player2_index, 1244, 150, 2)
 
     game_world.add_object(player1, 1)
     game_world.add_object(player2, 1)

@@ -112,7 +112,7 @@ collision_pairs = {}
 def add_collision_pair(group, a, b):
     # 맨 처음에는 그룹이 없다.
     if group not in collision_pairs:    # 처음 추가하는 그룹이면
-        collision_pairs[group] = [[], []]   # 해당 그룹을 만든다.
+        collision_pairs[group] = [[], [], []]   # 해당 그룹을 만든다.
     if a:   # a의 경우 1번째 리스트에 추가
         collision_pairs[group][0].append(a)
     if b:   # b의 경우 2번째 리스트에 추가

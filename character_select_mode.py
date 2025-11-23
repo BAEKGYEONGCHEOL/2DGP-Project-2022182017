@@ -126,7 +126,7 @@ def handle_events():
                     # 플레이어2 캐릭터 객체 생성
                     player2_character = draw_character_select_screen(player2_index, 1150, 645, 2)
                 # 플레이어 2 캐릭터 확정
-                elif e.key == SDLK_l:
+                elif e.key == SDLK_j:
                     player2_locked = True
 
 

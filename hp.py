@@ -11,7 +11,7 @@ class HPTool:
         pass
 
     def draw(self):
-        self.image.draw(x, y)
+        self.image.draw(self.x, self.y)
 
 # hp 바
 class HPBar:
@@ -25,4 +25,4 @@ class HPBar:
         pass
 
     def draw(self):
-        self.image.draw(x, y)
+        self.image.draw(self.x, self.y)

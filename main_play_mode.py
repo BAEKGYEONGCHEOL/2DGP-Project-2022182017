@@ -81,9 +81,9 @@ def init():
     game_world.add_object(player2, 1)
 
     hp_tool1 = HPTool(350, 825)
-    hp_bar1 = HPBar(player1, 350, 825)
+    hp_bar1 = HPBar(player1, 350, 825, 1)
     hp_tool2 = HPTool(1244, 825)
-    hp_bar2 = HPBar(player2, 1244, 825)
+    hp_bar2 = HPBar(player2, 1244, 825, 2)
 
     game_world.add_object(hp_tool1, 3)
     game_world.add_object(hp_bar1, 3)

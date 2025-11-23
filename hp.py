@@ -25,4 +25,8 @@ class HPBar:
         pass
 
     def draw(self):
-        self.image.draw(self.x, self.y)
+        # hp 비율 계산!
+        hp_rate = self.character.current_hp / self.character.max_hp
+        width = int(self.image.w * hp_rate)
+        # 그리기!
+        self.image.clip_draw(0, 0, width, self.image.h, self.x, self.y)

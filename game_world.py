@@ -140,3 +140,9 @@ def handle_collision():
                     if collide_reflect(a, b):
                         # a = reflect 캐릭터, b = wave
                         b.reflect(a)
+
+                # 지면과 캐릭터의 충돌!
+                elif group == 'ground:p1_body' or group == 'ground:p2_body':
+                    if collide(a, b):
+                        a.handle_collision(group, b)
+                        b.handle_collision(group, a)

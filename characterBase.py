@@ -1237,7 +1237,8 @@ class Defeat:
 class Character:
     def __init__(self, image_path, x, y, speed, dash_speed, sheet_data, player, change_facing_right):
         self.image = load_image(image_path)    # 캐릭터 이미지 로드
-        self.hp = 100   # 기본 체력 설정
+        self.max_hp = 100       # 최대 체력 설정
+        self.current_hp = 100   # 현재 체력 설정
         self.x = x
         self.y = y
         self.player = player
@@ -1539,7 +1540,7 @@ class XCharacter(Character):
 
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
-        if self.hp <= 0:
+        if self.current_hp <= 0:
             return
 
         # hit 상태일 때는 무시!(중복 hit 방지)
@@ -1547,12 +1548,12 @@ class XCharacter(Character):
             return
 
         # 체력 감소!
-        self.hp -= damage
-        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
+        self.current_hp -= damage
+        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.current_hp}")
 
         # 체력 0 이하로 떨어지면 죽음 상태로 전환
-        if self.hp <= 0:
-            self.hp = 0
+        if self.current_hp <= 0:
+            self.current_hp = 0
 
             self.state_machine.handle_state_event(('DEFEAT', None))
             return
@@ -1717,7 +1718,7 @@ class ZeroCharacter(Character):
 
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
-        if self.hp <= 0:
+        if self.current_hp <= 0:
             return
 
         # hit 상태일 때는 무시!(중복 hit 방지)
@@ -1725,12 +1726,12 @@ class ZeroCharacter(Character):
             return
 
         # 체력 감소!
-        self.hp -= damage
-        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
+        self.current_hp -= damage
+        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.current_hp}")
 
         # 체력 0 이하로 떨어지면 죽음 상태로 전환
-        if self.hp <= 0:
-            self.hp = 0
+        if self.current_hp <= 0:
+            self.current_hp = 0
 
             self.state_machine.handle_state_event(('DEFEAT', None))
             return
@@ -1931,7 +1932,7 @@ class SigmaCharacter(Character):
 
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
-        if self.hp <= 0:
+        if self.current_hp <= 0:
             return
 
         # hit 상태일 때는 무시!(중복 hit 방지)
@@ -1939,12 +1940,12 @@ class SigmaCharacter(Character):
             return
 
         # 체력 감소!
-        self.hp -= damage
-        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
+        self.current_hp -= damage
+        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.current_hp}")
 
         # 체력 0 이하로 떨어지면 죽음 상태로 전환
-        if self.hp <= 0:
-            self.hp = 0
+        if self.current_hp <= 0:
+            self.current_hp = 0
 
             self.state_machine.handle_state_event(('DEFEAT', None))
             return
@@ -2172,7 +2173,7 @@ class VileCharacter(Character):
 
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
-        if self.hp <= 0:
+        if self.current_hp <= 0:
             return
 
         # hit 상태일 때는 무시!(중복 hit 방지)
@@ -2180,12 +2181,12 @@ class VileCharacter(Character):
             return
 
         # 체력 감소!
-        self.hp -= damage
-        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
+        self.current_hp -= damage
+        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.current_hp}")
 
         # 체력 0 이하로 떨어지면 죽음 상태로 전환
-        if self.hp <= 0:
-            self.hp = 0
+        if self.current_hp <= 0:
+            self.current_hp = 0
 
             self.state_machine.handle_state_event(('DEFEAT', None))
             return
@@ -2411,7 +2412,7 @@ class UltimateArmorXCharacter(Character):
 
     def take_damage(self, damage):
         # 이미 죽었으면 무시!
-        if self.hp <= 0:
+        if self.current_hp <= 0:
             return
 
         # hit 상태일 때는 무시!(중복 hit 방지)
@@ -2419,12 +2420,12 @@ class UltimateArmorXCharacter(Character):
             return
 
         # 체력 감소!
-        self.hp -= damage
-        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.hp}")
+        self.current_hp -= damage
+        print(f"[{self.__class__.__name__}] Player{self.player} HIT! Damage: {damage}, HP: {self.current_hp}")
 
         # 체력 0 이하로 떨어지면 죽음 상태로 전환
-        if self.hp <= 0:
-            self.hp = 0
+        if self.current_hp <= 0:
+            self.current_hp = 0
 
             self.state_machine.handle_state_event(('DEFEAT', None))
             return

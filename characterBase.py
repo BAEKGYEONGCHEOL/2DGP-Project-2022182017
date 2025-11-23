@@ -344,18 +344,6 @@ class Jump:
         elif self.character.x > 1544:
             self.character.x = 1544
 
-        # 착지
-        GROUND_Y = 225
-        if self.character.y <= GROUND_Y:
-            self.character.y = GROUND_Y
-
-            if self.character.is_left_pressed or self.character.is_right_pressed:
-                self.character.state_machine.handle_state_event(('LAND_WALK', None))
-            else:
-                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
-
-            return
-
         # --- 프레임 계산 (위치 기반 진행률) ---
         total_frames = len(self.character.frame['jump'])
 
@@ -459,18 +447,6 @@ class WalkJump:
             self.character.x = 50
         elif self.character.x > 1544:
             self.character.x = 1544
-
-        # 착지
-        GROUND_Y = 225
-        if self.character.y <= GROUND_Y:
-            self.character.y = GROUND_Y
-
-            if self.character.is_left_pressed or self.character.is_right_pressed:
-                self.character.state_machine.handle_state_event(('LAND_WALK', None))
-            else:
-                self.character.state_machine.handle_state_event(('LAND_IDLE', None))
-
-            return
 
         # --- 프레임 계산 (위치 기반 진행률) ---
         total_frames = len(self.character.frame['jump'])

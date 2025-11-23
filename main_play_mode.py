@@ -79,6 +79,9 @@ def init():
     game_world.add_object(player1, 1)
     game_world.add_object(player2, 1)
 
+    game_world.add_collision_pair('ground:p1_body', current_map, player1)
+    game_world.add_collision_pair('ground:p2_body', current_map, player2)
+
     game_world.add_collision_pair('p1_attack:p2_body', player1, player2)
     game_world.add_collision_pair('p2_attack:p1_body', player2, player1)
 

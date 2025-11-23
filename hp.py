@@ -15,10 +15,11 @@ class HPTool:
 
 # hp 바
 class HPBar:
-    def __init__(self, character, x, y):
+    def __init__(self, character, x, y, player):
         self.character = character     # 해당 캐릭터 체력바!
         self.x = x
         self.y = y
+        self.player = player
         self.image = load_image('hp_bar.png')
 
     def update(self):
@@ -28,5 +29,13 @@ class HPBar:
         # hp 비율 계산!
         hp_rate = self.character.current_hp / self.character.max_hp
         width = int(self.image.w * hp_rate)
+
+        # 체력 바는 1p는 왼쪽은 고정!
+        if self.player == 1:
+            draw_x = self.x - (self.image.w / 2) + (width / 2)
+        # 2p는 오른쪽 고정!
+        else:
+            draw_x = self.x + (self.image.w / 2) - (width / 2)
+
         # 그리기!
-        self.image.clip_draw(0, 0, width, self.image.h, self.x, self.y)
+        self.image.draw(draw_x, self.y, width, self.image.h)

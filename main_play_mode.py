@@ -102,6 +102,11 @@ def init():
     game_world.add_collision_pair('p1_reflect:p2_wave', player1, None)
     game_world.add_collision_pair('p2_reflect:p1_wave', player2, None)
 
+    # CPU 모드면 행동트리 연결!
+    if battle_mode == 'vs_cpu':
+        player2.target = player1
+        player2.build_behavior_tree()  # 행동 트리 생성!
+
 
 def handle_events():
     events = get_events()
@@ -123,6 +128,10 @@ def handle_events():
 def update():
     game_world.update()
     game_world.handle_collision()
+
+    # CPU 모드일 때 AI 실행!
+    if battle_mode == 'vs_cpu' and player2.bt:
+        player2.bt.run()
 
 
 def draw():

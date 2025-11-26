@@ -114,7 +114,10 @@ def handle_events():
                 game_framework.change_mode(mode_select_mode)
 
         player1.handle_event(e)
-        player2.handle_event(e)
+
+        if battle_mode == 'vs_player':
+            # 2P 모드 -> P2도 직접 조작
+            player2.handle_event(e)
 
 
 def update():

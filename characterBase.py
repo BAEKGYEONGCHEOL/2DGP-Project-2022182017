@@ -1468,6 +1468,10 @@ class XCharacter(Character):
         # 지면 y 좌표 저장!
         self.ground_y = 70
 
+        # 행동 트리와 타겟 초기화!
+        self.bt = None
+        self.target = None
+
     # normal buster 발사 함수
     def fire_normal_buster(self):
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
@@ -1659,6 +1663,10 @@ class ZeroCharacter(Character):
         # 지면 y 좌표 저장!
         self.ground_y = 70
 
+        # 행동 트리와 타겟 초기화!
+        self.bt = None
+        self.target = None
+
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
@@ -1849,6 +1857,10 @@ class SigmaCharacter(Character):
 
         # 지면 y 좌표 저장!
         self.ground_y = 120
+
+        # 행동 트리와 타겟 초기화!
+        self.bt = None
+        self.target = None
 
     # sphere 발사 함수
     def fire_sphere(self):
@@ -2104,6 +2116,10 @@ class VileCharacter(Character):
         # 지면 y 좌표 저장!
         self.ground_y = 100
 
+        # 행동 트리와 타겟 초기화!
+        self.bt = None
+        self.target = None
+
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
@@ -2358,6 +2374,10 @@ class UltimateArmorXCharacter(Character):
 
         # 지면 y 좌표 저장!
         self.ground_y = 70
+
+        # 행동 트리와 타겟 초기화!
+        self.bt = None
+        self.target = None
 
     # normal buster 발사 함수
     def fire_normal_buster(self):

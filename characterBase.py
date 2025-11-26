@@ -9,6 +9,8 @@ from all_buster import NormalBuster, PowerBuster, Sphere, Wave
 
 from state_machine import StateMachine
 
+from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+
 def time_out(e):
     return e[0] == 'TIME_OUT'
 
@@ -1572,6 +1574,13 @@ class XCharacter(Character):
     def get_wave_damage(self, wave_type):
         return self.wave_damage_table.get(wave_type, 0)
 
+    # ==============================================================================================================
+    # ===================================================== AI =====================================================
+    # ==============================================================================================================
+    # AI 행동 트리
+    def build_behavior_tree(self):
+        pass
+
 
 # Zero 캐릭터 클래스
 class ZeroCharacter(Character):
@@ -1750,6 +1759,12 @@ class ZeroCharacter(Character):
     def get_attack_damage(self):
         return self.attack_damage_table.get(self.state_machine.cur_state, 0)
 
+    # ==============================================================================================================
+    # ===================================================== AI =====================================================
+    # ==============================================================================================================
+    # AI 행동 트리
+    def build_behavior_tree(self):
+        pass
 
 # Sigma 캐릭터 클래스
 class SigmaCharacter(Character):
@@ -2003,6 +2018,12 @@ class SigmaCharacter(Character):
         # 해당 프레임 그리기!
         self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x, self.y, w_data * 3, h_data * 3)
 
+    # ==============================================================================================================
+    # ===================================================== AI =====================================================
+    # ==============================================================================================================
+    # AI 행동 트리
+    def build_behavior_tree(self):
+        pass
 
 # Vile 캐릭터 클래스
 class VileCharacter(Character):
@@ -2244,6 +2265,12 @@ class VileCharacter(Character):
         # 해당 프레임 그리기!
         self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x, self.y, w_data * 3, h_data * 3)
 
+    # ==============================================================================================================
+    # ===================================================== AI =====================================================
+    # ==============================================================================================================
+    # AI 행동 트리
+    def build_behavior_tree(self):
+        pass
 
 # Ultimate Armor X 캐릭터 클래스
 class UltimateArmorXCharacter(Character):
@@ -2488,3 +2515,10 @@ class UltimateArmorXCharacter(Character):
 
         # 해당 프레임 그리기!
         self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x, self.y, w_data * 3, h_data * 3)
+
+    # ==============================================================================================================
+    # ===================================================== AI =====================================================
+    # ==============================================================================================================
+    # AI 행동 트리
+    def build_behavior_tree(self):
+        pass

@@ -118,6 +118,52 @@ def leftBracket_up(e):
 def period_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_PERIOD
 
+# AI
+def ai_four_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'FOUR_DOWN'
+
+def ai_six_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'SIX_DOWN'
+
+def ai_four_up(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'FOUR_UP'
+
+def ai_six_up(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'SIX_UP'
+
+def ai_j_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'J_DOWN'
+
+def ai_k_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'K_DOWN'
+
+def ai_l_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'L_DOWN'
+
+def ai_semicolon_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'SEMICOLON_DOWN'
+
+def ai_quote_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'QUOTE_DOWN'
+
+def ai_slash_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'SLASH_DOWN'
+
+def ai_o_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'O_DOWN'
+
+def ai_p_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'P_DOWN'
+
+def ai_leftBracket_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'LEFTBRACKET_DOWN'
+
+def ai_leftBracket_up(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'LEFTBRACKET_UP'
+
+def ai_period_down(e):
+    return e[0] == 'AI_INPUT' and e[1] == 'PERIOD_DOWN'
+
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel == 30 cm
 

@@ -1258,6 +1258,20 @@ class Hit:
         elif self.character.x > 1544:
             self.character.x = 1544
 
+        # y축 중력 적용!
+        if self.character.y > self.character.ground_y:
+            self.character.y -= GRAVITY_PPS2 * game_framework.frame_time
+            if self.character.y <= self.character.ground_y:
+                self.character.y = self.character.ground_y
+
+        # 바닥 착지!
+        # if self.character.y <= self.character.ground_y:
+        #     self.character.y = self.character.ground_y
+        #     if self.character.is_left_pressed or self.character.is_right_pressed:
+        #         self.character.state_machine.handle_state_event(('LAND_WALK', None))
+        #     else:
+        #         self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+
     def draw(self):
         frame_data = self.character.frame['hit'][self.character.current_frame]
         self.character.draw_frame(frame_data)

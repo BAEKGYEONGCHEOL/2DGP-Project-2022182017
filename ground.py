@@ -19,6 +19,11 @@ class FirstGround:
     # 잔디는 충돌 처리에 대한 아무런 동작을 하지 않으므로 빈 함수로 둔다.
     def handle_collision(self, group, other):
         other.y = 151 + other.ground_y
+
+        # Hit 상태일 때는 착지 이벤트 금지!
+        if other.is_hitted:
+            return
+
         if other.is_left_pressed or other.is_right_pressed:
             other.state_machine.handle_state_event(('LAND_WALK', None))
         else:
@@ -43,6 +48,11 @@ class SecondGround:
     # 잔디는 충돌 처리에 대한 아무런 동작을 하지 않으므로 빈 함수로 둔다.
     def handle_collision(self, group, other):
         other.y = 151 + other.ground_y
+
+        # Hit 상태일 때는 착지 이벤트 금지!
+        if other.is_hitted:
+            return
+
         if other.is_left_pressed or other.is_right_pressed:
             other.state_machine.handle_state_event(('LAND_WALK', None))
         else:

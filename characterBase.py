@@ -792,6 +792,11 @@ class PowerAttack:
         self.attack_name = None
 
     def enter(self, e):
+        if len(self.character.active_bullets) > 0:
+            # 강제로 idle/state return!
+            self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+            return
+
         self.character.action_doing = True
         self.character.facing_lock = True
         self.frame = 0
@@ -845,6 +850,11 @@ class SphereAttack:
         self.attack_name = None
 
     def enter(self, e):
+        if len(self.character.active_bullets) > 0:
+            # 강제로 idle/state return!
+            self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+            return
+
         self.character.action_doing = True
         self.character.facing_lock = True
         self.frame = 0
@@ -898,6 +908,11 @@ class WaveAttack:
         self.attack_name = None
 
     def enter(self, e):
+        if len(self.character.active_bullets) > 0:
+            # 강제로 idle/state return!
+            self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+            return
+
         self.character.action_doing = True
         self.character.facing_lock = True
         self.frame = 0
@@ -1089,6 +1104,11 @@ class BaseBusterAttack:
         self.attack_name = None
 
     def enter(self, e):
+        if len(self.character.active_bullets) > 0:
+            # 강제로 idle/state return!
+            self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+            return
+
         self.character.action_doing = True
         self.character.facing_lock = True
         self.frame = 0
@@ -1324,6 +1344,9 @@ class Character:
 
         # 히트 상태 변수
         self.is_hitted = False
+
+        # 캐릭터가 투사체를 발사했는지 확인하는 리스트!
+        self.active_bullets = []
 
     def update(self):
         if self.state_machine:
@@ -1620,11 +1643,18 @@ class XCharacter(Character):
 
     # normal buster 발사 함수
     def fire_normal_buster(self):
+        # 이미 발사한 총알이 존재하면 새로운 발사 금지!
+        if len(self.active_bullets) >= 1:
+            return
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
         buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, self, 15)
         game_world.add_object(buster, 2)
+
+        # 총알 리스트에 추가!
+        self.active_bullets.append(buster)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
@@ -1636,11 +1666,18 @@ class XCharacter(Character):
 
     # power buster 발사 함수
     def fire_power_buster(self):
+        # 이미 발사한 총알이 존재하면 새로운 발사 금지!
+        if len(self.active_bullets) >= 1:
+            return
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
         buster = PowerBuster(self.x + 50 * facing, self.y + 20, facing, self, 25)
         game_world.add_object(buster, 2)
+
+        # 총알 리스트에 추가!
+        self.active_bullets.append(buster)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
@@ -2114,11 +2151,18 @@ class SigmaCharacter(Character):
 
     # sphere 발사 함수
     def fire_sphere(self):
+        # 이미 발사한 총알이 존재하면 새로운 발사 금지!
+        if len(self.active_bullets) >= 1:
+            return
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
         buster = Sphere(self.x + 50 * facing, self.y + 25, facing, self, 15)
         game_world.add_object(buster, 2)
+
+        # 총알 리스트에 추가!
+        self.active_bullets.append(buster)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
@@ -2130,11 +2174,18 @@ class SigmaCharacter(Character):
 
     # wave 발사 함수
     def fire_wave(self):
+        # 이미 발사한 총알이 존재하면 새로운 발사 금지!
+        if len(self.active_bullets) >= 1:
+            return
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
         buster = Wave(self.x + 50 * facing, self.y + 50, facing, self, 25)
         game_world.add_object(buster, 2)
+
+        # 총알 리스트에 추가!
+        self.active_bullets.append(buster)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
@@ -2633,11 +2684,18 @@ class UltimateArmorXCharacter(Character):
 
     # normal buster 발사 함수
     def fire_normal_buster(self):
+        # 이미 발사한 총알이 존재하면 새로운 발사 금지!
+        if len(self.active_bullets) >= 1:
+            return
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
         buster = NormalBuster(self.x + 50 * facing, self.y + 25, facing, self, 25)
         game_world.add_object(buster, 2)
+
+        # 총알 리스트에 추가!
+        self.active_bullets.append(buster)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:
@@ -2647,11 +2705,18 @@ class UltimateArmorXCharacter(Character):
 
     # power buster 발사 함수
     def fire_power_buster(self):
+        # 이미 발사한 총알이 존재하면 새로운 발사 금지!
+        if len(self.active_bullets) >= 1:
+            return
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
         buster = PowerBuster(self.x + 50 * facing, self.y + 25, facing, self, 40)
         game_world.add_object(buster, 2)
+
+        # 총알 리스트에 추가!
+        self.active_bullets.append(buster)
 
         # 충돌 그룹으로 등록(플레이어에 따라서!)
         if self.player == 1:

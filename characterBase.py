@@ -1582,8 +1582,91 @@ class XCharacter(Character):
     # ===================================================== AI =====================================================
     # ==============================================================================================================
     # AI 행동 트리
+    def distance_less_than(self, x1, y1, x2, y2, r):  # r은 미터 단위!
+        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
+        return distance2 < (PIXEL_PER_METER * r) ** 2
+
+    # 플레이어가 얕게 가까이 있는지 판단하는 조건 노드
+    def if_player_nearly(self):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 20):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    # 플레이어가 깊게 가까이 있는지 판단하는 조건 노드
+    def if_player_nearly_deep(self):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 10):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    # 벽이 가까이 있는지 판단하는 조건 노드
+    def if_wall_nearly(self):
+        if self.x < 50 + PIXEL_PER_METER * 1.0:
+            return BehaviorTree.SUCCESS
+        if self.x > 1544 - PIXEL_PER_METER * 1.0:
+            return BehaviorTree.SUCCESS
+        return BehaviorTree.FAIL
+
+    # 플레이어의 반대 방향으로 walk 하는 행동 노드
+    def walk_opposite_to_player(self):
+        if self.target.x < self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('LAND_WALK', None))
+        return BehaviorTree.SUCCESS
+
+    # 플레이어의 반대 방향으로 dash 하는 행동 노드
+    def dash_opposite_to_player(self):
+        if self.target.x < self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('g_down', None))
+        return BehaviorTree.SUCCESS
+
+    # 벽의 반대 방향으로 walk_jump 하는 행동 노드
+    def walk_jump_opposite_to_wall(self):
+        if self.x < 50 + PIXEL_PER_METER * 1.0:
+            self.facing = 1
+        elif self.x > 1544 - PIXEL_PER_METER * 1.0:
+            self.facing = -1
+        else:
+            return BehaviorTree.FAIL
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('LAND_WALK', None))
+        self.state_machine.handle_state_event(('s_down', None))
+        return BehaviorTree.SUCCESS
+
+    # AI 행동 트리
     def build_behavior_tree(self):
-        pass
+        # 기본 플레이어 또는 벽에서 멀어지기 노드
+        c1 = Condition('if_player_nearly', self.if_player_nearly)
+        c2 = Condition('if_player_nearly_deep', self.if_player_nearly_deep)
+        c3 = Condition('if_wall_nearly', self.if_wall_nearly)
+
+        a1 = Action('walk_opposite_to_player', self.walk_opposite_to_player)
+        a2 = Action('dash_opposite_to_player', self.dash_opposite_to_player)
+        a3 = Action('walk_jump_opposite_to_wall', self.walk_jump_opposite_to_wall)
+
+        run_to_player_nearly = Sequence('run_to_player_nearly', c1, a1)
+        run_to_player_nearly_deep = Sequence('run_to_player_nearly_deep', c2, a2)
+        jump_from_wall_nearly = Sequence('jump_from_wall_nearly', c3, a3)
+
+        root = run_to_target = Selector('run_to_target', run_to_player_nearly_deep, run_to_player_nearly,
+                                        jump_from_wall_nearly)
+
+        # 메인 행동 트리 설정!
+        self.bt = BehaviorTree(root)
 
 
 # Zero 캐릭터 클래스
@@ -1773,6 +1856,7 @@ class ZeroCharacter(Character):
     # AI 행동 트리
     def build_behavior_tree(self):
         pass
+
 
 # Sigma 캐릭터 클래스
 class SigmaCharacter(Character):
@@ -2037,6 +2121,7 @@ class SigmaCharacter(Character):
     def build_behavior_tree(self):
         pass
 
+
 # Vile 캐릭터 클래스
 class VileCharacter(Character):
     Vile_speed = 1.85
@@ -2287,6 +2372,7 @@ class VileCharacter(Character):
     # AI 행동 트리
     def build_behavior_tree(self):
         pass
+
 
 # Ultimate Armor X 캐릭터 클래스
 class UltimateArmorXCharacter(Character):

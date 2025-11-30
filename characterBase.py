@@ -1948,15 +1948,129 @@ class ZeroCharacter(Character):
             self.state_machine = StateMachine(
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
-                    self.INTRO: {time_out: self.IDLE},
-                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.BASE_SWORD_ATTACK, k_down: self.JUMP, quote_down: self.DASH, slash_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.BASE_SWORD_ATTACK, k_down: self.WALK_JUMP, quote_down: self.DASH, slash_down: self.DASH_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    # INTRO
+                    self.INTRO: {
+                        time_out: self.IDLE,
+                    },
+
+                    # ==========================================================
+                    # IDLE
+                    # ==========================================================
+                    self.IDLE: {
+                        # Player
+                        six_down: self.WALK, six_up: self.WALK,
+                        four_down: self.WALK, four_up: self.WALK,
+                        j_down: self.BASE_SWORD_ATTACK,
+                        k_down: self.JUMP,
+                        quote_down: self.DASH,
+                        slash_down: self.DASH_ATTACK,
+
+                        # AI
+                        ai_idle: self.IDLE,
+                        ai_walk: self.WALK,
+                        ai_jump: self.JUMP,
+                        ai_walk_jump: self.WALK_JUMP,
+                        ai_base_sword_attack: self.BASE_SWORD_ATTACK,
+                        ai_dash: self.DASH,
+                        ai_dash_attack: self.DASH_ATTACK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WALK
+                    # ==========================================================
+                    self.WALK: {
+                        # Player
+                        six_down: self.IDLE, six_up: self.IDLE,
+                        four_down: self.IDLE, four_up: self.IDLE,
+                        j_down: self.BASE_SWORD_ATTACK,
+                        k_down: self.WALK_JUMP,
+                        quote_down: self.DASH,
+                        slash_down: self.DASH_ATTACK,
+
+                        # AI
+                        ai_idle: self.IDLE,
+                        ai_walk: self.WALK,
+                        ai_jump: self.WALK_JUMP,
+                        ai_walk_jump: self.WALK_JUMP,
+                        ai_base_sword_attack: self.BASE_SWORD_ATTACK,
+                        ai_dash: self.DASH,
+                        ai_dash_attack: self.DASH_ATTACK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # JUMP
+                    # ==========================================================
+                    self.JUMP: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WALK_JUMP
+                    # ==========================================================
+                    self.WALK_JUMP: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # BASE_SWORD_ATTACK
+                    # ==========================================================
+                    self.BASE_SWORD_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DASH_ATTACK
+                    # ==========================================================
+                    self.DASH_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DASH
+                    # ==========================================================
+                    self.DASH: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # HIT
+                    # ==========================================================
+                    self.HIT: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DEFEAT
+                    # ==========================================================
                     self.DEFEAT: {},
                 }
             )
@@ -2138,15 +2252,131 @@ class SigmaCharacter(Character):
             self.state_machine = StateMachine(
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
-                    self.INTRO: {time_out: self.IDLE},
-                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.ARM_ATTACK, k_down: self.TELEPORT, slash_down: self.DASH_ATTACK_WALL, o_down: self.SPHERE_ATTACK, p_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.ARM_ATTACK, k_down: self.TELEPORT, slash_down: self.DASH_ATTACK_WALL, o_down: self.SPHERE_ATTACK, p_down: self.WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.ARM_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.SPHERE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    # INTRO
+                    self.INTRO: {
+                        time_out: self.IDLE,
+                    },
+
+                    # ==========================================================
+                    # IDLE
+                    # ==========================================================
+                    self.IDLE: {
+                        # Player
+                        six_down: self.WALK, six_up: self.WALK,
+                        four_down: self.WALK, four_up: self.WALK,
+                        j_down: self.ARM_ATTACK,
+                        k_down: self.TELEPORT,
+                        slash_down: self.DASH_ATTACK_WALL,
+                        o_down: self.SPHERE_ATTACK,
+                        p_down: self.WAVE_ATTACK,
+
+                        # AI
+                        ai_idle: self.IDLE,
+                        ai_walk: self.WALK,
+                        ai_teleport: self.TELEPORT,
+                        ai_arm_attack: self.ARM_ATTACK,
+                        ai_sphere_attack: self.SPHERE_ATTACK,
+                        ai_wave_attack: self.WAVE_ATTACK,
+                        ai_dash_attack_wall: self.DASH_ATTACK_WALL,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WALK
+                    # ==========================================================
+                    self.WALK: {
+                        # Player
+                        six_down: self.IDLE, six_up: self.IDLE,
+                        four_down: self.IDLE, four_up: self.IDLE,
+                        j_down: self.ARM_ATTACK,
+                        k_down: self.TELEPORT,
+                        slash_down: self.DASH_ATTACK_WALL,
+                        o_down: self.SPHERE_ATTACK,
+                        p_down: self.WAVE_ATTACK,
+
+                        # AI
+                        ai_idle: self.IDLE,
+                        ai_walk: self.WALK,
+                        ai_teleport: self.TELEPORT,
+                        ai_arm_attack: self.ARM_ATTACK,
+                        ai_sphere_attack: self.SPHERE_ATTACK,
+                        ai_wave_attack: self.WAVE_ATTACK,
+                        ai_dash_attack_wall: self.DASH_ATTACK_WALL,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # TELEPORT
+                    # ==========================================================
+                    self.TELEPORT: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # ARM_ATTACK
+                    # ==========================================================
+                    self.ARM_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # SPHERE_ATTACK
+                    # ==========================================================
+                    self.SPHERE_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WAVE_ATTACK
+                    # ==========================================================
+                    self.WAVE_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DASH_ATTACK_WALL
+                    # ==========================================================
+                    self.DASH_ATTACK_WALL: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # HIT
+                    # ==========================================================
+                    self.HIT: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DEFEAT
+                    # ==========================================================
                     self.DEFEAT: {},
                 }
             )
@@ -2416,15 +2646,131 @@ class VileCharacter(Character):
             self.state_machine = StateMachine(
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
-                    self.INTRO: {time_out: self.IDLE},
-                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.BASE_SWORD_ATTACK, k_down: self.TELEPORT, slash_down: self.DASH_ATTACK, leftBracket_down: self.REFLEX_ATTACK, period_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.BASE_SWORD_ATTACK, k_down: self.TELEPORT, slash_down: self.DASH_ATTACK, leftBracket_down: self.REFLEX_ATTACK, period_down: self.AMBIENT_WAVE_ATTACK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.TELEPORT: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.REFLEX_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.DASH_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.AMBIENT_WAVE_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    # INTRO
+                    self.INTRO: {
+                        time_out: self.IDLE,
+                    },
+
+                    # ==========================================================
+                    # IDLE
+                    # ==========================================================
+                    self.IDLE: {
+                        # Player 입력
+                        six_down: self.WALK, six_up: self.WALK,
+                        four_down: self.WALK, four_up: self.WALK,
+                        j_down: self.BASE_SWORD_ATTACK,
+                        k_down: self.TELEPORT,
+                        slash_down: self.DASH_ATTACK,
+                        leftBracket_down: self.REFLEX_ATTACK,
+                        period_down: self.AMBIENT_WAVE_ATTACK,
+
+                        # AI 입력
+                        ai_idle: self.IDLE,
+                        ai_walk: self.WALK,
+                        ai_teleport: self.TELEPORT,
+                        ai_base_sword_attack: self.BASE_SWORD_ATTACK,
+                        ai_reflex_attack: self.REFLEX_ATTACK,
+                        ai_dash_attack: self.DASH_ATTACK,
+                        ai_ambient_wave_attack: self.AMBIENT_WAVE_ATTACK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WALK
+                    # ==========================================================
+                    self.WALK: {
+                        # Player 입력
+                        six_down: self.IDLE, six_up: self.IDLE,
+                        four_down: self.IDLE, four_up: self.IDLE,
+                        j_down: self.BASE_SWORD_ATTACK,
+                        k_down: self.TELEPORT,
+                        slash_down: self.DASH_ATTACK,
+                        leftBracket_down: self.REFLEX_ATTACK,
+                        period_down: self.AMBIENT_WAVE_ATTACK,
+
+                        # AI 입력
+                        ai_idle: self.IDLE,
+                        ai_walk: self.WALK,
+                        ai_teleport: self.TELEPORT,
+                        ai_base_sword_attack: self.BASE_SWORD_ATTACK,
+                        ai_reflex_attack: self.REFLEX_ATTACK,
+                        ai_dash_attack: self.DASH_ATTACK,
+                        ai_ambient_wave_attack: self.AMBIENT_WAVE_ATTACK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # TELEPORT
+                    # ==========================================================
+                    self.TELEPORT: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # BASE_SWORD_ATTACK
+                    # ==========================================================
+                    self.BASE_SWORD_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # REFLEX_ATTACK
+                    # ==========================================================
+                    self.REFLEX_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DASH_ATTACK
+                    # ==========================================================
+                    self.DASH_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # AMBIENT_WAVE_ATTACK
+                    # ==========================================================
+                    self.AMBIENT_WAVE_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # HIT
+                    # ==========================================================
+                    self.HIT: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DEFEAT
+                    # ==========================================================
                     self.DEFEAT: {},
                 }
             )
@@ -2670,16 +3016,140 @@ class UltimateArmorXCharacter(Character):
             self.state_machine = StateMachine(
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
-                    self.INTRO: {time_out: self.IDLE},
-                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.BASE_SWORD_ATTACK, k_down: self.JUMP, l_down: self.BASE_BUSTER_ATTACK, semicolon_down: self.POWER_ATTACK, slash_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.BASE_SWORD_ATTACK, k_down: self.WALK_JUMP, l_down: self.BASE_BUSTER_ATTACK, semicolon_down: self.POWER_ATTACK, slash_down: self.DASH_ATTACK_WALL, hit: self.HIT, defeat: self.DEFEAT},
-                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.BASE_SWORD_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.DASH_ATTACK_WALL: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
+                    # INTRO
+                    self.INTRO : {
+                        time_out: self.IDLE,
+                    },
+
+                    # ==========================================================
+                    # IDLE
+                    # ==========================================================
+                    self.IDLE: {
+                        six_down: self.WALK, six_up: self.WALK,
+                        four_down: self.WALK, four_up: self.WALK,
+                        j_down: self.BASE_SWORD_ATTACK,
+                        k_down: self.JUMP,
+                        l_down: self.BASE_BUSTER_ATTACK,
+                        semicolon_down: self.POWER_ATTACK,
+                        slash_down: self.DASH_ATTACK_WALL,
+
+                        # AI
+                        ai_walk: self.WALK,
+                        ai_jump: self.JUMP,
+                        ai_walk_jump: self.WALK_JUMP,
+                        ai_base_sword_attack: self.BASE_SWORD_ATTACK,
+                        ai_base_buster_attack: self.BASE_BUSTER_ATTACK,
+                        ai_power_attack: self.POWER_ATTACK,
+                        ai_dash_attack_wall: self.DASH_ATTACK_WALL,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WALK
+                    # ==========================================================
+                    self.WALK: {
+                        six_down: self.IDLE, six_up: self.IDLE,
+                        four_down: self.IDLE, four_up: self.IDLE,
+                        j_down: self.BASE_SWORD_ATTACK,
+                        k_down: self.WALK_JUMP,
+                        l_down: self.BASE_BUSTER_ATTACK,
+                        semicolon_down: self.POWER_ATTACK,
+                        slash_down: self.DASH_ATTACK_WALL,
+
+                        # AI
+                        ai_idle: self.IDLE,
+                        ai_jump: self.WALK_JUMP,
+                        ai_walk_jump: self.WALK_JUMP,
+                        ai_base_sword_attack: self.BASE_SWORD_ATTACK,
+                        ai_base_buster_attack: self.BASE_BUSTER_ATTACK,
+                        ai_power_attack: self.POWER_ATTACK,
+                        ai_dash_attack_wall: self.DASH_ATTACK_WALL,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # JUMP
+                    # ==========================================================
+                    self.JUMP: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WALK_JUMP
+                    # ==========================================================
+                    self.WALK_JUMP: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # BASE_SWORD_ATTACK
+                    # ==========================================================
+                    self.BASE_SWORD_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # BASE_BUSTER_ATTACK
+                    # ==========================================================
+                    self.BASE_BUSTER_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # POWER_ATTACK
+                    # ==========================================================
+                    self.POWER_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DASH_ATTACK_WALL
+                    # ==========================================================
+                    self.DASH_ATTACK_WALL: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        hit: self.HIT,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # HIT
+                    # ==========================================================
+                    self.HIT: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DEFEAT
+                    # ==========================================================
                     self.DEFEAT: {},
                 }
             )

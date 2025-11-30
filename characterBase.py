@@ -10,6 +10,7 @@ from all_buster import NormalBuster, PowerBuster, Sphere, Wave
 from state_machine import StateMachine
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+from random import *
 
 def time_out(e):
     return e[0] == 'TIME_OUT'
@@ -1842,7 +1843,11 @@ class XCharacter(Character):
 
         # 총알이 없을 때만 상태 전환!
         if len(self.active_bullets) == 0:
-            self.state_machine.handle_state_event(('AI', 'BASE_BUSTER_ATTACK'))
+            if random() < 0.7:
+                attack_type = 'BASE_BUSTER_ATTACK'
+            else:
+                attack_type = 'POWER_ATTACK'
+            self.state_machine.handle_state_event(('AI', attack_type))
         return BehaviorTree.SUCCESS
 
     # AI 행동 트리

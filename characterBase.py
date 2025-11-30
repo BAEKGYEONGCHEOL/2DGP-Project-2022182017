@@ -1840,7 +1840,9 @@ class XCharacter(Character):
 
         self.facing_lock = False
 
-        self.state_machine.handle_state_event(('AI', 'BASE_BUSTER_ATTACK'))
+        # 총알이 없을 때만 상태 전환!
+        if len(self.active_bullets) == 0:
+            self.state_machine.handle_state_event(('AI', 'BASE_BUSTER_ATTACK'))
         return BehaviorTree.SUCCESS
 
     # AI 행동 트리

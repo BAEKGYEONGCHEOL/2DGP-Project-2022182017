@@ -1793,6 +1793,19 @@ class XCharacter(Character):
         self.state_machine.handle_state_event(('AI', 'WALK_JUMP'))
         return BehaviorTree.SUCCESS
 
+    # 플레이어 방향으로 버스터 쏘는 행동 노드
+    def buster_to_player(self):
+        # 플레이어가 오른쪽이면 오른쪽 바라보고, 왼쪽이면 왼쪽 바라보게
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('AI', 'BASE_BUSTER_ATTACK'))
+        return BehaviorTree.SUCCESS
+
     # AI 행동 트리
     def build_behavior_tree(self):
         # 기본 플레이어 또는 벽에서 멀어지기 노드
@@ -1808,8 +1821,15 @@ class XCharacter(Character):
         run_to_player_nearly_deep = Sequence('run_to_player_nearly_deep', c2, a2)
         jump_from_wall_nearly = Sequence('jump_from_wall_nearly', c3, a3)
 
-        root = run_to_target = Selector('run_to_target', run_to_player_nearly_deep, run_to_player_nearly,
-                                        jump_from_wall_nearly)
+        root = run_to_target = Selector('run_to_target', jump_from_wall_nearly, run_to_player_nearly_deep, run_to_player_nearly,)
+
+
+        # 플레이어에게 버스터 쏘기 노드
+        a4 = Action('buster_to_player', self.buster_to_player)
+
+
+        # 메인 루트 노드
+        root = Selector('MainSelector', run_to_target, a4)
 
         # 메인 행동 트리 설정!
         self.bt = BehaviorTree(root)

@@ -1734,14 +1734,14 @@ class XCharacter(Character):
 
     # 플레이어가 얕게 가까이 있는지 판단하는 조건 노드
     def if_player_nearly(self):
-        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 20):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 15):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     # 플레이어가 깊게 가까이 있는지 판단하는 조건 노드
     def if_player_nearly_deep(self):
-        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 10):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 7):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL

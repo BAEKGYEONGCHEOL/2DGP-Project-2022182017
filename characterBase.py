@@ -119,50 +119,56 @@ def period_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_PERIOD
 
 # AI
-def ai_four_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'FOUR_DOWN'
+def ai_intro(e):
+    return e[0] == 'AI' and e[1] == 'INTRO'
 
-def ai_six_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'SIX_DOWN'
+def ai_idle(e):
+    return e[0] == 'AI' and e[1] == 'IDLE'
 
-def ai_four_up(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'FOUR_UP'
+def ai_walk(e):
+    return e[0] == 'AI' and e[1] == 'WALK'
 
-def ai_six_up(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'SIX_UP'
+def ai_jump(e):
+    return e[0] == 'AI' and e[1] == 'JUMP'
 
-def ai_j_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'J_DOWN'
+def ai_walk_jump(e):
+    return e[0] == 'AI' and e[1] == 'WALK_JUMP'
 
-def ai_k_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'K_DOWN'
+def ai_teleport(e):
+    return e[0] == 'AI' and e[1] == 'TELEPORT'
 
-def ai_l_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'L_DOWN'
+def ai_dash(e):
+    return e[0] == 'AI' and e[1] == 'DASH'
 
-def ai_semicolon_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'SEMICOLON_DOWN'
+def ai_dash_attack(e):
+    return e[0] == 'AI' and e[1] == 'DASH_ATTACK'
 
-def ai_quote_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'QUOTE_DOWN'
+def ai_dash_attack_wall(e):
+    return e[0] == 'AI' and e[1] == 'DASH_ATTACK_WALL'
 
-def ai_slash_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'SLASH_DOWN'
+def ai_base_sword_attack(e):
+    return e[0] == 'AI' and e[1] == 'BASE_SWORD_ATTACK'
 
-def ai_o_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'O_DOWN'
+def ai_base_buster_attack(e):
+    return e[0] == 'AI' and e[1] == 'BASE_BUSTER_ATTACK'
 
-def ai_p_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'P_DOWN'
+def ai_power_attack(e):
+    return e[0] == 'AI' and e[1] == 'POWER_ATTACK'
 
-def ai_leftBracket_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'LEFTBRACKET_DOWN'
+def ai_arm_attack(e):
+    return e[0] == 'AI' and e[1] == 'ARM_ATTACK'
 
-def ai_leftBracket_up(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'LEFTBRACKET_UP'
+def ai_sphere_attack(e):
+    return e[0] == 'AI' and e[1] == 'SPHERE_ATTACK'
 
-def ai_period_down(e):
-    return e[0] == 'AI_INPUT' and e[1] == 'PERIOD_DOWN'
+def ai_wave_attack(e):
+    return e[0] == 'AI' and e[1] == 'WAVE_ATTACK'
+
+def ai_reflex_attack(e):
+    return e[0] == 'AI' and e[1] == 'REFLEX_ATTACK'
+
+def ai_ambient_wave_attack(e):
+    return e[0] == 'AI' and e[1] == 'AMBIENT_WAVE_ATTACK'
 
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel == 30 cm
@@ -1483,19 +1489,113 @@ class XCharacter(Character):
             self.state_machine = StateMachine(
                 self.IDLE,  # 시작 상태는 IDLE 상태
                 {
-                    # INTRO 상태에서 해당 INTRO 프레임이 끝나는 이벤트(time_out)가 발생하면 IDLE 상태가 됨
+                    # INTRO -> IDLE
                     self.INTRO: {time_out: self.IDLE},
-                    # IDLE 상태(RUN 상태에서 양쪽 방향키를 동시에 눌렀을 때)에서 한 쪽 방향키를 떼었을 때 반대 방향으로 달리게 하기 위해서 right_down, right_up, left_down, left_up 이벤트도 추가, a키를 누르면 AUTO_RUN 상태로 변환!
-                    self.IDLE: {six_down: self.WALK, six_up: self.WALK, four_down: self.WALK, four_up: self.WALK, j_down: self.BASE_BUSTER_ATTACK, k_down: self.JUMP, l_down: self.POWER_ATTACK, quote_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
-                    # 여기서 right_down 과 left_down 은 RUN 상태에서 반대 방향키를 눌렀을 때 IDLE 상태로 가게 되는 경우이다.
-                    self.WALK: {six_down: self.IDLE, six_up: self.IDLE, four_down: self.IDLE, four_up: self.IDLE, j_down: self.BASE_BUSTER_ATTACK, k_down: self.WALK_JUMP, l_down: self.POWER_ATTACK, quote_down: self.DASH, hit: self.HIT, defeat: self.DEFEAT},
-                    self.JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.WALK_JUMP: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.BASE_BUSTER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.POWER_ATTACK: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.DASH: {land_idle: self.IDLE, land_walk: self.WALK, hit: self.HIT, defeat: self.DEFEAT},
-                    self.HIT: {land_idle: self.IDLE, land_walk: self.WALK, defeat: self.DEFEAT},
-                    self.DEFEAT: {},
+
+                    # ==========================================================
+                    # IDLE
+                    # ==========================================================
+                    self.IDLE: {
+                        # 2P 입력
+                        six_down: self.WALK, six_up: self.WALK,
+                        four_down: self.WALK, four_up: self.WALK,
+                        j_down: self.BASE_BUSTER_ATTACK,
+                        k_down: self.JUMP,
+                        l_down: self.POWER_ATTACK,
+                        quote_down: self.DASH,
+
+                        # AI 입력
+                        ai_walk: self.WALK,
+                        ai_jump: self.JUMP,
+                        ai_walk_jump: self.WALK_JUMP,
+                        ai_base_buster_attack: self.BASE_BUSTER_ATTACK,
+                        ai_power_attack: self.POWER_ATTACK,
+                        ai_dash: self.DASH,
+
+                        # 공통
+                        hit: self.HIT, defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WALK
+                    # ==========================================================
+                    self.WALK: {
+                        six_down: self.IDLE, six_up: self.IDLE,
+                        four_down: self.IDLE, four_up: self.IDLE,
+                        j_down: self.BASE_BUSTER_ATTACK,
+                        k_down: self.WALK_JUMP,
+                        l_down: self.POWER_ATTACK,
+                        quote_down: self.DASH,
+
+                        # AI
+                        ai_idle: self.IDLE,
+                        ai_jump: self.WALK_JUMP,
+                        ai_walk_jump: self.WALK_JUMP,
+                        ai_base_buster_attack: self.BASE_BUSTER_ATTACK,
+                        ai_power_attack: self.POWER_ATTACK,
+                        ai_dash: self.DASH,
+
+                        hit: self.HIT, defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # JUMP
+                    # ==========================================================
+                    self.JUMP: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+                        hit: self.HIT, defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # WALK_JUMP
+                    # ==========================================================
+                    self.WALK_JUMP: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+                        hit: self.HIT, defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # BASE_BUSTER_ATTACK
+                    # ==========================================================
+                    self.BASE_BUSTER_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+                        hit: self.HIT, defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # POWER_ATTACK
+                    # ==========================================================
+                    self.POWER_ATTACK: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+                        hit: self.HIT, defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DASH
+                    # ==========================================================
+                    self.DASH: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+                        hit: self.HIT, defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # HIT
+                    # ==========================================================
+                    self.HIT: {
+                        land_idle: self.IDLE,
+                        land_walk: self.WALK,
+                        defeat: self.DEFEAT
+                    },
+
+                    # ==========================================================
+                    # DEFEAT
+                    # ==========================================================
+                    self.DEFEAT: {}
                 }
             )
 
@@ -1663,7 +1763,7 @@ class XCharacter(Character):
 
         self.facing_lock = False
 
-        self.state_machine.handle_state_event(('LAND_WALK', None))
+        self.state_machine.handle_state_event(('AI', 'WALK'))
         return BehaviorTree.SUCCESS
 
     # 플레이어의 반대 방향으로 dash 하는 행동 노드
@@ -1675,7 +1775,7 @@ class XCharacter(Character):
 
         self.facing_lock = False
 
-        self.state_machine.handle_state_event(('g_down', None))
+        self.state_machine.handle_state_event(('AI', 'DASH'))
         return BehaviorTree.SUCCESS
 
     # 벽의 반대 방향으로 walk_jump 하는 행동 노드
@@ -1690,7 +1790,7 @@ class XCharacter(Character):
         self.facing_lock = False
 
         self.state_machine.handle_state_event(('LAND_WALK', None))
-        self.state_machine.handle_state_event(('s_down', None))
+        self.state_machine.handle_state_event(('AI', 'WALK_JUMP'))
         return BehaviorTree.SUCCESS
 
     # AI 행동 트리

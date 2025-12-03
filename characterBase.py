@@ -2474,7 +2474,6 @@ class SigmaCharacter(Character):
 
                         # AI
                         ai_idle: self.IDLE,
-                        ai_walk: self.WALK,
                         ai_teleport: self.TELEPORT,
                         ai_arm_attack: self.ARM_ATTACK,
                         ai_sphere_attack: self.SPHERE_ATTACK,
@@ -2873,7 +2872,6 @@ class VileCharacter(Character):
 
                         # AI 입력
                         ai_idle: self.IDLE,
-                        ai_walk: self.WALK,
                         ai_teleport: self.TELEPORT,
                         ai_base_sword_attack: self.BASE_SWORD_ATTACK,
                         ai_reflex_attack: self.REFLEX_ATTACK,
@@ -3246,7 +3244,6 @@ class UltimateArmorXCharacter(Character):
 
                         # AI
                         ai_idle: self.IDLE,
-                        ai_jump: self.WALK_JUMP,
                         ai_walk_jump: self.WALK_JUMP,
                         ai_base_sword_attack: self.BASE_SWORD_ATTACK,
                         ai_base_buster_attack: self.BASE_BUSTER_ATTACK,

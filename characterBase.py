@@ -1810,10 +1810,19 @@ class XCharacter(Character):
     def if_enemy_wave_nearly(self):
         for wave in self.target.active_bullets:
             # 내 총알이면 pass!
-            if wave.owner == self:
+            if wave.thrower == self:
                 continue
+
+            # 해당 총알의 속도에 따른 점프 범위 설정
+            if wave.xv == 15:
+                jump_range = 200
+            elif wave.xv == 25:
+                jump_range = 350
+            elif wave.xv == 40:
+                jump_range = 500
+
             # 가까이 있는지 검사
-            if abs(self.x - wave.x) < 200:
+            if abs(self.x - wave.x) < jump_range:
                 # 나를 향해 오는 총알만 처리!
                 if (wave.facing == 1 and wave.x < self.x) or (wave.facing == -1 and wave.x > self.x):
                     return BehaviorTree.SUCCESS
@@ -1877,22 +1886,30 @@ class XCharacter(Character):
             self.state_machine.handle_state_event(('AI', attack_type))
         return BehaviorTree.SUCCESS
 
+    # 상대 총알이 날아오면 점프 행동 노드
+    def jump_from_enemy_wave(self):
+        self.state_machine.handle_state_event(('AI', 'JUMP'))
+        return BehaviorTree.SUCCESS
+
     # AI 행동 트리
     def build_behavior_tree(self):
         # 기본 플레이어 또는 벽에서 멀어지기 노드
         c1 = Condition('if_player_nearly', self.if_player_nearly)
         c2 = Condition('if_player_nearly_deep', self.if_player_nearly_deep)
         c3 = Condition('if_wall_nearly', self.if_wall_nearly)
+        c4 = Condition('if_enemy_wave_nearly', self.if_enemy_wave_nearly)
 
         a1 = Action('walk_opposite_to_player', self.walk_opposite_to_player)
         a2 = Action('dash_opposite_to_player', self.dash_opposite_to_player)
         a3 = Action('walk_jump_opposite_to_wall', self.walk_jump_opposite_to_wall)
+        a4 = Action('jump_from_enemy_wave', self.jump_from_enemy_wave)
 
         run_to_player_nearly = Sequence('run_to_player_nearly', c1, a1)
         run_to_player_nearly_deep = Sequence('run_to_player_nearly_deep', c2, a2)
         jump_from_wall_nearly = Sequence('jump_from_wall_nearly', c3, a3)
+        jump_from_enemy_wave = Sequence('jump_from_enemy_wave', c4, a4)
 
-        root = run_to_target = Selector('run_to_target', jump_from_wall_nearly, run_to_player_nearly_deep, run_to_player_nearly,)
+        root = run_to_target = Selector('run_to_target', jump_from_enemy_wave, jump_from_wall_nearly, run_to_player_nearly_deep, run_to_player_nearly,)
 
 
         # 플레이어에게 버스터 쏘기 노드

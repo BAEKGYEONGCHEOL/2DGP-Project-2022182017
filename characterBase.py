@@ -2282,6 +2282,29 @@ class ZeroCharacter(Character):
         else:
             return BehaviorTree.FAIL
 
+    # 적 투사체가 가까이 있는지 판단하는 노드
+    def if_enemy_wave_nearly(self):
+        for wave in self.target.active_bullets:
+            # 내 총알이면 pass!
+            if wave.thrower == self:
+                continue
+
+            # 해당 총알의 속도에 따른 점프 범위 설정
+            if wave.xv == 15:
+                jump_range = 300
+            elif wave.xv == 25:
+                jump_range = 500
+            elif wave.xv == 40:
+                jump_range = 700
+
+            # 가까이 있는지 검사
+            if abs(self.x - wave.x) < jump_range:
+                # 나를 향해 오는 총알만 처리!
+                if (wave.facing == 1 and wave.x < self.x) or (wave.facing == -1 and wave.x > self.x):
+                    return BehaviorTree.SUCCESS
+        return BehaviorTree.FAIL
+
+
     # ============= 행동 노드 =============
     # 플레이어에게 대쉬하는 노드
     def dash_towards_player(self):
@@ -2348,6 +2371,19 @@ class ZeroCharacter(Character):
         self.state_machine.handle_state_event(('AI', 'BASE_SWORD_ATTACK'))
         return BehaviorTree.SUCCESS
 
+    # 상대 총알이 날아오면 점프 행동 노드
+    def jump_from_enemy_wave(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.SUCCESS
+
+        # 이미 점프 중이면 다시 점프 금지!!
+        if self.state_machine.cur_state == self.JUMP or self.state_machine.cur_state == self.WALK_JUMP:
+            return BehaviorTree.FAIL
+
+        self.state_machine.handle_state_event(('AI', 'WALK_JUMP'))
+        return BehaviorTree.SUCCESS
+
     def build_behavior_tree(self):
         # 기본 플레이어 또는 벽에서 멀어지기 노드
         c1 = Condition('if_player_far', self.if_player_far)
@@ -2365,8 +2401,16 @@ class ZeroCharacter(Character):
         walk_to_player = Sequence('walk_to_player', c3, a3)
         attack_to_player = Sequence('attack_to_player', c4, a4)
 
-        # 메인 루트 노드
         root = run_and_attack_to_target = Selector('run_and_attack_to_target', attack_to_player, walk_to_player, dash_attack_to_player, dash_to_player,)
+
+
+        c5 = Condition('if_enemy_wave_nearly', self.if_enemy_wave_nearly)
+        a5 = Action('jump_from_enemy_wave', self.jump_from_enemy_wave)
+
+        jump_from_enemy_wave = Sequence('jump_from_enemy_wave', c5, a5)
+
+        # 메인 루트 노드
+        root = Selector('MainSelector', jump_from_enemy_wave, run_and_attack_to_target)
 
         # 메인 행동 트리 설정!
         self.bt = BehaviorTree(root)

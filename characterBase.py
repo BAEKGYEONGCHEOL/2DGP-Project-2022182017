@@ -1833,6 +1833,10 @@ class XCharacter(Character):
     # ============= 행동 노드 =============
     # 플레이어의 반대 방향으로 walk 하는 행동 노드
     def walk_opposite_to_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
         if self.target.x < self.x:
             self.facing = 1
         else:
@@ -1845,6 +1849,10 @@ class XCharacter(Character):
 
     # 플레이어의 반대 방향으로 dash 하는 행동 노드
     def dash_opposite_to_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
         if self.target.x < self.x:
             self.facing = 1
         else:
@@ -1857,6 +1865,10 @@ class XCharacter(Character):
 
     # 벽의 반대 방향으로 walk_jump 하는 행동 노드
     def walk_jump_opposite_to_wall(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
         if self.x < 50 + PIXEL_PER_METER * 1.0:
             self.facing = 1
         elif self.x > 1544 - PIXEL_PER_METER * 1.0:
@@ -1872,6 +1884,10 @@ class XCharacter(Character):
 
     # 플레이어 방향으로 버스터 쏘는 행동 노드
     def buster_to_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
         # 플레이어가 오른쪽이면 오른쪽 바라보고, 왼쪽이면 왼쪽 바라보게
         if self.target.x > self.x:
             self.facing = 1
@@ -1891,6 +1907,10 @@ class XCharacter(Character):
 
     # 상대 총알이 날아오면 점프 행동 노드
     def jump_from_enemy_wave(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
         # 이미 점프 중이면 다시 점프 금지!!
         if self.state_machine.cur_state == self.JUMP or self.state_machine.cur_state == self.WALK_JUMP:
             return BehaviorTree.FAIL
@@ -1920,11 +1940,11 @@ class XCharacter(Character):
 
 
         # 플레이어에게 버스터 쏘기 노드
-        a4 = Action('buster_to_player', self.buster_to_player)
+        buster_to_player = Action('buster_to_player', self.buster_to_player)
 
 
         # 메인 루트 노드
-        root = Selector('MainSelector', run_to_target, a4)
+        root = Selector('MainSelector', run_to_target, buster_to_player)
 
         # 메인 행동 트리 설정!
         self.bt = BehaviorTree(root)
@@ -2242,23 +2262,66 @@ class ZeroCharacter(Character):
         else:
             return BehaviorTree.FAIL
 
-    # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
+    # 플레이어가 멀리 있을 때 판단하는 조건 노드
     def if_player_middle(self):
-        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 10):
+        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 8):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
-    # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
+    # 플레이어가 가까이 있을 때 판단하는 조건 노드
     def if_player_nearly(self):
         if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 5):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
+    # 플레이어가 매우 가까이 있을 때 판단하는 조건 노드
+    def if_player_very_nearly(self):
+        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 3):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
     # ============= 행동 노드 =============
+    # 플레이어에게 대쉬하는 노드
+    def dash_towards_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('AI', 'DASH'))
+        return BehaviorTree.SUCCESS
+
+    # 플레이어에게 대쉬 공격하는 노드
+    def dash_attack_towards_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('AI', 'DASH_ATTACK'))
+        return BehaviorTree.SUCCESS
+
     # 플레이어에게 걸어가는 행동 노드
     def walk_towards_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
         if self.target.x > self.x:
             self.facing = 1
         else:
@@ -2269,23 +2332,12 @@ class ZeroCharacter(Character):
         self.state_machine.handle_state_event(('AI', 'WALK'))
         return BehaviorTree.SUCCESS
 
-    # 플레이어에게 대쉬하거나 대쉬 공격하는 노드
-    def dash_towards_player(self):
-        if self.target.x > self.x:
-            self.facing = 1
-        else:
-            self.facing = -1
-
-        self.facing_lock = False
-
-        if random() < 0.5:
-            self.state_machine.handle_state_event(('AI', 'DASH'))
-        else:
-            self.state_machine.handle_state_event(('AI', 'DASH_ATTACK'))
-        return BehaviorTree.SUCCESS
-
     # 플레이어에게 근접하여 베이스 소드 공격하는 행동 노드
     def base_sword_attack_to_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.FAIL
+
         # 플레이어가 오른쪽이면 오른쪽 바라보고, 왼쪽이면 왼쪽 바라보게
         if self.target.x > self.x:
             self.facing = 1
@@ -2298,7 +2350,27 @@ class ZeroCharacter(Character):
         return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
-        pass
+        # 기본 플레이어 또는 벽에서 멀어지기 노드
+        c1 = Condition('if_player_far', self.if_player_far)
+        c2 = Condition('if_player_middle', self.if_player_middle)
+        c3 = Condition('if_player_nearly', self.if_player_nearly)
+        c4 = Condition('if_player_very_nearly', self.if_player_very_nearly)
+
+        a1 = Action('dash_towards_player', self.dash_towards_player)
+        a2 = Action('dash_attack_towards_player', self.dash_attack_towards_player)
+        a3 = Action('walk_towards_player', self.base_sword_attack_to_player)
+        a4 = Action('base_sword_attack_to_player', self.base_sword_attack_to_player)
+
+        dash_to_player = Sequence('dash_to_player', c1, a1)
+        dash_attack_to_player = Sequence('dash_attack_to_player', c2, a2)
+        walk_to_player = Sequence('walk_to_player', c3, a3)
+        attack_to_player = Sequence('attack_to_player', c4, a4)
+
+        # 메인 루트 노드
+        root = run_and_attack_to_target = Selector('run_and_attack_to_target', dash_to_player, dash_attack_to_player, walk_to_player, attack_to_player,)
+
+        # 메인 행동 트리 설정!
+        self.bt = BehaviorTree(root)
 
 
 # Sigma 캐릭터 클래스

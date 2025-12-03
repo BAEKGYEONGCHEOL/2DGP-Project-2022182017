@@ -1785,6 +1785,7 @@ class XCharacter(Character):
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
+    # ============= 조건 노드 =============
     # 플레이어가 얕게 가까이 있는지 판단하는 조건 노드
     def if_player_nearly(self):
         if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 15):
@@ -1829,6 +1830,7 @@ class XCharacter(Character):
                     return BehaviorTree.SUCCESS
         return BehaviorTree.FAIL
 
+    # ============= 행동 노드 =============
     # 플레이어의 반대 방향으로 walk 하는 행동 노드
     def walk_opposite_to_player(self):
         if self.target.x < self.x:
@@ -2232,6 +2234,7 @@ class ZeroCharacter(Character):
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
+    # ============= 조건 노드 =============
     # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
     def if_player_far(self):
         if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 15):
@@ -2253,6 +2256,8 @@ class ZeroCharacter(Character):
         else:
             return BehaviorTree.FAIL
 
+    # ============= 행동 노드 =============
+    # 플레이어에게 걸어가는 행동 노드
     def walk_towards_player(self):
         if self.target.x > self.x:
             self.facing = 1
@@ -2262,6 +2267,34 @@ class ZeroCharacter(Character):
         self.facing_lock = False
 
         self.state_machine.handle_state_event(('AI', 'WALK'))
+        return BehaviorTree.SUCCESS
+
+    # 플레이어에게 대쉬하거나 대쉬 공격하는 노드
+    def dash_towards_player(self):
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        if random() < 0.5:
+            self.state_machine.handle_state_event(('AI', 'DASH'))
+        else:
+            self.state_machine.handle_state_event(('AI', 'DASH_ATTACK'))
+        return BehaviorTree.SUCCESS
+
+    # 플레이어에게 근접하여 베이스 소드 공격하는 행동 노드
+    def base_sword_attack_to_player(self):
+        # 플레이어가 오른쪽이면 오른쪽 바라보고, 왼쪽이면 왼쪽 바라보게
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('AI', 'BASE_SWORD_ATTACK'))
         return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):

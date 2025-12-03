@@ -1889,6 +1889,10 @@ class XCharacter(Character):
 
     # 상대 총알이 날아오면 점프 행동 노드
     def jump_from_enemy_wave(self):
+        # 이미 점프 중이면 다시 점프 금지!!
+        if self.state_machine.cur_state == self.JUMP or self.state_machine.cur_state == self.WALK_JUMP:
+            return BehaviorTree.FAIL
+
         self.state_machine.handle_state_event(('AI', 'JUMP'))
         return BehaviorTree.SUCCESS
 
@@ -2227,6 +2231,38 @@ class ZeroCharacter(Character):
     def distance_less_than(self, x1, y1, x2, y2, r):  # r은 미터 단위!
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
         return distance2 < (PIXEL_PER_METER * r) ** 2
+
+    # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
+    def if_player_far(self):
+        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 15):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
+    def if_player_middle(self):
+        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 10):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
+    def if_player_nearly(self):
+        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 5):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def walk_towards_player(self):
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('AI', 'WALK'))
+        return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
         pass

@@ -1806,6 +1806,19 @@ class XCharacter(Character):
             return BehaviorTree.SUCCESS
         return BehaviorTree.FAIL
 
+    # 적 투사체가 가까이 있는지 판단하는 노드
+    def if_enemy_wave_nearly(self):
+        for wave in self.target.active_bullets:
+            # 내 총알이면 pass!
+            if wave.owner == self:
+                continue
+            # 가까이 있는지 검사
+            if abs(self.x - wave.x) < 200:
+                # 나를 향해 오는 총알만 처리!
+                if (wave.facing == 1 and wave.x < self.x) or (wave.facing == -1 and wave.x > self.x):
+                    return BehaviorTree.SUCCESS
+        return BehaviorTree.FAIL
+
     # 플레이어의 반대 방향으로 walk 하는 행동 노드
     def walk_opposite_to_player(self):
         if self.target.x < self.x:

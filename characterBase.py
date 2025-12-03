@@ -2256,28 +2256,28 @@ class ZeroCharacter(Character):
     # ============= 조건 노드 =============
     # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
     def if_player_far(self):
-        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 12):
+        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 14):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     # 플레이어가 멀리 있을 때 판단하는 조건 노드
     def if_player_middle(self):
-        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 12):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 14):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     # 플레이어가 가까이 있을 때 판단하는 조건 노드
     def if_player_nearly(self):
-        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 8):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 10):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     # 플레이어가 매우 가까이 있을 때 판단하는 조건 노드
     def if_player_very_nearly(self):
-        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 3):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 4):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL

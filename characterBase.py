@@ -1835,7 +1835,7 @@ class XCharacter(Character):
     def walk_opposite_to_player(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         if self.target.x < self.x:
             self.facing = 1
@@ -1851,7 +1851,7 @@ class XCharacter(Character):
     def dash_opposite_to_player(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         if self.target.x < self.x:
             self.facing = 1
@@ -1867,7 +1867,7 @@ class XCharacter(Character):
     def walk_jump_opposite_to_wall(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         if self.x < 50 + PIXEL_PER_METER * 1.0:
             self.facing = 1
@@ -1886,7 +1886,7 @@ class XCharacter(Character):
     def buster_to_player(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         # 플레이어가 오른쪽이면 오른쪽 바라보고, 왼쪽이면 왼쪽 바라보게
         if self.target.x > self.x:
@@ -1909,7 +1909,7 @@ class XCharacter(Character):
     def jump_from_enemy_wave(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         # 이미 점프 중이면 다시 점프 금지!!
         if self.state_machine.cur_state == self.JUMP or self.state_machine.cur_state == self.WALK_JUMP:
@@ -2049,7 +2049,6 @@ class ZeroCharacter(Character):
 
                         # AI
                         ai_idle: self.IDLE,
-                        ai_walk: self.WALK,
                         ai_jump: self.WALK_JUMP,
                         ai_walk_jump: self.WALK_JUMP,
                         ai_base_sword_attack: self.BASE_SWORD_ATTACK,
@@ -2257,28 +2256,28 @@ class ZeroCharacter(Character):
     # ============= 조건 노드 =============
     # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
     def if_player_far(self):
-        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 15):
+        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 12):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     # 플레이어가 멀리 있을 때 판단하는 조건 노드
     def if_player_middle(self):
-        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 8):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 12):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     # 플레이어가 가까이 있을 때 판단하는 조건 노드
     def if_player_nearly(self):
-        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 5):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 8):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     # 플레이어가 매우 가까이 있을 때 판단하는 조건 노드
     def if_player_very_nearly(self):
-        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 3):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 3):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -2288,7 +2287,7 @@ class ZeroCharacter(Character):
     def dash_towards_player(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         if self.target.x > self.x:
             self.facing = 1
@@ -2304,7 +2303,7 @@ class ZeroCharacter(Character):
     def dash_attack_towards_player(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         if self.target.x > self.x:
             self.facing = 1
@@ -2320,7 +2319,7 @@ class ZeroCharacter(Character):
     def walk_towards_player(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         if self.target.x > self.x:
             self.facing = 1
@@ -2336,7 +2335,7 @@ class ZeroCharacter(Character):
     def base_sword_attack_to_player(self):
         # 이미 행동 중이면 실패 반환!
         if self.action_doing:
-            return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
 
         # 플레이어가 오른쪽이면 오른쪽 바라보고, 왼쪽이면 왼쪽 바라보게
         if self.target.x > self.x:
@@ -2358,7 +2357,7 @@ class ZeroCharacter(Character):
 
         a1 = Action('dash_towards_player', self.dash_towards_player)
         a2 = Action('dash_attack_towards_player', self.dash_attack_towards_player)
-        a3 = Action('walk_towards_player', self.base_sword_attack_to_player)
+        a3 = Action('walk_towards_player', self.walk_towards_player)
         a4 = Action('base_sword_attack_to_player', self.base_sword_attack_to_player)
 
         dash_to_player = Sequence('dash_to_player', c1, a1)
@@ -2367,7 +2366,7 @@ class ZeroCharacter(Character):
         attack_to_player = Sequence('attack_to_player', c4, a4)
 
         # 메인 루트 노드
-        root = run_and_attack_to_target = Selector('run_and_attack_to_target', dash_to_player, dash_attack_to_player, walk_to_player, attack_to_player,)
+        root = run_and_attack_to_target = Selector('run_and_attack_to_target', attack_to_player, walk_to_player, dash_attack_to_player, dash_to_player,)
 
         # 메인 행동 트리 설정!
         self.bt = BehaviorTree(root)

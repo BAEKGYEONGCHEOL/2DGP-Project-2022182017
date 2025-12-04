@@ -2810,8 +2810,145 @@ class SigmaCharacter(Character):
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
+    # ============= 조건 노드 =============
+    # 플레이어가 아주 멀리 있을 때 판단하는 조건 노드
+    def if_player_far(self):
+        if not self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 12):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    # 플레이어가 멀리 있을 때 판단하는 조건 노드
+    def if_player_middle(self):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 12):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    # 플레이어가 매우 가까이 있을 때 판단하는 조건 노드
+    def if_player_very_nearly(self):
+        if self.distance_less_than(self.x, self.y, self.target.x, self.target.y, 4):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    # 적 투사체가 가까이 있는지 판단하는 노드
+    def if_enemy_wave_nearly(self):
+        for wave in self.target.active_bullets:
+            # 내 총알이면 pass!
+            if wave.thrower == self:
+                continue
+
+            # 텔레포트 범위 설정
+            teleport_range = 300
+
+            # 가까이 있는지 검사
+            if abs(self.x - wave.x) < teleport_range:
+                # 나를 향해 오는 총알만 처리!
+                if (wave.facing == 1 and wave.x < self.x) or (wave.facing == -1 and wave.x > self.x):
+                    return BehaviorTree.SUCCESS
+        return BehaviorTree.FAIL
+
+
+    # ============= 행동 노드 =============
+    # 플레이어에게 대쉬하거나 파동을 발사하는 노드
+    def dash_or_wave_to_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.SUCCESS
+
+        # 플레이어가 오른쪽이면 오른쪽 바라보고, 왼쪽이면 왼쪽 바라보게
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        # 총알이 없을 때만 상태 전환!
+        # 확률에 따라 대쉬 공격 또는 파동 공격 선택
+        if len(self.active_bullets) == 0:
+            r = random()    # 난수 한 번만 생성
+            if r < 0.5:
+                attack_type = 'SPHERE_ATTACK'
+            elif r < 0.85:  # 0.5 + 0.35로 계산!
+                attack_type = 'WAVE_ATTACK'
+            else:
+                attack_type = 'DASH_ATTACK_WALL'
+            self.state_machine.handle_state_event(('AI', attack_type))
+        return BehaviorTree.SUCCESS
+
+    # 플레이어에게 걸어가는 행동 노드
+    def walk_towards_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.SUCCESS
+
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('AI', 'WALK'))
+        return BehaviorTree.SUCCESS
+
+    # 플레이어에게 근접하여 암 어택하는 행동 노드
+    def arm_attack_to_player(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.SUCCESS
+
+        # 플레이어가 오른쪽이면 오른쪽 바라보고, 왼쪽이면 왼쪽 바라보게
+        if self.target.x > self.x:
+            self.facing = 1
+        else:
+            self.facing = -1
+
+        self.facing_lock = False
+
+        self.state_machine.handle_state_event(('AI', 'ARM_ATTACK'))
+        return BehaviorTree.SUCCESS
+
+    # 상대 총알이 날아오면 텔레포트 행동 노드
+    def teleport_from_enemy_wave(self):
+        # 이미 행동 중이면 실패 반환!
+        if self.action_doing:
+            return BehaviorTree.SUCCESS
+
+        # 이미 텔레포트 중이면 다시 텔레포트 금지!!
+        if self.state_machine.cur_state == self.TELEPORT:
+            return BehaviorTree.FAIL
+
+        self.state_machine.handle_state_event(('AI', 'TELEPORT'))
+        return BehaviorTree.SUCCESS
+
     def build_behavior_tree(self):
-        pass
+        c1 = Condition('if_player_far', self.if_player_far)
+        c2 = Condition('if_player_middle', self.if_player_middle)
+        c3 = Condition('if_player_very_nearly', self.if_player_very_nearly)
+
+        a1 = Action('dash_or_wave_to_player', self.dash_or_wave_to_player)
+        a2 = Action('walk_towards_player', self.walk_towards_player)
+        a3 = Action('arm_attack_to_player', self.arm_attack_to_player)
+
+        dash_or_wave_to_player = Sequence('dash_or_wave_to_player', c1, a1)
+        walk_towards_player = Sequence('walk_towards_player', c2, a2)
+        arm_attack_to_player = Sequence('arm_attack_to_player', c3, a3)
+
+        root = run_and_attack_to_target = Selector('run_and_attack_to_target', arm_attack_to_player, walk_towards_player, dash_or_wave_to_player,)
+
+        c4 = Condition('if_enemy_wave_nearly', self.if_enemy_wave_nearly)
+        a4 = Action('teleport_from_enemy_wave', self.teleport_from_enemy_wave)
+
+        teleport_from_enemy_wave = Sequence('teleport_from_enemy_wave', c4, a4)
+
+        # 메인 루트 노드
+        root = Selector('MainSelector', teleport_from_enemy_wave, run_and_attack_to_target)
+
+        # 메인 행동 트리 설정!
+        self.bt = BehaviorTree(root)
 
 
 # Vile 캐릭터 클래스

@@ -7,7 +7,6 @@ from ground import FirstGround, SecondGround
 import random
 from hp import HPTool, HPBar
 
-
 player1_index = 0
 player2_index = 0
 battle_mode = 'vs_player'
@@ -17,6 +16,17 @@ player2 = None
 
 battle_background1 = None
 battle_background2 = None
+
+# 게임 종료 상태 변수
+game_end = False
+winner = None     # 1 또는 2
+win_timer = 0
+WIN_DURATION = 5.0   # 5초
+# 승리 및 패배 이미지
+player1_win = None  # 1P 승리 이미지
+player2_win = None  # 2P 승리 이미지
+player1_win_vs_cpu = None  # 1P 승리 이미지 (vs CPU 모드)
+player1_lose_vs_cpu = None  # 1P 패배 이미지 (vs CPU 모드)
 
 
 class BattleBackground:
@@ -62,7 +72,18 @@ def set_characters(p1_index, p2_index, mode):
 
 # 모드 초기화 시 프린트로 확인
 def init():
-    global current_map, player1, player2
+    global current_map, player1, player2, player1_win, player2_win, player1_win_vs_cpu, player1_lose_vs_cpu, game_end, winner, win_timer, WIN_DURATION, battle_mode
+
+    # 게임 종료 상태 변수
+    game_end = False
+    winner = None  # 1 또는 2
+    win_timer = 0
+    WIN_DURATION = 5.0  # 5초
+
+    player1_win = load_image('player1_win.png')
+    player2_win = load_image('player2_win.png')
+    player1_win_vs_cpu = load_image('player1_win_vs_cpu.png')
+    player1_lose_vs_cpu = load_image('player1_lose_vs_cpu.png')
 
     print(f"Player1 Index: {player1_index}")
     print(f"Player2 Index: {player2_index}")
@@ -126,18 +147,46 @@ def handle_events():
 
 
 def update():
+    global game_end, winner, win_timer
+
     game_world.update()
     game_world.handle_collision()
 
-    # CPU 모드일 때 AI 실행!
-    if battle_mode == 'vs_cpu' and player2.bt:
-        player2.bt.run()
+    if not game_end:
+        # CPU 모드일 때 AI 실행!
+        if battle_mode == 'vs_cpu' and player2.bt:
+            player2.bt.run()
+
+        # 승패 판정
+        if player1.current_hp <= 0:
+            game_end = True
+            winner = 2
+        elif player2.current_hp <= 0:
+            game_end = True
+            winner = 1
+
+    else:
+        win_timer += game_framework.frame_time
+        if win_timer >= WIN_DURATION:
+            game_framework.change_mode(mode_select_mode)
 
 
 def draw():
     clear_canvas()
 
     game_world.render()
+
+    if game_end:
+        if winner == 1:
+            if battle_mode == 'vs_cpu':
+                player1_win_vs_cpu.draw(797, 447)
+            else:
+                player1_win.draw(797, 447)
+        else:
+            if battle_mode == 'vs_cpu':
+                player1_lose_vs_cpu.draw(797, 447)
+            else:
+                player2_win.draw(797, 447)
 
     update_canvas()
 

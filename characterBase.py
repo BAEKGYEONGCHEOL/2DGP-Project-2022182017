@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, draw_rectangle
+from pico2d import load_image, get_time, draw_rectangle, load_wav
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a, SDLK_s, SDLK_d, SDLK_f, SDLK_g, SDLK_v, SDLK_e, \
     SDLK_r, SDLK_t, SDLK_c, SDLK_KP_4, SDLK_KP_6, SDLK_j, SDLK_k, SDLK_l, SDLK_SEMICOLON, SDLK_QUOTE, SDLK_SLASH, \
     SDLK_o, SDLK_p, SDLK_LEFTBRACKET, SDLK_PERIOD
@@ -1127,6 +1127,7 @@ class BaseBusterAttack:
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
         self.fired = False  # Buster 발사 여부 변수
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -1154,6 +1155,10 @@ class BaseBusterAttack:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        if self.character.current_frame == 4 and not self.sound_played:
+            self.character.snd_buster.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['base_buster_attack'][self.character.current_frame]
@@ -1667,6 +1672,13 @@ class XCharacter(Character):
         # 행동 트리와 타겟 초기화!
         self.bt = None
         self.target = None
+
+        # 사운드
+        self.snd_buster = load_wav('x_and_ultimate_x_buster.wav')
+        self.snd_buster.set_volume(64)
+
+        self.snd_power = load_wav('x_and_ultimate_x_power_and_sigma_arm.wav')
+        self.snd_power.set_volume(64)
 
     # normal buster 발사 함수
     def fire_normal_buster(self):

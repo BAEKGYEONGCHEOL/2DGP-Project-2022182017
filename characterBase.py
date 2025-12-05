@@ -882,6 +882,7 @@ class SphereAttack:
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
         self.fired = False
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -910,6 +911,10 @@ class SphereAttack:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        if not self.sound_played:
+            self.character.snd_sphere.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['sphere_attack'][self.character.current_frame]
@@ -2680,6 +2685,9 @@ class SigmaCharacter(Character):
         # 사운드
         self.snd_arm_and_wave = load_wav('x_and_ultimate_x_power_and_sigma_arm.wav')
         self.snd_arm_and_wave.set_volume(64)
+
+        self.snd_sphere = load_wav('sigma_sphere.wav')
+        self.snd_sphere.set_volume(64)
 
     # sphere 발사 함수
     def fire_sphere(self):

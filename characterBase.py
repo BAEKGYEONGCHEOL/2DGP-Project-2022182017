@@ -3191,6 +3191,10 @@ class VileCharacter(Character):
         self.bt = None
         self.target = None
 
+        # 사운드
+        self.snd_sword = load_wav('vile_sword_dash_attack.wav')
+        self.snd_sword.set_volume(64)
+
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()

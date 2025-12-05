@@ -809,6 +809,7 @@ class PowerAttack:
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
         self.fired = False
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -837,6 +838,10 @@ class PowerAttack:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        if self.character.current_frame == 4 and not self.sound_played:
+            self.character.snd_power.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['power_attack'][self.character.current_frame]

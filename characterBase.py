@@ -3827,6 +3827,13 @@ class UltimateArmorXCharacter(Character):
     def draw_frame(self, frame_data):
         x_data, y_data, w_data, h_data = frame_data
 
+        if self.state_machine.cur_state == self.DEFEAT:
+            change_death_x = 0
+            change_death_y = -40  # 아래로 40픽셀 더 내려서 눕힌 느낌
+        else:
+            change_death_x = 0
+            change_death_y = 0
+
         # 현재 바라보는 방향(facing)
         # 시트 방향과 바라보는 방향에 따라 flip 계산
         if self.change_facing_right:
@@ -3851,7 +3858,7 @@ class UltimateArmorXCharacter(Character):
                 flip = 'h'
 
         # 해당 프레임 그리기!
-        self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x, self.y, w_data * 3, h_data * 3)
+        self.image.clip_composite_draw(x_data, y_data, w_data, h_data, 0, flip, self.x + change_death_x, self.y + change_death_y, w_data * 3, h_data * 3)
 
     # ==============================================================================================================
     # ===================================================== AI =====================================================

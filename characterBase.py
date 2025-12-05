@@ -1035,6 +1035,7 @@ class AmbientWaveAttack:
         self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -1057,6 +1058,10 @@ class AmbientWaveAttack:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        if not self.sound_played:
+            self.character.snd_ambient.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['ambient_wave_attack'][self.character.current_frame]
@@ -3194,6 +3199,9 @@ class VileCharacter(Character):
         # 사운드
         self.snd_sword = load_wav('vile_sword_dash_attack.wav')
         self.snd_sword.set_volume(64)
+
+        self.snd_ambient = load_wav('vile_ambient.wav')
+        self.snd_ambient.set_volume(64)
 
     def draw(self):
         if self.state_machine:

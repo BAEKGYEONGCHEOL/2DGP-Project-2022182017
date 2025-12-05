@@ -644,6 +644,12 @@ class ArmAttack:
         self.frame = (self.frame + len(self.character.frame['arm_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
 
         if self.frame >= len(self.character.frame['arm_attack']):
+            # 상대가 HIT이 들어왔으면 마지막 프레임으로 고정!
+            self.frame = len(self.character.frame['arm_attack']) - 1
+            self.character.current_frame = int(self.frame)
+            if self.character.target.state_machine.cur_state == self.character.target.HIT:
+                return
+
             if self.character.is_left_pressed or self.character.is_right_pressed:
                 self.character.state_machine.handle_state_event(('LAND_WALK', None))
             else:
@@ -1079,6 +1085,12 @@ class BaseSwordAttack:
             self.character.frame['base_sword_attack']) * self.ACTION_PER_TIME * game_framework.frame_time)
 
         if self.frame >= len(self.character.frame['base_sword_attack']):
+            # 상대가 HIT이 들어왔으면 마지막 프레임으로 고정!
+            self.frame = len(self.character.frame['base_sword_attack']) - 1
+            self.character.current_frame = int(self.frame)
+            if self.character.target.state_machine.cur_state == self.character.target.HIT:
+                return
+
             if self.character.is_left_pressed or self.character.is_right_pressed:
                 self.character.state_machine.handle_state_event(('LAND_WALK', None))
             else:

@@ -1074,6 +1074,7 @@ class BaseSwordAttack:
         self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -1102,6 +1103,10 @@ class BaseSwordAttack:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        if not self.sound_played:
+            self.character.snd_sword.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['base_sword_attack'][self.character.current_frame]
@@ -2172,6 +2177,10 @@ class ZeroCharacter(Character):
         # 행동 트리와 타겟 초기화!
         self.bt = None
         self.target = None
+
+        # 사운드
+        self.snd_sword = load_wav('zero_and_ultimate_x_sword_dash_attack.wav')
+        self.snd_sword.set_volume(64)
 
     def draw(self):
         if self.state_machine:
@@ -3710,6 +3719,10 @@ class UltimateArmorXCharacter(Character):
         # 행동 트리와 타겟 초기화!
         self.bt = None
         self.target = None
+
+        # 사운드
+        self.snd_sword = load_wav('zero_and_ultimate_x_sword_dash_attack.wav')
+        self.snd_sword.set_volume(64)
 
     # normal buster 발사 함수
     def fire_normal_buster(self):

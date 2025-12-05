@@ -123,10 +123,17 @@ def init():
     game_world.add_collision_pair('p1_reflect:p2_wave', player1, None)
     game_world.add_collision_pair('p2_reflect:p1_wave', player2, None)
 
+
     # CPU 모드면 행동트리 연결!
     if battle_mode == 'vs_cpu':
+        player1.target = player2
         player2.target = player1
         player2.build_behavior_tree()  # 행동 트리 생성!
+
+    # 플레이어 모드면 서로 타겟 연결!
+    if battle_mode == 'vs_player':
+        player1.target = player2
+        player2.target = player1
 
 
 def handle_events():

@@ -629,6 +629,7 @@ class ArmAttack:
         self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -656,6 +657,10 @@ class ArmAttack:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        if not self.sound_played:
+            self.character.snd_arm_and_wave.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['arm_attack'][self.character.current_frame]
@@ -935,6 +940,7 @@ class WaveAttack:
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
         self.fired = False
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -963,6 +969,10 @@ class WaveAttack:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        if not self.sound_played:
+            self.character.snd_arm_and_wave.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['wave_attack'][self.character.current_frame]
@@ -2666,6 +2676,10 @@ class SigmaCharacter(Character):
         # 행동 트리와 타겟 초기화!
         self.bt = None
         self.target = None
+
+        # 사운드
+        self.snd_arm_and_wave = load_wav('x_and_ultimate_x_power_and_sigma_arm.wav')
+        self.snd_arm_and_wave.set_volume(64)
 
     # sphere 발사 함수
     def fire_sphere(self):

@@ -679,6 +679,7 @@ class DashAttack:
         self.character.facing_lock = True
         self.frame = 0
         self.character.current_frame = 0  # current_frame 초기화!
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -710,6 +711,10 @@ class DashAttack:
                 self.character.state_machine.handle_state_event(('LAND_IDLE', None))
         else:
             self.character.current_frame = int(self.frame)
+
+        if not self.sound_played:
+            self.character.snd_sword.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['dash_attack'][self.character.current_frame]
@@ -3723,6 +3728,12 @@ class UltimateArmorXCharacter(Character):
         # 사운드
         self.snd_sword = load_wav('zero_and_ultimate_x_sword_dash_attack.wav')
         self.snd_sword.set_volume(64)
+
+        self.snd_buster = load_wav('x_and_ultimate_x_buster.wav')
+        self.snd_buster.set_volume(64)
+
+        self.snd_power = load_wav('x_and_ultimate_x_power_and_sigma_arm.wav')
+        self.snd_power.set_volume(64)
 
     # normal buster 발사 함수
     def fire_normal_buster(self):

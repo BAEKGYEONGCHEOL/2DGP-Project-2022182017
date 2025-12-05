@@ -534,7 +534,7 @@ class Teleport:
         self.character = character
         self.frame = 0
 
-        self.TIME_PER_ACTION = 0.8
+        self.TIME_PER_ACTION = 1.1
         self.ACTION_PER_TIME = 1.0 / self.TIME_PER_ACTION
 
         self.teleport_distance = 400    # 순간이동 거리
@@ -551,6 +551,7 @@ class Teleport:
         self.character.current_frame = 0
         self.teleport_done = False
         self.is_visible = True
+        self.sound_played = False
 
     def exit(self, e):
         self.character.action_doing = False
@@ -607,6 +608,10 @@ class Teleport:
 
         # 프레임 인덱스 갱신
         self.character.current_frame = int(self.frame)
+
+        if not self.sound_played:
+            self.character.snd_teleport.play()
+            self.sound_played = True
 
     def draw(self):
         frame_data = self.character.frame['teleport'][self.character.current_frame]
@@ -2689,6 +2694,9 @@ class SigmaCharacter(Character):
         self.snd_sphere = load_wav('sigma_sphere.wav')
         self.snd_sphere.set_volume(64)
 
+        self.snd_teleport = load_wav('sigma_and_vile_teleport.wav')
+        self.snd_teleport.set_volume(64)
+
     # sphere 발사 함수
     def fire_sphere(self):
         # 이미 발사한 총알이 존재하면 새로운 발사 금지!
@@ -3225,6 +3233,9 @@ class VileCharacter(Character):
         self.snd_ambient = load_wav('vile_ambient.wav')
         self.snd_ambient.set_volume(64)
 
+        self.snd_teleport = load_wav('sigma_and_vile_teleport.wav')
+        self.snd_teleport.set_volume(64)
+
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
@@ -3266,7 +3277,7 @@ class VileCharacter(Character):
         frame = self.current_frame
 
         if state == self.BASE_SWORD_ATTACK:
-            if frame >= 7 and frame <= 9:
+            if frame >= 7 and frame <= 8:
                 if self.facing == 1:
                     return self.x - 150, self.y - 100, self.x + 140, self.y + 120
                 else:

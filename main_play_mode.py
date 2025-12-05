@@ -135,7 +135,7 @@ def handle_events():
         if e.type == SDL_QUIT:
             game_framework.quit()
         elif e.type == SDL_KEYDOWN:
-            if e.key == SDLK_ESCAPE:
+            if e.key == SDLK_ESCAPE and not game_end:
                 # game_framework.quit()
                 game_framework.change_mode(mode_select_mode)
 

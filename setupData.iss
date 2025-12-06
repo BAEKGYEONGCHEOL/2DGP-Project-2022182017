@@ -11,7 +11,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{B777F4DB-FDF6-461B-A235-4CC145AE90E1}
+AppId={{F5E7DF65-5FC2-4A53-B8EF-A8871F2548B0}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -33,7 +33,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=C:\Users\DK11PC\Desktop\GamePlay
+OutputDir=C:\Users\DK11PC\Desktop\MyGamePlay
 OutputBaseFilename=MyGameSetup2022182017
 SolidCompression=yes
 WizardStyle=modern dark
@@ -58,4 +58,4 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Dirs]
-name: {app}; Permissions: users-full
+Name: {app}; Permissions: users-full

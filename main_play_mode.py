@@ -61,7 +61,7 @@ def create_character(index, x, y, player):
         character = UltimateArmorXCharacter(x, y, player)
 
     # 초기 상태 INTRO로 설정
-    # character.state_machine.cur_state = character.INTRO
+    character.state_machine.cur_state = character.INTRO
 
     return character
 

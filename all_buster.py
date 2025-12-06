@@ -35,7 +35,7 @@ class NormalBuster:
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def update(self):
         dt = game_framework.frame_time
@@ -112,7 +112,7 @@ class PowerBuster:
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def update(self):
         dt = game_framework.frame_time
@@ -189,7 +189,7 @@ class Sphere:
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def update(self):
         dt = game_framework.frame_time
@@ -267,7 +267,7 @@ class Wave:
         self.image.clip_composite_draw(x, y, w, h, 0, flip, self.x, self.y, w * 3, h * 3)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def update(self):
         dt = game_framework.frame_time

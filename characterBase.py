@@ -1805,8 +1805,8 @@ class XCharacter(Character):
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
-            draw_rectangle(*self.get_bb())
-            draw_rectangle(*self.get_attack_bb())
+            # draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -2251,8 +2251,8 @@ class ZeroCharacter(Character):
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
-            draw_rectangle(*self.get_bb())
-            draw_rectangle(*self.get_attack_bb())
+            # draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -2795,8 +2795,8 @@ class SigmaCharacter(Character):
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
-            draw_rectangle(*self.get_bb())
-            draw_rectangle(*self.get_attack_bb())
+            # draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -3288,9 +3288,9 @@ class VileCharacter(Character):
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
-            draw_rectangle(*self.get_bb())
-            draw_rectangle(*self.get_attack_bb())
-            draw_rectangle(*self.get_reflect_bb())
+            # draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_attack_bb())
+            # draw_rectangle(*self.get_reflect_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기
@@ -3887,8 +3887,8 @@ class UltimateArmorXCharacter(Character):
     def draw(self):
         if self.state_machine:
             self.state_machine.draw()
-            draw_rectangle(*self.get_bb())
-            draw_rectangle(*self.get_attack_bb())
+            # draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_attack_bb())
 
     def get_bb(self):
         # 현재 상태 불러오기

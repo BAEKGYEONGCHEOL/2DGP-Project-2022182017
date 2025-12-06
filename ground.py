@@ -11,7 +11,7 @@ class FirstGround:
         self.image.draw(1594 / 2, 894 / 2)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return 0, 0, 1594, 150
@@ -40,7 +40,7 @@ class SecondGround:
         self.image.draw(1594 / 2, 894 / 2)
         # draw_rectangle(): 좌상단(x1, y1), 우하단(x2, y2) 2개의 점을 가지고 빨간색 사각형을 그려준다.
         # 튜플은 하나의 파라미터로 간주가 되기 때문에 *를 붙여서 튜플을 풀어준다. -> 4개의 인자로 변환
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return 0, 0, 1594, 150

@@ -222,6 +222,12 @@ def draw():
 
 
 def finish():
+    # 브금 멈추기!
+    global current_bgm
+    if current_bgm:
+        current_bgm.stop()
+        current_bgm = None
+
     game_world.clear()
 
 

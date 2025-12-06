@@ -28,6 +28,11 @@ player2_win = None  # 2P 승리 이미지
 player1_win_vs_cpu = None  # 1P 승리 이미지 (vs CPU 모드)
 player1_lose_vs_cpu = None  # 1P 패배 이미지 (vs CPU 모드)
 
+# bgm 추가!
+battle_bgm_map1 = None
+battle_bgm_map2 = None
+current_bgm = None
+
 
 class BattleBackground:
     def __init__(self, image_path):
@@ -73,6 +78,7 @@ def set_characters(p1_index, p2_index, mode):
 # 모드 초기화 시 프린트로 확인
 def init():
     global current_map, player1, player2, player1_win, player2_win, player1_win_vs_cpu, player1_lose_vs_cpu, game_end, winner, win_timer, WIN_DURATION, battle_mode
+    global battle_bgm_map1, battle_bgm_map2, current_bgm
 
     # 게임 종료 상태 변수
     game_end = False
@@ -122,6 +128,23 @@ def init():
 
     game_world.add_collision_pair('p1_reflect:p2_wave', player1, None)
     game_world.add_collision_pair('p2_reflect:p1_wave', player2, None)
+
+
+    # bgm 로드!
+    battle_bgm_map1 = load_music('main_bgm_x_and_zero.wav')
+    battle_bgm_map2 = load_music('main_bgm_sigma.wav')
+
+    battle_bgm_map1.set_volume(64)
+    battle_bgm_map2.set_volume(64)
+
+    # 맵에 따라 bgm 재생
+    if isinstance(current_map, FirstGround):
+        current_bgm = battle_bgm_map1
+    elif isinstance(current_map, SecondGround):
+        current_bgm = battle_bgm_map2
+
+    if current_bgm:
+        current_bgm.play(-1)
 
 
     # CPU 모드면 행동트리 연결!

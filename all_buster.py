@@ -49,6 +49,7 @@ class NormalBuster:
         if self.x > 1650 or self.x < 0:
             if self in self.thrower.active_bullets:
                 self.thrower.active_bullets.remove(self)
+            self.thrower.buster_locked = False
             game_world.remove_object(self)
 
     def get_bb(self):
@@ -64,6 +65,8 @@ class NormalBuster:
     def handle_collision(self, group, other):
         if self in self.thrower.active_bullets:
             self.thrower.active_bullets.remove(self)
+
+        self.thrower.buster_locked = False
 
         # 투사체는 충돌 시 사라지도록 삭제!
         game_world.remove_object(self)
@@ -123,6 +126,7 @@ class PowerBuster:
         if self.x > 1650 or self.x < 0:
             if self in self.thrower.active_bullets:
                 self.thrower.active_bullets.remove(self)
+            self.thrower.buster_locked = False
             game_world.remove_object(self)
 
     def get_bb(self):
@@ -138,6 +142,8 @@ class PowerBuster:
     def handle_collision(self, group, other):
         if self in self.thrower.active_bullets:
             self.thrower.active_bullets.remove(self)
+
+        self.thrower.buster_locked = False
 
         # 투사체는 충돌 시 사라지도록 삭제!
         game_world.remove_object(self)
@@ -197,6 +203,7 @@ class Sphere:
         if self.x > 1650 or self.x < 0:
             if self in self.thrower.active_bullets:
                 self.thrower.active_bullets.remove(self)
+            self.thrower.buster_locked = False
             game_world.remove_object(self)
 
     def get_bb(self):
@@ -212,6 +219,8 @@ class Sphere:
     def handle_collision(self, group, other):
         if self in self.thrower.active_bullets:
             self.thrower.active_bullets.remove(self)
+
+        self.thrower.buster_locked = False
 
         # 투사체는 충돌 시 사라지도록 삭제!
         game_world.remove_object(self)
@@ -272,6 +281,7 @@ class Wave:
         if self.x > 1650 or self.x < 0:
             if self in self.thrower.active_bullets:
                 self.thrower.active_bullets.remove(self)
+            self.thrower.buster_locked = False
             game_world.remove_object(self)
 
     def get_bb(self):
@@ -287,6 +297,8 @@ class Wave:
     def handle_collision(self, group, other):
         if self in self.thrower.active_bullets:
             self.thrower.active_bullets.remove(self)
+
+        self.thrower.buster_locked = False
 
         # 투사체는 충돌 시 사라지도록 삭제!
         game_world.remove_object(self)

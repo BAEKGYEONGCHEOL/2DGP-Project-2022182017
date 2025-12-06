@@ -817,8 +817,13 @@ class PowerAttack:
 
         self.is_attack = False
         self.attack_name = None
+        self.sound_played = False
 
     def enter(self, e):
+        if self.character.buster_locked:
+            self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+            return
+
         if len(self.character.active_bullets) > 0:
             # 강제로 idle/state return!
             self.character.state_machine.handle_state_event(('LAND_IDLE', None))
@@ -880,8 +885,13 @@ class SphereAttack:
 
         self.is_attack = False
         self.attack_name = None
+        self.sound_played = False
 
     def enter(self, e):
+        if self.character.buster_locked:
+            self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+            return
+
         if len(self.character.active_bullets) > 0:
             # 강제로 idle/state return!
             self.character.state_machine.handle_state_event(('LAND_IDLE', None))
@@ -943,8 +953,13 @@ class WaveAttack:
 
         self.is_attack = False
         self.attack_name = None
+        self.sound_played = False
 
     def enter(self, e):
+        if self.character.buster_locked:
+            self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+            return
+
         if len(self.character.active_bullets) > 0:
             # 강제로 idle/state return!
             self.character.state_machine.handle_state_event(('LAND_IDLE', None))
@@ -1160,8 +1175,13 @@ class BaseBusterAttack:
 
         self.is_attack = False
         self.attack_name = None
+        self.sound_played = False
 
     def enter(self, e):
+        if self.character.buster_locked:
+            self.character.state_machine.handle_state_event(('LAND_IDLE', None))
+            return
+
         if len(self.character.active_bullets) > 0:
             # 강제로 idle/state return!
             self.character.state_machine.handle_state_event(('LAND_IDLE', None))
@@ -1424,6 +1444,7 @@ class Character:
 
         # 캐릭터가 투사체를 발사했는지 확인하는 리스트!
         self.active_bullets = []
+        self.buster_locked = False
 
     def update(self):
         if self.state_machine:
@@ -1731,6 +1752,11 @@ class XCharacter(Character):
         if len(self.active_bullets) >= 1:
             return
 
+        if self.buster_locked:
+            return
+
+        self.buster_locked = True
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
@@ -1753,6 +1779,11 @@ class XCharacter(Character):
         # 이미 발사한 총알이 존재하면 새로운 발사 금지!
         if len(self.active_bullets) >= 1:
             return
+
+        if self.buster_locked:
+            return
+
+        self.buster_locked = True
 
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
@@ -2711,6 +2742,11 @@ class SigmaCharacter(Character):
         if len(self.active_bullets) >= 1:
             return
 
+        if self.buster_locked:
+            return
+
+        self.buster_locked = True
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
@@ -2733,6 +2769,11 @@ class SigmaCharacter(Character):
         # 이미 발사한 총알이 존재하면 새로운 발사 금지!
         if len(self.active_bullets) >= 1:
             return
+
+        if self.buster_locked:
+            return
+
+        self.buster_locked = True
 
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
@@ -3797,6 +3838,11 @@ class UltimateArmorXCharacter(Character):
         if len(self.active_bullets) >= 1:
             return
 
+        if self.buster_locked:
+            return
+
+        self.buster_locked = True
+
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing
 
@@ -3817,6 +3863,11 @@ class UltimateArmorXCharacter(Character):
         # 이미 발사한 총알이 존재하면 새로운 발사 금지!
         if len(self.active_bullets) >= 1:
             return
+
+        if self.buster_locked:
+            return
+
+        self.buster_locked = True
 
         # 플레이어의 바라보는 방향에 따라 위치와 발사 방향 계산
         facing = self.facing

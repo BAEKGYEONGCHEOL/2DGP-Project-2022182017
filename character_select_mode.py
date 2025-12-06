@@ -23,6 +23,9 @@ player2_locked = False
 
 battle_mode = 'vs_player'  # 대전 모드 설정
 
+# bgm 추가!
+character_select_bgm = None
+
 
 # battle_mode 설정 함수
 def set_battle_mode(mode):
@@ -51,6 +54,7 @@ def draw_character_select_screen(index, x, y, player):
 
 def init():
     global background, characterSelectViewSlot, player1IconDirection, player2IconDirection, slot_images, player1_icon_x, player2_icon_x, player1_index, player2_index, player1_character, player2_character, battle_mode, player1_locked, player2_locked
+    global character_select_bgm
 
     background = load_image('select_character_background.png')
     characterSelectViewSlot = load_image('character_select_view_slot.png')
@@ -73,8 +77,17 @@ def init():
     player1_character = draw_character_select_screen(player1_index, 444, 645, 1)
     player2_character = draw_character_select_screen(player2_index, 1150, 645, 2)
 
+    # bgm 재생
+    character_select_bgm = load_music('character_select_bgm.wav')
+    character_select_bgm.set_volume(64)
+    character_select_bgm.play(-1)
+
 
 def finish():
+    # bgm 종료
+    global character_select_bgm
+    character_select_bgm.stop()
+
     global background, characterSelectViewSlot, player1IconDirection, player2IconDirection, slot_images
     del background, characterSelectViewSlot, player1IconDirection, player2IconDirection
     for s in slot_images:

@@ -10,9 +10,13 @@ vsPlayer2Button = None
 quitGame = None
 icon_x = 350
 
+# bgm 추가!
+mode_select_bgm = None
+
 
 def init():
     global banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame, icon_x
+    global mode_select_bgm
 
     banner = load_image('banner.png')  # 배경
     gameTitle = load_image('game_title.png')  # 게임 제목
@@ -23,8 +27,17 @@ def init():
 
     icon_x = 350
 
+    # bgm 재생
+    mode_select_bgm = load_music('opening_bgm.wav')
+    mode_select_bgm.set_volume(64)
+    mode_select_bgm.play(-1)
+
 
 def finish():
+    # bgm 종료
+    global mode_select_bgm
+    mode_select_bgm.stop()
+
     global banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame
     del banner, gameTitle, directionIcon, vsCPUButton, vsPlayer2Button, quitGame
 
